@@ -141,11 +141,21 @@ Notes: ✅ Docker Postgres 16 running
        ✅ Connection verified via psql and npm run db:test
 
 2.2 Schema v1 (minimum tables to store robot outputs)
-[ ] Not started
+[x] Done
 DoD: tables exist for episodes, transcript_segments_raw, episode_summary, summary_bullets, qc_runs
 Acceptance:
 - run migration
 - insert one robot run into DB with script
+Notes: ✅ Full schema implemented with 5 tables
+       ✅ episodes: stores metadata (YouTube, audio, local)
+       ✅ transcript_segments_raw: raw transcript with timestamps
+       ✅ episode_summary: summary metadata
+       ✅ summary_bullets: bullets with evidence spans (JSONB)
+       ✅ qc_runs: QC results with flags (JSONB)
+       ✅ Foreign keys and indexes configured
+       ✅ Migration generated and applied (0001_productive_wolf_cub.sql)
+       ✅ Insertion script created (scripts/insert_robot_output.ts)
+       ✅ Test data inserted: 1 episode, 9 segments, 1 summary, 8 bullets, 1 QC run
 
 2.3 Seeds (shows/users/admin)
 [ ] Not started
