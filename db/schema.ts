@@ -1,6 +1,37 @@
 import { pgTable, text, timestamp, uuid, integer, jsonb, real, index } from "drizzle-orm/pg-core";
 
 // ─────────────────────────────────────────────────────────────────────────────
+// Users - authentication and authorization
+// ─────────────────────────────────────────────────────────────────────────────
+
+export const users = pgTable("users", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  email: text("email").notNull().unique(),
+  name: text("name").notNull(),
+  role: text("role").notNull(), // "admin" | "user"
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+}, (table) => ({
+  emailIdx: index("users_email_idx").on(table.email),
+  roleIdx: index("users_role_idx").on(table.role),
+}));
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Shows - podcast shows/channels
+// ─────────────────────────────────────────────────────────────────────────────
+
+export const shows = pgTable("shows", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  name: text("name").notNull(),
+  description: text("description"),
+  youtubeChannelId: text("youtube_channel_id").unique(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+}, (table) => ({
+  youtubeChannelIdIdx: index("shows_youtube_channel_id_idx").on(table.youtubeChannelId),
+}));
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Episodes - stores metadata for each ingested episode
 // ─────────────────────────────────────────────────────────────────────────────
 

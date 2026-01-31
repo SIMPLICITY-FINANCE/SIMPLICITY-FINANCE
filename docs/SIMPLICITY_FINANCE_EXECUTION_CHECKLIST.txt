@@ -158,9 +158,17 @@ Notes: ✅ Full schema implemented with 5 tables
        ✅ Test data inserted: 1 episode, 9 segments, 1 summary, 8 bullets, 1 QC run
 
 2.3 Seeds (shows/users/admin)
-[ ] Not started
+[x] Done
 DoD: seed script creates one admin + sample show
 Acceptance: seed runs idempotently
+Notes: ✅ Added users and shows tables to schema
+       ✅ users: id, email (unique), name, role, timestamps
+       ✅ shows: id, name, description, youtube_channel_id (unique), timestamps
+       ✅ Migration 0003_gifted_songbird.sql applied
+       ✅ Seed script created (scripts/seed.ts)
+       ✅ npm run db:seed creates admin@simplicity.finance + sample show
+       ✅ Idempotency verified: Run 1 creates, Run 2 updates (no duplicates)
+       ✅ Counts stable: 1 user, 1 show
 
 =====================================================================
 PHASE 3 — INNGEST (WORKFLOWS)
