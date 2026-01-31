@@ -1,0 +1,571 @@
+=====================================================================
+SIMPLICITY_FINANCE_BLUEPRINT
+Single-source-of-truth blueprint (expanded + structured + production-minded)
+Scope: Web MVP first, Mobile later, beginner-friendly, scalable + trustworthy
+=====================================================================
+
+OWNER / GOALS
+-------------
+Team: 2 people (AI-assisted dev)
+Product: Finance podcast intelligence from long-form audio/video
+Moat: Trust (evidence), Speed (fresh feed), Consistency (stable schema)
+
+=====================================================================
+0) LOCKED DECISIONS
+=====================================================================
+
+DEV / AI
+--------
+- IDE: Windsurf
+- Coding assistant: Claude
+- Summarization: any LLM provider, outputs MUST be schema-validated + QC’d
+
+AUTH / USERS
+------------
+- Passwordless login (magic link or one-time code)
+- Registration: name + email only
+- Roles: normal | premium | admin
+
+CORE UX SEMANTICS
+-----------------
+- Saved = Episodes + Reports only
+- Notebook = Bullets only
+- Checkbox = “Save bullet to Notebook”
+- Bullets never appear in Saved
+
+ORCHESTRATION
+-------------
+- Inngest is the workflow/orchestration layer
+- Inngest Dev Server used locally
+- Postgres is the source of truth (statuses, artifacts, entitlements)
+
+SEARCH
+------
+- Keyword: Postgres FTS
+- Semantic: pgvector
+- Week 1: do NOT build unified hybrid ranking
+
+PUBLISHING / TRUST
+------------------
+- QC verification required
+- Admin approval exists
+- Auto-publish allowed for trusted shows with high QC (avoid admin bottleneck)
+
+INGESTION SCOPE
+---------------
+- MVP ingestion is URL-based (YouTube captions where feasible + RSS/creator-provided URLs)
+- MVP excludes user file uploads (Phase 9+ only)
+
+UI TRUTH
+--------
+- Screenshots/Figma = visual truth
+- Figma export code = naming/layout hints only
+
+=====================================================================
+1) PRODUCT DEFINITION
+=====================================================================
+
+INPUTS
+------
+- YouTube finance episodes (captions-first)
+- Podcast RSS episodes (audio URL provided/licensed)
+- Partner/creator-provided content URLs
+
+OUTPUTS
+-------
+- Episode summaries: structured categories + bullets
+- Evidence: citations to transcript timestamps
+- Reports: daily/weekly/monthly summaries-of-summaries
+- Search: keyword + semantic
+- Notebook: curated bullets
+- Saved: episodes + reports
+- Discover: shows + people directory, follow
+- Admin: approvals + operations
+- Later: widgets, chatbot, mobile app
+
+QUALITY PRINCIPLES
+------------------
+- Evidence-grounded bullets (no evidence → not publishable)
+- Speaker-safe outputs (never invent speaker names)
+- Async pipeline with idempotent steps + retries
+- Cost controls baked in (usage ledger + limits)
+
+=====================================================================
+2) UX MAP + NAMING (STANDARDIZED)
+=====================================================================
+
+ROUTES (LABEL → ROUTE)
+----------------------
+Home       → /home
+Saved      → /saved
+Notebook   → /notebook
+Reports    → /reports
+Upload     → /upload
+Discover   → /discover
+Admin      → /admin (admin-only)
+
+Profile    → /profile
+Settings   → /settings
+Help       → /help
+
+FOOTER LINKS (LEFT SIDEBAR)
+---------------------------
+About         → /about
+Privacy       → /privacy
+Terms         → /terms
+Data          → /data
+Accessibility → /accessibility
+
+COMPONENT NAMING (CONSISTENT)
+-----------------------------
+Layout: AppShellLayout, LeftSidebar, RightSidebar, TopSearchBar
+Feed: FeedPage, EpisodeCard, TopicChips
+Summary: EpisodeSummaryModal (or EpisodeDetail), InlineCitationChip, EvidenceBottomSheet
+Saved: SavedPage
+Notebook: NotebookPage, RecentSummariesCarousel, NotebookBulletsList
+Reports: ReportsPage, ReportCard, ReportModal
+Discover: DiscoverPage, ShowModal, PersonModal, SuggestEntityModal
+Admin: AdminPage + tabs
+Other: NotificationsPopup, PremiumModal
+Later: ChatBotOverlay, Widgets
+
+ACTIONS (USER-FACING)
+---------------------
+Episode: Save | Share | Export | Open
+Report:  Save | Share | Export
+Bullet:  Save to Notebook (checkbox)
+Upload:  Generate Summary | Try Again (failure)
+Admin:   Approve | Reject | Reprocess | Retry Job | Pause/Resume Ingestion
+
+EXPORT NOTE
+-----------
+- “Export” is a menu later (PDF/Markdown/JSON). In v1, hide or stub.
+
+=====================================================================
+3) REFERENCE FILE STRUCTURE (NEXT.JS APP ROUTER, NO src/)
+=====================================================================
+
+my-app/
+├── app/
+│   ├── (auth)/
+│   │   ├── login/page.tsx
+│   │   └── callback/page.tsx
+│   ├── (dashboard)/
+│   │   ├── layout.tsx                 # AppShellLayout wrapper
+│   │   ├── home/page.tsx
+│   │   ├── saved/page.tsx
+│   │   ├── notebook/page.tsx
+│   │   ├── reports/page.tsx
+│   │   ├── discover/page.tsx
+│   │   ├── upload/page.tsx
+│   │   ├── admin/page.tsx             # admin-only
+│   │   ├── profile/page.tsx
+│   │   ├── settings/page.tsx
+│   │   └── help/page.tsx
+│   ├── api/
+│   │   ├── inngest/route.ts           # Inngest handler only
+│   │   ├── episodes/route.ts          # thin API controllers
+│   │   ├── reports/route.ts
+│   │   ├── notebook/route.ts
+│   │   ├── saved/route.ts
+│   │   ├── admin/route.ts
+│   │   └── auth/route.ts
+│   ├── about/page.tsx
+│   ├── privacy/page.tsx
+│   ├── terms/page.tsx
+│   ├── data/page.tsx
+│   ├── accessibility/page.tsx
+│   ├── layout.tsx
+│   └── page.tsx                       # landing
+│
+├── components/
+│   ├── ui/                            # shadcn primitives
+│   ├── layout/                        # LeftSidebar/RightSidebar/AppShell
+│   ├── episodes/
+│   ├── reports/
+│   ├── notebook/
+│   ├── evidence/
+│   └── admin/
+│
+├── server/                            # SERVER-ONLY boundary (critical)
+│   ├── db/
+│   │   ├── index.ts                   # drizzle connection
+│   │   └── schema.ts                  # drizzle schema
+│   ├── services/
+│   │   ├── ingestion.service.ts
+│   │   ├── transcript.service.ts
+│   │   ├── summary.service.ts
+│   │   ├── qc.service.ts
+│   │   ├── report.service.ts
+│   │   ├── search.service.ts
+│   │   ├── approvals.service.ts
+│   │   ├── usage.service.ts
+│   │   └── notifications.service.ts
+│   ├── providers/
+│   │   ├── youtube.provider.ts
+│   │   ├── rss.provider.ts
+│   │   ├── deepgram.provider.ts
+│   │   ├── whisper.provider.ts
+│   │   └── llm.provider.ts
+│   ├── auth/
+│   │   └── authz.ts                   # requireAdmin/requirePremium/canUpload
+│   ├── config/
+│   │   ├── env.ts                     # env validation (fail fast)
+│   │   └── features.ts                # feature flags
+│   └── logging/
+│       └── logger.ts
+│
+├── inngest/
+│   ├── client.ts
+│   ├── events.ts                      # event names + payload types
+│   ├── functions/
+│   │   ├── processEpisode.ts
+│   │   ├── reprocessEpisode.ts
+│   │   ├── generateDailyReport.ts
+│   │   ├── processSuggestion.ts
+│   │   └── onApprovalChanged.ts
+│   └── steps/                         # optional shared step logic
+│
+├── schemas/                           # Zod contracts (system truth)
+│   ├── summary.schema.ts
+│   ├── report.schema.ts
+│   ├── entities.schema.ts
+│   └── event.schema.ts
+│
+├── prompts/                           # prompt text + versioning
+│   ├── summary/v1.ts
+│   ├── qc/v1.ts
+│   └── report/v1.ts
+│
+├── scripts/                           # integration + ops scripts
+│   ├── pipeline_smoke.ts
+│   ├── backfill_show.ts
+│   └── reprocess_failed.ts
+│
+├── public/
+├── drizzle.config.ts
+├── next.config.js
+├── tsconfig.json
+├── eslint.config.*
+└── package.json
+
+SERVER/CLIENT RULE
+------------------
+- components/ and app/(dashboard) UI must never import from server/*
+- server/* modules should declare "server-only" at entry points
+- app/api/* routes are thin controllers calling server/services/*
+
+=====================================================================
+4) COMPLIANCE-AWARE INGESTION + ELIGIBILITY
+=====================================================================
+
+SUPPORTED INGESTION MODES (MVP)
+-------------------------------
+A) Captions-first (YouTube):
+- use captions when available via allowed mechanisms
+- store timestamped transcript segments
+
+B) URL-based authorized/licensed audio:
+- RSS audio URLs (podcasts)
+- creator/partner-provided audio URLs
+
+EXCLUDED (MVP)
+--------------
+- user-uploaded audio files (Phase 9+)
+
+CHANNEL ELIGIBILITY GATES
+-------------------------
+shows.ingestion_policy:
+- captions_only
+- captions_or_authorized_audio
+- authorized_audio_only
+- disabled
+
+=====================================================================
+5) TRUST TIERS + AUTO-PUBLISH (AVOID ADMIN BOTTLENECK)
+=====================================================================
+
+shows.trust_tier: low | medium | high
+
+Summaries:
+- if trust_tier=high AND qc_score >= AUTO_PUBLISH_QC_THRESHOLD
+  → approval_status=approved automatically
+- else pending
+
+Reports:
+- default pending early MVP
+- optional later auto-publish
+
+Suggestions:
+- always pending
+
+RISK FLAGS (recommended, influences pending)
+--------------------------------------------
+- numbers (rates/prices/percentages)
+- forecasts/predictions
+- claims about specific companies/earnings/events
+Risky items can force pending even for high-trust shows.
+
+=====================================================================
+6) DOMAIN MODEL / STATUSES / VERSIONING
+=====================================================================
+
+EpisodeStatus:
+queued | transcribing | summarizing | qc | ready | failed
+
+Approval:
+SummaryApprovalStatus: pending | approved | rejected
+ReportApprovalStatus:  pending | approved | rejected
+SuggestionStatus:      pending | approved | rejected
+
+QC:
+pass | warn | fail
+qc_score: 0–100
+
+SPEAKER-SAFE RULE
+-----------------
+- transcript speaker field is optional (nullable)
+- LLM must not invent speakers or names
+- UI omits speaker labels unless present; optionally show “Unknown Speaker”
+
+VERSIONING
+----------
+- store schema_version, prompt_version, model_version for:
+  summary_bullets/episode_summary/reports
+
+=====================================================================
+7) EVIDENCE MODEL + UX
+=====================================================================
+
+EVIDENCE STORAGE (required)
+---------------------------
+- evidence_segment_ids[]  (fast lookup)
+- evidence_spans_ms[]     (portable backup)
+  [{start_ms,end_ms}, ...]
+
+EVIDENCE UX (required)
+----------------------
+- inline citation chips per bullet: [12:30] [18:05]
+- click opens EvidenceBottomSheet:
+  transcript highlight around timestamp
+  optional audio jump if authorized audio exists
+  copy citation link
+
+PUBLISHING RULE
+---------------
+- missing citations → not publishable (at minimum qc_warn + pending)
+
+=====================================================================
+8) PIPELINE (STAGES)
+=====================================================================
+
+1) ingest metadata
+2) acquire transcript (captions → authorized ASR fallback if applicable)
+3) refine transcript
+4) summarize chunks
+5) merge + normalize summary
+6) QC verify + score + risk flags
+7) approval (pending/auto)
+8) index search (FTS + embeddings)
+9) notify (admin/users)
+
+SUMMARY OUTPUT
+--------------
+- stable category taxonomy
+- bullets contain:
+  text, confidence, qc_status, qc_score, citations, entities, risk_flags
+
+REPORTS
+-------
+- input: approved summaries only
+- output: report_items referencing bullet IDs
+- QC + approval same pattern
+
+=====================================================================
+9) ORCHESTRATION: INNGEST CONTRACT
+=====================================================================
+
+EVENTS
+------
+episode/submitted
+episode/reprocess_requested
+report/generate_daily
+suggestion/submitted
+admin/approval_changed
+
+FUNCTIONS
+---------
+processEpisode
+reprocessEpisode
+generateDailyReport
+processSuggestion
+onApprovalChanged
+
+processEpisode steps
+--------------------
+A loadEpisodeAndLock
+B ingestMetadata
+C acquireTranscript
+D refineTranscript
+E summarizeAndStore
+F qcVerifyAndScore
+G setApprovalStatus
+H1 indexFTS
+H2 embedBullets
+I notify
+
+Rules:
+- no step-per-segment
+- each step idempotent
+- concurrency caps (global + show_id + user_id)
+- rate limits per user/day for submissions
+
+=====================================================================
+10) DATABASE (POSTGRES + DRIZZLE)
+=====================================================================
+
+Core tables: users, shows, people, episodes, episode_assets,
+transcript_segments_raw/refined, summary_bullets, episode_summary,
+reports, report_items, saved_items, notebook_items, user_follows,
+notifications, suggestions, admin_audit_logs, user_usage_ledger.
+
+Key additions:
+- shows: trust_tier, ingestion_policy
+- users: onboarding_status
+- summary bullets: citations backup (evidence_spans_ms), qc_score, risk_flags
+- usage ledger: tokens/audio/uploads by day
+
+Data retention policy
+---------------------
+- default: do not store audio unless authorized and needed
+- transcripts + bullets are stored
+- admin delete-episode tool (Phase 8) for compliance/cleanup
+- define retention windows later (ticket)
+
+=====================================================================
+11) SEARCH (ROLLOUT)
+=====================================================================
+
+V1:
+- FTS for titles/entities
+- semantic bullets only
+- filters: show, date range, category
+
+V2:
+- transcript semantic retrieval if needed
+- hybrid ranking experiments + feedback loop
+
+Publishing filter:
+- users see approved only
+- admin can see pending/rejected
+
+=====================================================================
+12) ADMIN AREA
+=====================================================================
+
+/admin tabs:
+Dashboard | Summaries | Reports | Suggestions | Support | Users | Errors | Open Pages
+
+Approvals:
+- list pending
+- show QC score + risk flags + citations
+- actions: Approve / Reject(reason) / Reprocess
+
+Users:
+- role changes, disable user, reset quota, comp premium
+
+Errors:
+- failed runs summary + last_error
+- retry/reprocess actions
+- link out to monitoring/Inngest run details
+
+Audit:
+- every admin action recorded
+
+=====================================================================
+13) HOSTING / ENVIRONMENTS / OPS
+=====================================================================
+
+Local:
+- Next.js dev
+- Postgres Docker
+- Inngest Dev Server
+- scripts/pipeline_smoke.ts for end-to-end validation
+
+Staging:
+- preview deploy
+- staging DB
+- limited quotas
+
+Prod:
+- Vercel (web)
+- Supabase/Neon (Postgres)
+- Inngest (orchestration)
+- optional Render worker for system deps only
+
+Observability:
+- Sentry
+- PostHog
+- Langfuse
+
+Backups:
+- enable DB backups
+- reprocess playbook via events
+
+=====================================================================
+14) SECURITY / ABUSE / COST CONTROL
+=====================================================================
+
+- quotas enforced via user_usage_ledger
+- rate limits on upload/search/(chatbot later)
+- validate URLs and enforce ingestion_policy
+- admin role enforced server-side
+- env validation required at startup
+
+=====================================================================
+15) BUILD ORDER (BEGINNER-OPTIMIZED)
+=====================================================================
+
+Phase 1: Integration script (URL → transcript → summary → store/print)
+Phase 2: DB migrations + seeds
+Phase 3: Inngest incremental workflow build (processEpisode)
+Phase 4: Admin MVP approvals + trust_tier/auto-publish
+Phase 5: Public UI MVP (feed + summary + notebook + saved)
+Phase 6: Reports MVP
+Phase 7: Search V1
+Phase 8: Hardening (monitoring, quotas, delete tools, ops dashboards)
+Phase 9+: widgets, chatbot, mobile, file uploads (optional)
+
+=====================================================================
+16) OPEN DECISIONS (TICKETS)
+=====================================================================
+
+- category taxonomy
+- auto-publish thresholds (summaries/reports)
+- audio policy details (store vs ephemeral vs none for authorized sources)
+- export formats (PDF/MD/JSON)
+- diarization (v2)
+- free tier limits (uploads/day, tokens/day)
+- retention windows + deletion policy detail
+
+=====================================================================
+17) AI-ASSISTED BUILD RULES
+=====================================================================
+
+- small diffs, one feature per PR
+- always require “how to run and verify locally”
+- schema-first: any output field requires Zod schema update
+- prompt changes require prompt_version bump
+- keep Inngest steps coarse (no step explosion)
+
+Prompt template:
+1) Goal
+2) Constraints
+3) Current file tree
+4) Required behavior + edge cases
+5) Minimal diff + files changed
+6) How to run + verify
+
+=====================================================================
+END OF SIMPLICITY_FINANCE_BLUEPRINT
+=====================================================================
