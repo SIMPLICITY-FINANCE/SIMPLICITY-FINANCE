@@ -129,11 +129,16 @@ PHASE 2 — DATABASE (LOCAL) + DRIZZLE
 =====================================================================
 
 2.1 Local Postgres (Docker) + Drizzle config
-[ ] Not started
+[x] Done
 DoD: local postgres running + drizzle connects + migrations folder exists
 Acceptance:
 - `psql` connects OR drizzle studio connects
 - drizzle migration runs clean
+Notes: ✅ Docker Postgres 16 running
+       ✅ Drizzle ORM configured with postgres driver
+       ✅ Migration generated and applied (episodes table exists)
+       ✅ Drizzle Studio accessible at https://local.drizzle.studio
+       ✅ Connection verified via psql and npm run db:test
 
 2.2 Schema v1 (minimum tables to store robot outputs)
 [ ] Not started

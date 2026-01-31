@@ -31,7 +31,7 @@
    ```bash
    npm run db:studio
    ```
-   Then open http://localhost:4983 in your browser
+   This will automatically open https://local.drizzle.studio in your browser
 
 ## Connection Details
 

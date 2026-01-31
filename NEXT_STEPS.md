@@ -53,7 +53,7 @@ This applies the schema to the database.
 npm run db:studio
 ```
 
-Open http://localhost:4983 and you should see the `episodes` table.
+This will automatically open https://local.drizzle.studio and you should see the `episodes` table.
 
 ## Acceptance Criteria for Checkpoint 2.1
 
