@@ -16,7 +16,8 @@
     "db:push": "drizzle-kit push",
     "db:test": "tsx scripts/test_db_connection.ts",
     "db:insert": "tsx scripts/insert_robot_output.ts",
-    "db:seed": "tsx scripts/seed.ts"
+    "db:seed": "tsx scripts/seed.ts",
+    "inngest:dev": "npx inngest-cli@latest dev"
   },
   "keywords": [],
   "author": "",
@@ -26,6 +27,7 @@
     "dotenv": "^17.2.3",
     "drizzle-kit": "^0.31.8",
     "drizzle-orm": "^0.45.1",
+    "inngest": "^3.50.0",
     "openai": "^6.17.0",
     "postgres": "^3.4.8",
     "zod": "^4.3.6"

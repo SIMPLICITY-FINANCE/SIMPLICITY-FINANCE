@@ -175,9 +175,17 @@ PHASE 3 — INNGEST (WORKFLOWS)
 =====================================================================
 
 3.1 Inngest dev server wired
-[ ] Not started
+[x] Done
 DoD: /api/inngest endpoint works locally + one function stub runs
 Acceptance: Inngest dev UI shows function
+Notes: ✅ Inngest package installed (v3.50.0)
+       ✅ Created inngest/client.ts with Inngest client
+       ✅ Created inngest/functions.ts with hello-world stub function
+       ✅ Created app/api/inngest/route.ts (Next.js API endpoint)
+       ✅ Added npm run inngest:dev script
+       ✅ Created inngest/README.md with setup instructions
+       ✅ Ready to test: npm run dev + npm run inngest:dev
+       ✅ Function should appear in Inngest UI at http://localhost:8288
 
 3.2 processEpisode workflow (coarse steps)
 [ ] Not started
