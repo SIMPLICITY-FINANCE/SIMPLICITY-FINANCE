@@ -9,7 +9,12 @@
   },
   "scripts": {
     "dev": "next dev",
-    "robot": "tsx scripts/pipeline_smoke.ts"
+    "robot": "tsx scripts/pipeline_smoke.ts",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:studio": "drizzle-kit studio",
+    "db:push": "drizzle-kit push",
+    "db:test": "tsx scripts/test_db_connection.ts"
   },
   "keywords": [],
   "author": "",
@@ -17,7 +22,10 @@
   "dependencies": {
     "@deepgram/sdk": "^4.11.3",
     "dotenv": "^17.2.3",
+    "drizzle-kit": "^0.31.8",
+    "drizzle-orm": "^0.45.1",
     "openai": "^6.17.0",
+    "postgres": "^3.4.8",
     "zod": "^4.3.6"
   },
   "devDependencies": {
