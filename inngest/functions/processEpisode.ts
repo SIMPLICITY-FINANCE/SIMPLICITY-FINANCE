@@ -1,7 +1,6 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 import * as crypto from "node:crypto";
-import { z } from "zod";
 import { createClient } from "@deepgram/sdk";
 import OpenAI from "openai";
 import { inngest } from "../client";
@@ -15,13 +14,6 @@ const execAsync = promisify(exec);
 // ─────────────────────────────────────────────────────────────────────────────
 // Types & Schemas
 // ─────────────────────────────────────────────────────────────────────────────
-
-const EpisodeSubmittedEventSchema = z.object({
-  name: z.literal("episode/submitted"),
-  data: z.object({
-    url: z.string().url(),
-  }),
-});
 
 interface TranscriptSegment {
   start_ms: number;
