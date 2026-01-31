@@ -8,9 +8,9 @@ export const episodes = pgTable("episodes", {
   id: uuid("id").primaryKey().defaultRandom(),
   source: text("source").notNull(), // "youtube" | "audio" | "local"
   url: text("url"),
-  videoId: text("video_id"),
-  audioId: text("audio_id"),
-  fileId: text("file_id"),
+  videoId: text("video_id").unique(),
+  audioId: text("audio_id").unique(),
+  fileId: text("file_id").unique(),
   
   // YouTube metadata (if source = youtube)
   youtubeTitle: text("youtube_title"),
