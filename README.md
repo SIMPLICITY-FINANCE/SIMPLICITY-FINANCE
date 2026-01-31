@@ -1,16 +1,30 @@
-## Hi there 👋
+# Simplicity Finance
 
-<!--
-**SIMPLICITY-FINANCE/SIMPLICITY-FINANCE** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
+Finance podcast summarization platform focused on trustworthy, evidence-grounded outputs.
 
-Here are some ideas to get you started:
+## What this repo will become
+- Ingest long-form finance episodes (captions-first + licensed RSS/partner URLs)
+- Produce structured summaries with citations to transcript timestamps
+- Generate daily/weekly/monthly reports (summaries-of-summaries)
+- Provide search (Postgres FTS + pgvector) and a Notebook (saved bullets)
 
-- 🔭 I’m currently working on ...
-- 🌱 I’m currently learning ...
-- 👯 I’m looking to collaborate on ...
-- 🤔 I’m looking for help with ...
-- 💬 Ask me about ...
-- 📫 How to reach me: ...
-- 😄 Pronouns: ...
-- ⚡ Fun fact: ...
--->
+## Core UX rules
+- **Saved** = Episodes + Reports only
+- **Notebook** = Bullets only
+
+## Repo structure (high level)
+- `/app` — Next.js routes (App Router)
+- `/components` — UI components
+- `/server` — server-only services, providers, DB (do not import from UI)
+- `/inngest` — workflow orchestration
+- `/schemas` — Zod schemas (contracts)
+- `/prompts` — versioned prompts
+- `/scripts` — integration/ops scripts
+
+## Workflow
+- No direct commits to `main`
+- All work happens on branches and merges via PR
+- Keep PRs small (one feature per PR)
+
+## Local development
+(Coming soon)
