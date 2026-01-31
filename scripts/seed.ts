@@ -19,7 +19,7 @@ async function seed() {
     console.log("👤 Seeding admin user...");
     const [admin] = await sql`
       INSERT INTO users (email, name, role)
-      VALUES ('admin@simplicity.finance', 'Admin User', 'admin')
+      VALUES ('admin@simplicity-finance.com', 'Admin User', 'admin')
       ON CONFLICT (email) DO UPDATE SET
         name = EXCLUDED.name,
         role = EXCLUDED.role,
