@@ -188,9 +188,24 @@ Notes: ✅ Inngest package installed (v3.50.0)
        ✅ Function should appear in Inngest UI at http://localhost:8288
 
 3.2 processEpisode workflow (coarse steps)
-[ ] Not started
+[x] Done
 DoD: event episode/submitted triggers steps: ingest -> transcript -> summary -> qc -> approval
 Acceptance: one run completes end-to-end using DB artifacts
+Notes: ✅ Created inngest/functions/processEpisode.ts
+       ✅ 5-step workflow: ingest → transcribe → summary → qc → database
+       ✅ Reuses robot pipeline logic with Inngest orchestration
+       ✅ Writes artifacts to output/<id>/ directory
+       ✅ Calls npm run db:insert to store in database
+       ✅ Supports audio URLs (.mp3, .m4a, .wav) via Deepgram
+       ✅ YouTube metadata extraction (captions require audio URL)
+       ✅ Error handling with retries (retries: 3)
+       ✅ Exported in inngest/functions.ts
+       ✅ Updated inngest/README.md with testing instructions
+       ✅ Fixed audioId/videoId fields in episode metadata
+       ✅ TESTED: Workflow completed successfully end-to-end
+       ✅ Test URL: https://www.voiptroubleshooter.com/open_speech/american/OSR_us_000_0010_8k.wav
+       ✅ Verified: 81 transcript segments, summary generated, QC passed, DB inserted
+       ✅ Database counts: 2 episodes, 90 segments, 2 summaries, 8 bullets, 2 QC runs
 
 =====================================================================
 PHASE 4 — ADMIN MVP (APPROVALS + TRUST TIERS)

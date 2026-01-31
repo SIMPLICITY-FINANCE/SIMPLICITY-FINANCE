@@ -1,4 +1,5 @@
-import { inngest } from "./client.js";
+import { inngest } from "./client";
+import { processEpisode } from "./functions/processEpisode";
 
 // Stub function to verify Inngest is working
 export const helloWorld = inngest.createFunction(
@@ -15,4 +16,4 @@ export const helloWorld = inngest.createFunction(
 );
 
 // Export all functions as an array
-export const functions = [helloWorld];
+export const functions = [helloWorld, processEpisode];
