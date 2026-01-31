@@ -203,15 +203,22 @@ async function generateSummary(
     .replace("{{PUBLISHED_AT}}", publishedAt)
     .replace("{{TRANSCRIPT}}", transcriptText);
 
-  const response = await openai.chat.completions.create({
-    model: "gpt-4o-mini",
-    messages: [{ role: "user", content: prompt }],
-    response_format: { type: "json_object" },
-  });
+  try {
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
+      messages: [{ role: "user", content: prompt }],
+      response_format: { type: "json_object" },
+    });
 
-  const content = response.choices[0]?.message?.content ?? "{}";
-  const parsed = JSON.parse(content);
-  return SummarySchema.parse(parsed);
+    const content = response.choices[0]?.message?.content ?? "{}";
+    const parsed = JSON.parse(content);
+    return SummarySchema.parse(parsed);
+  } catch (err) {
+    if (err instanceof Error) {
+      throw new Error(`OpenAI API failed: ${err.message}`);
+    }
+    throw err;
+  }
 }
 
 async function generateQC(
@@ -228,15 +235,22 @@ async function generateQC(
     .replace("{{SUMMARY}}", JSON.stringify(summary, null, 2))
     .replace("{{TRANSCRIPT}}", transcriptText);
 
-  const response = await openai.chat.completions.create({
-    model: "gpt-4o-mini",
-    messages: [{ role: "user", content: prompt }],
-    response_format: { type: "json_object" },
-  });
+  try {
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
+      messages: [{ role: "user", content: prompt }],
+      response_format: { type: "json_object" },
+    });
 
-  const content = response.choices[0]?.message?.content ?? "{}";
-  const parsed = JSON.parse(content);
-  return QCSchema.parse(parsed);
+    const content = response.choices[0]?.message?.content ?? "{}";
+    const parsed = JSON.parse(content);
+    return QCSchema.parse(parsed);
+  } catch (err) {
+    if (err instanceof Error) {
+      throw new Error(`OpenAI API failed: ${err.message}`);
+    }
+    throw err;
+  }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -247,18 +261,26 @@ async function handleYouTubeUrl(url: string, videoId: string) {
   console.log("🤖 Robot v0 accepted YouTube URL.");
   console.log("videoId:", videoId);
 
+  // Create output directory first so we can write error.json if needed
+  const outputDir = path.join(process.cwd(), "output", videoId);
+  fs.mkdirSync(outputDir, { recursive: true });
+
   // Validate environment
   const envResult = YouTubeEnvSchema.safeParse(process.env);
   if (!envResult.success) {
+    const errorPayload = {
+      stage: "ingestion",
+      code: "MISSING_ENV_VAR",
+      message: "Missing required environment variable: YOUTUBE_API_KEY",
+      videoId,
+      url,
+    };
+    fs.writeFileSync(path.join(outputDir, "error.json"), JSON.stringify(errorPayload, null, 2));
     console.error("❌ Missing required environment variable: YOUTUBE_API_KEY");
     console.error("Set it in .env.local or export it in your shell.");
     process.exit(1);
   }
   const { YOUTUBE_API_KEY } = envResult.data;
-
-  // Create output directory
-  const outputDir = path.join(process.cwd(), "output", videoId);
-  fs.mkdirSync(outputDir, { recursive: true });
 
   // Fetch YouTube metadata via Data API v3
   console.log("📥 Fetching YouTube metadata...");
@@ -345,15 +367,17 @@ async function handleAudioUrl(url: string) {
   console.log("🤖 Robot v0 accepted audio URL.");
   console.log("audioId:", audioId);
 
+  // Create output directory first
+  const outputDir = path.join(process.cwd(), "output", audioId);
+  fs.mkdirSync(outputDir, { recursive: true });
+
   // Validate environment
   const envResult = DeepgramEnvSchema.safeParse(process.env);
   if (!envResult.success) {
-    const outputDir = path.join(process.cwd(), "output", audioId);
-    fs.mkdirSync(outputDir, { recursive: true });
     const errorPayload = {
-      stage: "transcript",
-      code: "MISSING_API_KEY",
-      message: "DEEPGRAM_API_KEY is required for audio transcription.",
+      stage: "transcription",
+      code: "MISSING_ENV_VAR",
+      message: "Missing required environment variable: DEEPGRAM_API_KEY",
       audioId,
       url,
     };
@@ -365,8 +389,6 @@ async function handleAudioUrl(url: string) {
   const { DEEPGRAM_API_KEY } = envResult.data;
 
   // Create output directory
-  const outputDir = path.join(process.cwd(), "output", audioId);
-  fs.mkdirSync(outputDir, { recursive: true });
 
   // Build episode.json for audio
   const episode = {
@@ -466,24 +488,64 @@ async function handleLocalTranscript(filePath: string) {
   console.log("🤖 Robot v0 processing local transcript.");
   console.log("fileId:", fileId);
 
+  // Create output directory first
+  const outputDir = path.join(process.cwd(), "output", fileId);
+  fs.mkdirSync(outputDir, { recursive: true });
+
   // Validate OpenAI key
   const openaiEnvResult = OpenAIEnvSchema.safeParse(process.env);
   if (!openaiEnvResult.success) {
+    const errorPayload = {
+      stage: "summary_qc",
+      code: "MISSING_ENV_VAR",
+      message: "Missing required environment variable: OPENAI_API_KEY",
+      fileId,
+      filePath,
+    };
+    fs.writeFileSync(path.join(outputDir, "error.json"), JSON.stringify(errorPayload, null, 2));
     console.error("❌ Missing required environment variable: OPENAI_API_KEY");
     console.error("Set it in .env.local or export it in your shell.");
     process.exit(1);
   }
 
-  // Create output directory
-  const outputDir = path.join(process.cwd(), "output", fileId);
-  fs.mkdirSync(outputDir, { recursive: true });
+  // Read transcript with error handling
+  let transcriptContent: string;
+  try {
+    transcriptContent = fs.readFileSync(filePath, "utf-8");
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    const errorPayload = {
+      stage: "ingestion",
+      code: "FILE_NOT_FOUND",
+      message: `Failed to read transcript file: ${message}`,
+      fileId,
+      filePath,
+    };
+    fs.writeFileSync(path.join(outputDir, "error.json"), JSON.stringify(errorPayload, null, 2));
+    console.error(`❌ FILE_NOT_FOUND: ${message}`);
+    process.exit(1);
+  }
 
-  // Read transcript
-  const transcriptContent = fs.readFileSync(filePath, "utf-8");
-  const segments: TranscriptSegment[] = transcriptContent
-    .trim()
-    .split("\n")
-    .map((line) => JSON.parse(line) as TranscriptSegment);
+  // Parse transcript with error handling
+  let segments: TranscriptSegment[];
+  try {
+    segments = transcriptContent
+      .trim()
+      .split("\n")
+      .map((line) => JSON.parse(line) as TranscriptSegment);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    const errorPayload = {
+      stage: "ingestion",
+      code: "INVALID_TRANSCRIPT_FORMAT",
+      message: `Failed to parse transcript.jsonl: ${message}`,
+      fileId,
+      filePath,
+    };
+    fs.writeFileSync(path.join(outputDir, "error.json"), JSON.stringify(errorPayload, null, 2));
+    console.error(`❌ INVALID_TRANSCRIPT_FORMAT: ${message}`);
+    process.exit(1);
+  }
 
   console.log(`✅ Loaded transcript: ${segments.length} segments`);
 
@@ -545,7 +607,7 @@ async function main() {
   // Check for --local flag
   if (arg === "--local") {
     const filePath = process.argv[3];
-    if (!filePath || !fs.existsSync(filePath)) {
+    if (!filePath) {
       console.error("❌ Usage: npm run robot -- --local <transcript.jsonl>");
       console.error("Example: npm run robot -- --local scripts/sample_transcript.jsonl");
       process.exit(1);

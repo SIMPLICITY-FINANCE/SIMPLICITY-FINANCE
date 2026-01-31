@@ -107,12 +107,22 @@ Acceptance:
 Notes: ✅ Fixed schema to include qc_status and risk_flags
 
 1.5 Robot checkpoint freeze (release-quality CLI behavior)
-[ ] Not started
+[x] Done
 DoD:
 - Clear error messages for: missing keys, invalid URL, API failure, Deepgram failure
 - outputs include error.json on fail (never partial silent failure)
 Acceptance:
 - run robot with bad URL -> exits nonzero + writes error.json
+Notes: ✅ Comprehensive error.json writing for all failure modes:
+       - Missing env vars (YOUTUBE_API_KEY, DEEPGRAM_API_KEY, OPENAI_API_KEY)
+       - Invalid URLs (exits with usage message)
+       - File not found (local transcripts)
+       - Invalid transcript format (malformed JSON)
+       - API failures (YouTube, Deepgram, OpenAI)
+       - Empty transcription results
+       - LLM/validation failures
+       ✅ All errors write error.json to output/<id>/ before exit
+       ✅ Exit codes: 1 for all errors, 0 for success
 
 =====================================================================
 PHASE 2 — DATABASE (LOCAL) + DRIZZLE
