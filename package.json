@@ -7,14 +7,15 @@
   "directories": {
     "doc": "docs"
   },
-"scripts": {
-  "dev": "next dev",
-  "robot": "tsx scripts/pipeline_smoke.ts"
-},
+  "scripts": {
+    "dev": "next dev",
+    "robot": "tsx scripts/pipeline_smoke.ts"
+  },
   "keywords": [],
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "dotenv": "^17.2.3",
     "zod": "^4.3.6"
   },
   "devDependencies": {

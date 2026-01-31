@@ -140,3 +140,6 @@ vite.config.ts.timestamp-*
 
 # Robot output (do not commit)
 /output
+
+# Local environment files
+.env.local
