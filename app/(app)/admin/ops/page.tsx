@@ -1,5 +1,5 @@
 import postgres from "postgres";
-import { requireAdmin } from "../../lib/auth";
+import { requireAdmin } from "../../../lib/auth.js";
 
 const sql = postgres(process.env.DATABASE_URL!, {
   max: 1,

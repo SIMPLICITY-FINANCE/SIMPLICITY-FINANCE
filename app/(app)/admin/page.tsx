@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { requireAdmin } from "../lib/auth";
+import { requireAdmin } from "../../lib/auth.js";
 import postgres from "postgres";
 
 const sql = postgres(process.env.DATABASE_URL!, {
