@@ -9,11 +9,11 @@ const sql = postgres(process.env.DATABASE_URL!, {
 });
 
 interface Show {
-  channelId: string;
-  channelTitle: string;
-  episodeCount: number;
-  latestEpisode: string;
-  thumbnailUrl: string | null;
+  channel_id: string;
+  channel_title: string;
+  episode_count: number;
+  latest_episode: string;
+  thumbnail_url: string | null;
 }
 
 interface Person {
@@ -142,30 +142,30 @@ export default async function DiscoverPage({
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {shows.map((show) => (
                 <a
-                  key={show.channelId}
-                  href={`/show/${show.channelId}`}
+                  key={show.channel_id}
+                  href={`/show/${show.channel_id}`}
                   className="block"
                 >
                   <Card className="p-0 overflow-hidden hover:shadow-lg transition-all">
-                    {show.thumbnailUrl && (
+                    {show.thumbnail_url && (
                       <div className="aspect-video bg-gray-100 overflow-hidden">
                         <img
-                          src={show.thumbnailUrl}
-                          alt={show.channelTitle}
+                          src={show.thumbnail_url}
+                          alt={show.channel_title}
                           className="w-full h-full object-cover"
                         />
                       </div>
                     )}
                     <div className="p-4">
                       <h3 className="text-base font-semibold text-foreground mb-2 line-clamp-2">
-                        {show.channelTitle}
+                        {show.channel_title}
                       </h3>
                       <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                        <Chip>{show.episodeCount} episodes</Chip>
-                        {show.latestEpisode && (
+                        <Chip>{show.episode_count} episodes</Chip>
+                        {show.latest_episode && (
                           <span>
                             Latest:{" "}
-                            {new Date(show.latestEpisode).toLocaleDateString(
+                            {new Date(show.latest_episode).toLocaleDateString(
                               "en-US",
                               {
                                 month: "short",
