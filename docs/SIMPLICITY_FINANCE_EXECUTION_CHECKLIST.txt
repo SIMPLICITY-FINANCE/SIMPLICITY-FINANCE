@@ -258,7 +258,18 @@ Notes: ✅ Created /dashboard page with public feed layout
        ✅ Footer with branding
        ✅ Updated home page with link to dashboard
 5.2 Feed + episode detail + evidence chips
-[ ] Not started
+[x] Done
+Notes: ✅ Created /episode/[id] dynamic route for episode detail pages
+       ✅ Shows episode title, date, channel, QC score/status
+       ✅ Displays summary bullets organized by section
+       ✅ Evidence citation chips with timestamps [MM:SS] format
+       ✅ Citation chips link to YouTube video at specific timestamp
+       ✅ Shows confidence warnings for bullets < 80% confidence
+       ✅ Back to feed navigation link
+       ✅ Save to notebook button placeholder
+       ✅ Watch on YouTube button
+       ✅ Returns 404 for non-existent or non-approved episodes
+       ✅ Responsive layout with proper spacing
 5.3 Saved vs Notebook semantics (hard rule)
 [ ] Not started
 
