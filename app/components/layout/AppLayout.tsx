@@ -20,7 +20,7 @@ export function AppLayout({
     <div className="min-h-screen bg-gray-50">
       <Sidebar />
       
-      <main className={`ml-[220px] ${showRightRail ? 'mr-[320px]' : ''}`}>
+      <main className={`ml-[236px] ${showRightRail ? 'mr-[336px]' : ''}`}>
         {/* Top Search Bar */}
         <div className="sticky top-0 z-10 bg-background border-b border-border px-6 py-4">
           <div className="max-w-3xl mx-auto flex items-center gap-4">

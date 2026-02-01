@@ -47,7 +47,7 @@ const quickActions = [
 
 export function RightRail() {
   return (
-    <aside className="fixed right-0 top-0 h-screen w-[320px] bg-background border-l border-border overflow-y-auto">
+    <aside className="fixed right-4 top-4 bottom-4 w-[320px] bg-white rounded-2xl shadow-lg overflow-y-auto">
       {/* Header Icons */}
       <div className="flex items-center justify-between px-4 py-4 border-b border-border">
         <div className="flex items-center gap-2">
