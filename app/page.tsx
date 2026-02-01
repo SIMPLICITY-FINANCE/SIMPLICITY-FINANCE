@@ -1,13 +1,22 @@
+import { UserNav } from "./components/UserNav.js";
+
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-      <div className="max-w-2xl w-full bg-white shadow-lg rounded-lg p-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-4">
-          Simplicity Finance
-        </h1>
-        <p className="text-gray-600 mb-6">
-          Finance podcast summarization platform focused on trustworthy, evidence-grounded outputs.
-        </p>
+    <div className="min-h-screen bg-gray-50">
+      <div className="bg-white border-b">
+        <div className="max-w-7xl mx-auto px-4 py-4">
+          <UserNav />
+        </div>
+      </div>
+      
+      <div className="flex items-center justify-center py-12">
+        <div className="max-w-2xl w-full bg-white shadow-lg rounded-lg p-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-4">
+            Simplicity Finance
+          </h1>
+          <p className="text-gray-600 mb-6">
+            Finance podcast summarization platform focused on trustworthy, evidence-grounded outputs.
+          </p>
         
         <div className="space-y-4">
           <div className="border-t pt-4">
@@ -67,6 +76,7 @@ export default function HomePage() {
               </li>
             </ul>
           </div>
+        </div>
         </div>
       </div>
     </div>
