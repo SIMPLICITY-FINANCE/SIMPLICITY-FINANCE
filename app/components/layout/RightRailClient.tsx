@@ -5,18 +5,61 @@ import { Crown, MessageCircle, RefreshCw, Bell, User, Settings, HelpCircle, Shie
 import { useRouter } from 'next/navigation.js';
 import { IconButton } from '../ui/IconButton.js';
 
+const upNextItems = [
+  {
+    id: 1,
+    title: 'Market Analysis: Fed Policy and Tech Earnings',
+    show: 'All-In Podcast',
+    host: 'Chamath',
+    date: '01-15-2026',
+    thumbnail: '🎙️',
+  },
+  {
+    id: 2,
+    title: 'Quarterly Economic Outlook - January 14, 2026',
+    show: 'Quarterly Report',
+    summaries: 142,
+    date: '01-14-2026',
+    thumbnail: '📊',
+  },
+  {
+    id: 3,
+    title: "Understanding the Federal Reserve's Balance Sheet",
+    show: 'Odd Lots',
+    host: 'Tracy Alloway',
+    date: '01-13-2026',
+    thumbnail: '🎵',
+  },
+];
+
+const suggestions = [
+  { name: 'Planet Money', avatar: '💰' },
+  { name: 'Josh Brown', avatar: '👨' },
+  { name: 'Masters in Business', avatar: '👩' },
+  { name: 'Chamath Palihapitiya', avatar: '👨‍💼' },
+];
+
+const quickActions = [
+  { label: 'NEWS', icon: '📰' },
+  { label: 'CALENDAR', icon: '📅' },
+  { label: 'EARNINGS', icon: '💼' },
+  { label: 'TWEETS', icon: '🐦' },
+  { label: 'PREDICTIONS', icon: '📈' },
+  { label: 'MARKETS', icon: '📊' },
+];
+
 interface RightRailClientProps {
-  upNextItems: any[];
-  suggestions: any[];
-  quickActions: any[];
   userRole?: 'admin' | 'user' | null;
 }
 
-export function RightRailClient({ upNextItems, suggestions, quickActions, userRole }: RightRailClientProps) {
+export function RightRailClient({ userRole }: RightRailClientProps = {}) {
   const router = useRouter();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+  
+  // For now, assume non-admin. In production, fetch from session/API
+  const effectiveUserRole = userRole || null;
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
@@ -114,7 +157,7 @@ export function RightRailClient({ upNextItems, suggestions, quickActions, userRo
                     <HelpCircle size={16} />
                     Help
                   </button>
-                  {userRole === 'admin' && (
+                  {effectiveUserRole === 'admin' && (
                     <>
                       <div className="border-t border-gray-100 my-1"></div>
                       <button
