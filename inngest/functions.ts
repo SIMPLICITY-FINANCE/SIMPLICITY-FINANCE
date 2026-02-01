@@ -1,5 +1,6 @@
 import { inngest } from "./client";
 import { processEpisode, processEpisodeOnFailure } from "./functions/processEpisode";
+import { scheduledIngest } from "./functions/scheduledIngest";
 
 // Stub function to verify Inngest is working
 export const helloWorld = inngest.createFunction(
@@ -16,4 +17,4 @@ export const helloWorld = inngest.createFunction(
 );
 
 // Export all functions as an array
-export const functions = [helloWorld, processEpisode, processEpisodeOnFailure];
+export const functions = [helloWorld, processEpisode, processEpisodeOnFailure, scheduledIngest];

@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, uuid, integer, jsonb, real, index } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, uuid, integer, jsonb, real, index, boolean } from "drizzle-orm/pg-core";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Users - authentication and authorization
@@ -25,10 +25,20 @@ export const shows = pgTable("shows", {
   name: text("name").notNull(),
   description: text("description"),
   youtubeChannelId: text("youtube_channel_id").unique(),
+  
+  // Automatic ingestion configuration
+  ingestEnabled: boolean("ingest_enabled").notNull().default(false),
+  ingestSource: text("ingest_source"), // "youtube_channel" | "youtube_playlist" | "rss"
+  youtubePlaylistId: text("youtube_playlist_id"),
+  rssFeedUrl: text("rss_feed_url"),
+  lastIngestedAt: timestamp("last_ingested_at"),
+  ingestFrequency: text("ingest_frequency").default("daily"), // "hourly" | "daily" | "weekly"
+  
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 }, (table) => ({
   youtubeChannelIdIdx: index("shows_youtube_channel_id_idx").on(table.youtubeChannelId),
+  ingestEnabledIdx: index("shows_ingest_enabled_idx").on(table.ingestEnabled),
 }));
 
 // ─────────────────────────────────────────────────────────────────────────────
