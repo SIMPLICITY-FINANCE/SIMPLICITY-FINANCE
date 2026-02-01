@@ -119,16 +119,30 @@ npm run robot              # Run pipeline smoke test
 
 ## Documentation
 
-- **Execution Roadmap:** `docs/planning/EXECUTE_V2.md`
-- **Deployment Guide:** `docs/deployment/DEPLOYMENT.md`
-- **Design Spec:** `docs/planning/FIGMA_STYLE_SPEC.md`
-- **Inngest Setup:** `inngest/README.md`
+### Getting Started
+- **README:** This file - Quick start and overview
+- **Pipeline Workflow:** `docs/PIPELINE.md` - How episodes are processed
+- **API Documentation:** `docs/API.md` - Server actions, routes, and Inngest functions
 
-## Next Steps
+### Deployment & Operations
+- **Deployment Guide:** `docs/deployment/DEPLOYMENT.md` - Production deployment
+- **Auth Setup:** `docs/deployment/AUTH_SETUP.md` - Google OAuth configuration
+- **Execution Roadmap:** `docs/planning/EXECUTE_V2.md` - Milestones and roadmap
 
-See `docs/planning/EXECUTE_V2.md` for the complete production readiness roadmap.
+### Development
+- **Inngest Setup:** `inngest/README.md` - Workflow orchestration
+- **Design Spec:** `docs/planning/FIGMA_STYLE_SPEC.md` - UI design system
 
-**Current Priority:** Milestone 1 - Regression Prevention (Smoke Tests + CI)
+## Production Readiness
+
+**Status:** 5 of 6 milestones complete
+
+- ✅ **Milestone 1:** Regression Prevention (Smoke Tests + CI)
+- ✅ **Milestone 2:** Production Deployment Baseline
+- ✅ **Milestone 3:** Real Authentication (NextAuth.js + Google OAuth)
+- ✅ **Milestone 4:** Real Data Ingestion Scheduling
+- ✅ **Milestone 5:** Operational Hardening
+- 🔄 **Milestone 6:** Documentation & Developer UX (In Progress)
 
 ## Contributing
 
