@@ -1,8 +1,7 @@
 import postgres from "postgres";
 import { AppLayout } from "../components/layout/AppLayout.js";
 import { Card } from "../components/ui/Card.js";
-import { Chip } from "../components/ui/Chip.js";
-import { Bookmark, Share2, Download } from "lucide-react";
+import { FeedEpisodeCard } from "../components/feed/FeedEpisodeCard.js";
 
 const sql = postgres(process.env.DATABASE_URL!, {
   max: 1,
@@ -50,81 +49,25 @@ export default async function DashboardPage() {
           </p>
         </Card>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-6">
           {approvedSummaries.map((summary) => (
-            <Card key={summary.id} hover className="p-6">
-              {/* Header */}
-              <div className="flex items-start justify-between mb-4">
-                <div className="flex-1">
-                  <a 
-                    href={`/episode/${summary.episode_id}`}
-                    className="text-lg font-semibold text-foreground hover:text-primary transition-colors block mb-2"
-                  >
-                    📄 {summary.title}
-                  </a>
-                  
-                  {/* Metadata */}
-                  <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                    <span className="flex items-center gap-1">
-                      <span>🎙️</span>
-                      <span>{summary.youtube_channel_title || 'Unknown Show'}</span>
-                    </span>
-                    <span>•</span>
-                    <span className="flex items-center gap-1">
-                      <span>👤</span>
-                      <span>Host Name</span>
-                    </span>
-                    <span>•</span>
-                    <span className="flex items-center gap-1">
-                      <span>📅</span>
-                      <span>
-                        {new Date(summary.published_at).toLocaleDateString('en-US', {
-                          weekday: 'long',
-                          year: 'numeric',
-                          month: 'long',
-                          day: 'numeric'
-                        })}
-                      </span>
-                    </span>
-                  </div>
-                </div>
-                
-                {/* Action Icons */}
-                <div className="flex items-center gap-2">
-                  <button className="p-2 hover:bg-muted rounded-lg transition-all duration-150">
-                    <Bookmark size={20} className="text-muted-foreground" />
-                  </button>
-                  <button className="p-2 hover:bg-muted rounded-lg transition-all duration-150">
-                    <Share2 size={20} className="text-muted-foreground" />
-                  </button>
-                  <button className="p-2 hover:bg-muted rounded-lg transition-all duration-150">
-                    <Download size={20} className="text-muted-foreground" />
-                  </button>
-                </div>
-              </div>
-
-              {/* Description */}
-              <p className="text-sm text-muted-foreground mb-4 line-clamp-3">
-                In this episode, Josh discusses the key market trends heading into Q1 2026. We explore
-                inflation concerns, interest rate predictions, and sector rotation strategies. Josh breaks down
-                how geopolitical tensions are affecting global markets and provides actionable insights for
-                portfolio positioning.
-              </p>
-
-              {/* Thumbnail placeholder */}
-              <div className="mb-4 rounded-lg overflow-hidden bg-muted aspect-video flex items-center justify-center">
-                <span className="text-6xl">📊</span>
-              </div>
-
-              {/* Tags */}
-              <div className="flex flex-wrap gap-2">
-                <Chip>Federal Reserve</Chip>
-                <Chip>Interest Rates</Chip>
-                <Chip>Stock Market</Chip>
-                <Chip>Portfolio Strategy</Chip>
-                <Chip>Geopolitics</Chip>
-              </div>
-            </Card>
+            <FeedEpisodeCard
+              key={summary.id}
+              title={summary.title}
+              show={summary.youtube_channel_title || 'Unknown Show'}
+              host="Host Name"
+              date={new Date(summary.published_at).toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+              })}
+              summary="In this episode, Josh discusses the key market trends heading into Q1 2026. We explore inflation concerns, interest rate predictions, and sector rotation strategies. Josh breaks down how geopolitical tensions are affecting global markets and provides actionable insights for portfolio positioning."
+              thumbnail={`https://img.youtube.com/vi/${summary.video_id}/maxresdefault.jpg`}
+              topics={['Federal Reserve', 'Interest Rates', 'Stock Market', 'Portfolio Strategy', 'Geopolitics']}
+              videoId={summary.video_id}
+              episodeId={summary.episode_id}
+            />
           ))}
         </div>
       )}
