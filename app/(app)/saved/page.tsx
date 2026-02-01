@@ -1,8 +1,7 @@
 import postgres from "postgres";
-import { unsaveEpisode } from "../lib/actions";
-import { AppLayout } from "../components/layout/AppLayout.js";
-import { Card } from "../components/ui/Card.js";
-import { Button } from "../components/ui/Button.js";
+import { unsaveEpisode } from "../../lib/actions.js";
+import { Card } from "../../components/ui/Card.js";
+import { Button } from "../../components/ui/Button.js";
 import { Bookmark } from "lucide-react";
 
 const sql = postgres(process.env.DATABASE_URL!, {
@@ -41,7 +40,7 @@ export default async function SavedPage() {
   `;
 
   return (
-    <AppLayout showRightRail={true} searchPlaceholder="Search saved items...">
+    <>
       <div className="mb-6">
         <div className="bg-accent/50 border border-border/50 rounded-lg p-4">
           <p className="text-sm text-foreground">
@@ -129,6 +128,6 @@ export default async function SavedPage() {
           ))}
         </div>
       )}
-    </AppLayout>
+    </>
   );
 }

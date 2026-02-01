@@ -1,7 +1,6 @@
 import postgres from "postgres";
-import { AppLayout } from "../components/layout/AppLayout.js";
-import { Card } from "../components/ui/Card.js";
-import { FeedEpisodeCard } from "../components/feed/FeedEpisodeCard.js";
+import { Card } from "../../components/ui/Card.js";
+import { FeedEpisodeCard } from "../../components/feed/FeedEpisodeCard.js";
 
 const sql = postgres(process.env.DATABASE_URL!, {
   max: 1,
@@ -40,7 +39,7 @@ export default async function DashboardPage() {
   `;
 
   return (
-    <AppLayout showRightRail={true} searchPlaceholder="Search episodes...">
+    <>
       {approvedSummaries.length === 0 ? (
         <Card className="p-12 text-center">
           <p className="text-muted-foreground text-lg">No summaries available yet</p>
@@ -71,6 +70,6 @@ export default async function DashboardPage() {
           ))}
         </div>
       )}
-    </AppLayout>
+    </>
   );
 }

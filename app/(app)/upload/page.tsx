@@ -1,11 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { ingestEpisode } from "../lib/actions/ingest.js";
-import { AppLayout } from "../components/layout/AppLayout.js";
-import { Card } from "../components/ui/Card.js";
-import { Button } from "../components/ui/Button.js";
-import { Input } from "../components/ui/Input.js";
+import { ingestEpisode } from "../../lib/actions/ingest.js";
+import { Card } from "../../components/ui/Card.js";
+import { Button } from "../../components/ui/Button.js";
+import { Input } from "../../components/ui/Input.js";
 import { Loader2, CheckCircle2, XCircle } from "lucide-react";
 
 type Status = "idle" | "submitting" | "processing" | "complete" | "failed";
@@ -60,8 +59,7 @@ export default function UploadPage() {
   };
 
   return (
-    <AppLayout showRightRail={false} searchPlaceholder="Search...">
-      <div className="max-w-2xl mx-auto">
+    <div className="max-w-2xl mx-auto">
         <Card className="p-8">
           <div className="mb-6">
             <h2 className="text-xl font-semibold text-foreground mb-2">
@@ -228,6 +226,5 @@ export default function UploadPage() {
           </ul>
         </Card>
       </div>
-    </AppLayout>
   );
 }
