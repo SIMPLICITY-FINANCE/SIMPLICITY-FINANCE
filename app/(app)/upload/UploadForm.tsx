@@ -6,12 +6,10 @@ import { Card } from "../../components/ui/Card.js";
 import { Button } from "../../components/ui/Button.js";
 import { Input } from "../../components/ui/Input.js";
 import { Loader2, CheckCircle2, XCircle } from "lucide-react";
-import { useRouter } from "next/navigation";
 
 type Status = "idle" | "submitting" | "success" | "error";
 
 export function UploadForm() {
-  const router = useRouter();
   const [url, setUrl] = useState("");
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState<string | null>(null);
@@ -37,11 +35,7 @@ export function UploadForm() {
       setStatus("success");
       setRequestId(result.requestId || null);
       setIsExisting(result.isExisting || false);
-      
-      // Refresh the page to show updated queue
-      setTimeout(() => {
-        router.refresh();
-      }, 500);
+      // Note: IngestStatusList auto-refreshes via polling, no manual refresh needed
     } else {
       setStatus("error");
       setError(result.error || "Failed to submit request");
