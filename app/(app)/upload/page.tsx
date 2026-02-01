@@ -1,13 +1,49 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ingestEpisode } from "../../lib/actions/ingest.js";
 import { Card } from "../../components/ui/Card.js";
 import { Button } from "../../components/ui/Button.js";
 import { Input } from "../../components/ui/Input.js";
-import { Loader2, CheckCircle2, XCircle } from "lucide-react";
+import { Chip } from "../../components/ui/Chip.js";
+import { Loader2, CheckCircle2, XCircle, Clock } from "lucide-react";
 
 type Status = "idle" | "submitting" | "processing" | "complete" | "failed";
+
+interface QueueItem {
+  id: string;
+  title: string;
+  url: string;
+  status: "processing" | "complete" | "failed";
+  submittedAt: Date;
+  episodeId?: string;
+}
+
+// Demo queue data (in production, fetch from DB)
+const demoQueue: QueueItem[] = [
+  {
+    id: "1",
+    title: "Market Analysis: Fed Policy and Tech Earnings",
+    url: "https://youtube.com/watch?v=abc123",
+    status: "complete",
+    submittedAt: new Date(Date.now() - 1000 * 60 * 30), // 30 min ago
+    episodeId: "ep-123",
+  },
+  {
+    id: "2",
+    title: "Quarterly Economic Outlook - January 2026",
+    url: "https://youtube.com/watch?v=def456",
+    status: "processing",
+    submittedAt: new Date(Date.now() - 1000 * 60 * 5), // 5 min ago
+  },
+  {
+    id: "3",
+    title: "Understanding the Federal Reserve's Balance Sheet",
+    url: "https://youtube.com/watch?v=ghi789",
+    status: "failed",
+    submittedAt: new Date(Date.now() - 1000 * 60 * 60), // 1 hour ago
+  },
+];
 
 export default function UploadPage() {
   const [url, setUrl] = useState("");
@@ -16,6 +52,7 @@ export default function UploadPage() {
   const [episodeId, setEpisodeId] = useState<string | null>(null);
   const [runId, setRunId] = useState<string | null>(null);
   const [isExisting, setIsExisting] = useState(false);
+  const [queue, setQueue] = useState<QueueItem[]>(demoQueue);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -214,6 +251,76 @@ export default function UploadPage() {
             </div>
           )}
         </Card>
+
+        {/* Recent Uploads Queue */}
+        <div className="mt-8">
+          <h3 className="text-xl font-semibold text-foreground mb-4">
+            Recent Uploads
+          </h3>
+          
+          {queue.length === 0 ? (
+            <Card className="p-8 text-center">
+              <Clock size={48} className="mx-auto text-muted-foreground mb-4" />
+              <p className="text-muted-foreground text-lg mb-2">No recent uploads</p>
+              <p className="text-muted-foreground/70 text-sm">
+                Your upload history will appear here
+              </p>
+            </Card>
+          ) : (
+            <div className="space-y-3">
+              {queue.map((item) => (
+                <Card key={item.id} className="p-4">
+                  <div className="flex items-start gap-4">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between gap-4 mb-2">
+                        <h4 className="text-sm font-semibold text-foreground line-clamp-1">
+                          {item.title}
+                        </h4>
+                        {item.status === "processing" && (
+                          <div className="flex items-center gap-2 text-primary flex-shrink-0">
+                            <Loader2 size={16} className="animate-spin" />
+                            <Chip>Processing</Chip>
+                          </div>
+                        )}
+                        {item.status === "complete" && (
+                          <div className="flex items-center gap-2 text-green-600 flex-shrink-0">
+                            <CheckCircle2 size={16} />
+                            <Chip>Complete</Chip>
+                          </div>
+                        )}
+                        {item.status === "failed" && (
+                          <div className="flex items-center gap-2 text-destructive flex-shrink-0">
+                            <XCircle size={16} />
+                            <Chip>Failed</Chip>
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <span>
+                          {new Date(item.submittedAt).toLocaleTimeString('en-US', {
+                            hour: 'numeric',
+                            minute: '2-digit',
+                          })}
+                        </span>
+                        <span>•</span>
+                        <span className="truncate">{item.url}</span>
+                      </div>
+                      {item.episodeId && item.status === "complete" && (
+                        <div className="mt-2">
+                          <a href={`/episode/${item.episodeId}`}>
+                            <Button variant="secondary" size="sm">
+                              View Episode →
+                            </Button>
+                          </a>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          )}
+        </div>
 
         {/* Help Section */}
         <Card className="mt-8 p-6 bg-accent/30">
