@@ -209,3 +209,49 @@ export const notebookItems = pgTable("notebook_items", {
   bulletIdIdx: index("notebook_items_bullet_id_idx").on(table.bulletId),
   uniqueUserBullet: index("notebook_items_user_bullet_unique").on(table.userId, table.bulletId),
 }));
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Reports - Summaries of summaries (daily/weekly/monthly aggregations)
+// ─────────────────────────────────────────────────────────────────────────────
+
+export const reports = pgTable("reports", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  
+  title: text("title").notNull(),
+  reportType: text("report_type").notNull(), // "daily" | "weekly" | "monthly"
+  periodStart: text("period_start").notNull(), // ISO date
+  periodEnd: text("period_end").notNull(), // ISO date
+  
+  summary: text("summary").notNull(), // Overall summary text
+  
+  // Approval workflow (same as episode_summary)
+  approvalStatus: text("approval_status").notNull().default("pending"), // "pending" | "approved" | "rejected"
+  approvedBy: uuid("approved_by").references(() => users.id),
+  approvedAt: timestamp("approved_at"),
+  rejectionReason: text("rejection_reason"),
+  
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+}, (table) => ({
+  reportTypeIdx: index("reports_report_type_idx").on(table.reportType),
+  periodIdx: index("reports_period_idx").on(table.periodStart, table.periodEnd),
+  approvalStatusIdx: index("reports_approval_status_idx").on(table.approvalStatus),
+}));
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Report Items - Links reports to specific bullets from episodes
+// ─────────────────────────────────────────────────────────────────────────────
+
+export const reportItems = pgTable("report_items", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  reportId: uuid("report_id").notNull().references(() => reports.id, { onDelete: "cascade" }),
+  
+  bulletId: uuid("bullet_id").notNull().references(() => summaryBullets.id, { onDelete: "cascade" }),
+  
+  // Optional context or commentary for this bullet in the report
+  context: text("context"),
+  
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+}, (table) => ({
+  reportIdIdx: index("report_items_report_id_idx").on(table.reportId),
+  bulletIdIdx: index("report_items_bullet_id_idx").on(table.bulletId),
+}));

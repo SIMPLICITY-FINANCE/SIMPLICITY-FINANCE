@@ -286,6 +286,22 @@ Notes: ✅ Added saved_items table (episodes + reports only)
        ✅ Pushed schema changes to database
 
 =====================================================================
+PHASE 6 — REPORTS MVP
+=====================================================================
+
+6.1 Reports schema and UI
+[x] Done
+Notes: ✅ Added reports table with approval workflow
+       ✅ Added report_items table linking reports to bullets
+       ✅ Created /reports page showing approved reports
+       ✅ Support for daily/weekly/monthly report types
+       ✅ Shows period range and item count per report
+       ✅ Empty state with helpful messaging
+       ✅ Save button placeholder for future functionality
+       ✅ View report link (detail page to be implemented)
+       ✅ Pushed schema changes to database
+
+=====================================================================
 MOBILE (LATER)
 =====================================================================
 M0 Prep: API-first discipline (REST/tRPC contracts stable + Zod schemas shared)
