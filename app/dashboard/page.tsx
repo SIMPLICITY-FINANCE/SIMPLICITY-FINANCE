@@ -67,6 +67,23 @@ export default async function DashboardPage() {
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-6">
+          <form method="GET" action="/search" className="mb-6">
+            <div className="flex gap-3">
+              <input
+                type="text"
+                name="q"
+                placeholder="Search episodes and key points..."
+                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+              <button
+                type="submit"
+                className="px-6 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                Search
+              </button>
+            </div>
+          </form>
+          
           <h2 className="text-2xl font-bold text-gray-900">Latest Summaries</h2>
           <p className="text-sm text-gray-600 mt-1">
             {approvedSummaries.length} approved episode summaries

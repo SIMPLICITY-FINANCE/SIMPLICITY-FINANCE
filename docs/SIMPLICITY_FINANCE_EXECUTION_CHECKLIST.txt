@@ -302,6 +302,23 @@ Notes: ✅ Added reports table with approval workflow
        ✅ Pushed schema changes to database
 
 =====================================================================
+PHASE 7 — SEARCH V1
+=====================================================================
+
+7.1 Basic search functionality
+[x] Done
+Notes: ✅ Created /search page with keyword search
+       ✅ Search across episode titles and summary bullets
+       ✅ ILIKE pattern matching for flexible search
+       ✅ Results show episode type vs key point type
+       ✅ Search bar added to dashboard header
+       ✅ Empty state with helpful messaging
+       ✅ Results limited to 50 for performance
+       ✅ Links to episode detail pages from results
+       ✅ Shows published date for each result
+       ✅ Truncates long bullet text in results
+
+=====================================================================
 MOBILE (LATER)
 =====================================================================
 M0 Prep: API-first discipline (REST/tRPC contracts stable + Zod schemas shared)

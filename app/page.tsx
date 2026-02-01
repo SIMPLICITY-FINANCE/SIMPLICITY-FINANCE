@@ -33,6 +33,11 @@ export default function HomePage() {
                   📊 Reports - Daily/weekly/monthly summaries
                 </a>
               </li>
+              <li>
+                <a href="/search" className="text-blue-600 hover:underline">
+                  🔍 Search - Find episodes and key points
+                </a>
+              </li>
             </ul>
           </div>
           
