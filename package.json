@@ -33,6 +33,7 @@
     "drizzle-orm": "^0.45.1",
     "inngest": "^3.50.0",
     "next": "^16.1.6",
+    "next-auth": "^5.0.0-beta.30",
     "openai": "^6.17.0",
     "postgres": "^3.4.8",
     "react": "^19.2.4",

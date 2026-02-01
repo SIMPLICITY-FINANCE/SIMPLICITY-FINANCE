@@ -1,4 +1,5 @@
-import { cookies } from "next/headers";
+import { auth } from "@/auth";
+import { redirect } from "next/navigation";
 import postgres from "postgres";
 
 const sql = postgres(process.env.DATABASE_URL!, {
@@ -13,22 +14,17 @@ export interface User {
 }
 
 export async function getCurrentUser(): Promise<User | null> {
-  if (process.env.NODE_ENV === "production") {
-    return null;
-  }
-
   try {
-    const cookieStore = await cookies();
-    const userEmail = cookieStore.get("user_email")?.value;
+    const session = await auth();
 
-    if (!userEmail) {
+    if (!session?.user?.email) {
       return null;
     }
 
     const [user] = await sql<User[]>`
       SELECT id, email, role, name
       FROM users
-      WHERE email = ${userEmail}
+      WHERE email = ${session.user.email}
       LIMIT 1
     `;
 
@@ -40,18 +36,14 @@ export async function getCurrentUser(): Promise<User | null> {
 }
 
 export async function requireAdmin(): Promise<User> {
-  if (process.env.NODE_ENV === "production") {
-    throw new Error("Unauthorized: Auth not implemented for production");
-  }
-
   const user = await getCurrentUser();
 
   if (!user) {
-    throw new Error("Unauthorized: No user session");
+    redirect("/api/auth/signin");
   }
 
   if (user.role !== "admin") {
-    throw new Error("Forbidden: Admin access required");
+    redirect("/unauthorized");
   }
 
   return user;

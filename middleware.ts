@@ -1,8 +1,9 @@
+import { auth } from '@/auth';
 import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
 
-export function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
+export default auth((req) => {
+  const { pathname } = req.nextUrl;
+  const isLoggedIn = !!req.auth;
 
   // Block /dev/* routes in production
   if (pathname.startsWith('/dev/')) {
@@ -14,11 +15,19 @@ export function middleware(request: NextRequest) {
     }
   }
 
+  // Protect admin routes
+  if (pathname.startsWith('/admin')) {
+    if (!isLoggedIn) {
+      return NextResponse.redirect(new URL('/api/auth/signin', req.url));
+    }
+  }
+
   return NextResponse.next();
-}
+});
 
 export const config = {
   matcher: [
     '/dev/:path*',
+    '/admin/:path*',
   ],
 };
