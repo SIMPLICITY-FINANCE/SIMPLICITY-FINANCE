@@ -1,8 +1,9 @@
 import { Card } from "../../../../components/ui/Card.js";
 import { Chip } from "../../../../components/ui/Chip.js";
-import { Button } from "../../../../components/ui/Button.js";
-import { ArrowLeft, Bookmark } from "lucide-react";
+import { FollowButton } from "../../../../components/ui/FollowButton.js";
+import { ArrowLeft } from "lucide-react";
 import { notFound } from "next/navigation";
+import { isFollowingPerson, followPerson, unfollowPerson } from "../../../../lib/actions/follow.js";
 
 interface Person {
   id: string;
@@ -80,6 +81,8 @@ export default async function PersonDetailPage({
     notFound();
   }
 
+  const isFollowing = await isFollowingPerson(id);
+
   return (
     <>
       {/* Back Button */}
@@ -116,10 +119,18 @@ export default async function PersonDetailPage({
 
             {/* Actions */}
             <div className="flex items-center gap-3">
-              <Button variant="secondary" size="sm">
-                <Bookmark size={16} className="mr-2" />
-                Follow
-              </Button>
+              <FollowButton
+                isFollowing={isFollowing}
+                onFollow={async () => {
+                  "use server";
+                  return await followPerson(person.id, person.name);
+                }}
+                onUnfollow={async () => {
+                  "use server";
+                  return await unfollowPerson(person.id);
+                }}
+                size="sm"
+              />
             </div>
           </div>
         </div>
