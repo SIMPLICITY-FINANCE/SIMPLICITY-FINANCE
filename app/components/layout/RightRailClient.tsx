@@ -49,17 +49,18 @@ const quickActions = [
 ];
 
 interface RightRailClientProps {
-  userRole?: 'admin' | 'user' | null;
+  user?: {
+    name: string | null;
+    email: string;
+    role: 'admin' | 'user';
+  } | null;
 }
 
-export function RightRailClient({ userRole }: RightRailClientProps = {}) {
+export function RightRailClient({ user }: RightRailClientProps) {
   const router = useRouter();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
-  
-  // For now, assume non-admin. In production, fetch from session/API
-  const effectiveUserRole = userRole || null;
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
@@ -115,67 +116,109 @@ export function RightRailClient({ userRole }: RightRailClientProps = {}) {
             )}
           </div>
 
-          <div className="relative">
-            <button 
-              className="w-10 h-10 rounded-full bg-gray-200 overflow-hidden hover:bg-gray-300 transition-colors"
-              onClick={() => setShowProfileMenu(!showProfileMenu)}
+          {/* Auth Controls */}
+          {!user ? (
+            // Not signed in - show Sign In button
+            <button
+              onClick={() => router.push('/auth/signin')}
+              className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors"
             >
-              <User size={20} className="text-gray-600 mx-auto mt-2" />
+              Sign In
             </button>
+          ) : (
+            // Signed in - show profile menu
+            <div className="relative">
+              <button 
+                className="w-10 h-10 rounded-full bg-gray-200 overflow-hidden hover:bg-gray-300 transition-colors flex items-center justify-center"
+                onClick={() => setShowProfileMenu(!showProfileMenu)}
+                title={user.email}
+              >
+                {user.name ? (
+                  <span className="text-sm font-semibold text-gray-700">
+                    {user.name.charAt(0).toUpperCase()}
+                  </span>
+                ) : (
+                  <User size={20} className="text-gray-600" />
+                )}
+              </button>
 
-            {/* Profile Menu Dropdown */}
-            {showProfileMenu && (
-              <div className="absolute right-0 top-12 w-48 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
-                <div className="py-1">
-                  <button
-                    onClick={() => {
-                      setShowProfileMenu(false);
-                      router.push('/profile');
-                    }}
-                    className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
-                  >
-                    <User size={16} />
-                    Profile
-                  </button>
-                  <button
-                    onClick={() => {
-                      setShowProfileMenu(false);
-                      router.push('/settings');
-                    }}
-                    className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
-                  >
-                    <Settings size={16} />
-                    Settings
-                  </button>
-                  <button
-                    onClick={() => {
-                      setShowProfileMenu(false);
-                      router.push('/help');
-                    }}
-                    className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
-                  >
-                    <HelpCircle size={16} />
-                    Help
-                  </button>
-                  {effectiveUserRole === 'admin' && (
-                    <>
-                      <div className="border-t border-gray-100 my-1"></div>
-                      <button
-                        onClick={() => {
-                          setShowProfileMenu(false);
-                          router.push('/admin');
-                        }}
-                        className="w-full px-4 py-2 text-left text-sm text-blue-600 hover:bg-blue-50 flex items-center gap-2 font-semibold"
-                      >
-                        <Shield size={16} />
-                        ADMIN
-                      </button>
-                    </>
-                  )}
+              {/* Profile Menu Dropdown */}
+              {showProfileMenu && (
+                <div className="absolute right-0 top-12 w-56 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
+                  {/* User Info Header */}
+                  <div className="px-4 py-3 border-b border-gray-100">
+                    <p className="text-sm font-semibold text-gray-900 truncate">
+                      {user.name || 'User'}
+                    </p>
+                    <p className="text-xs text-gray-500 truncate">{user.email}</p>
+                  </div>
+
+                  <div className="py-1">
+                    <button
+                      onClick={() => {
+                        setShowProfileMenu(false);
+                        router.push('/profile');
+                      }}
+                      className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                    >
+                      <User size={16} />
+                      Profile
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowProfileMenu(false);
+                        router.push('/settings');
+                      }}
+                      className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                    >
+                      <Settings size={16} />
+                      Settings
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowProfileMenu(false);
+                        router.push('/help');
+                      }}
+                      className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                    >
+                      <HelpCircle size={16} />
+                      Help
+                    </button>
+
+                    {/* Admin Link - Only for admin users */}
+                    {user.role === 'admin' && (
+                      <>
+                        <div className="border-t border-gray-100 my-1"></div>
+                        <button
+                          onClick={() => {
+                            setShowProfileMenu(false);
+                            router.push('/admin');
+                          }}
+                          className="w-full px-4 py-2 text-left text-sm text-blue-600 hover:bg-blue-50 flex items-center gap-2 font-semibold"
+                        >
+                          <Shield size={16} />
+                          ADMIN
+                        </button>
+                      </>
+                    )}
+
+                    {/* Sign Out */}
+                    <div className="border-t border-gray-100 my-1"></div>
+                    <button
+                      onClick={() => {
+                        setShowProfileMenu(false);
+                        router.push('/api/auth/signout');
+                      }}
+                      className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
+                    >
+                      <span className="text-base">→</span>
+                      Sign Out
+                    </button>
+                  </div>
                 </div>
-              </div>
-            )}
-          </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
 
