@@ -44,8 +44,8 @@ export default async function DashboardPage() {
     <AppLayout showRightRail={true} searchPlaceholder="Search episodes...">
       {approvedSummaries.length === 0 ? (
         <Card className="p-12 text-center">
-          <p className="text-gray-500 text-lg">No summaries available yet</p>
-          <p className="text-gray-400 text-sm mt-2">
+          <p className="text-muted-foreground text-lg">No summaries available yet</p>
+          <p className="text-muted-foreground/70 text-sm mt-2">
             Check back soon for finance podcast summaries
           </p>
         </Card>
@@ -58,13 +58,13 @@ export default async function DashboardPage() {
                 <div className="flex-1">
                   <a 
                     href={`/episode/${summary.episode_id}`}
-                    className="text-lg font-semibold text-gray-900 hover:text-blue-600 transition-colors block mb-2"
+                    className="text-lg font-semibold text-foreground hover:text-primary transition-colors block mb-2"
                   >
                     📄 {summary.title}
                   </a>
                   
                   {/* Metadata */}
-                  <div className="flex items-center gap-3 text-sm text-gray-500">
+                  <div className="flex items-center gap-3 text-sm text-muted-foreground">
                     <span className="flex items-center gap-1">
                       <span>🎙️</span>
                       <span>{summary.youtube_channel_title || 'Unknown Show'}</span>
@@ -91,20 +91,20 @@ export default async function DashboardPage() {
                 
                 {/* Action Icons */}
                 <div className="flex items-center gap-2">
-                  <button className="p-2 hover:bg-gray-50 rounded-lg transition-colors">
-                    <Bookmark size={20} className="text-gray-400" />
+                  <button className="p-2 hover:bg-muted rounded-lg transition-all duration-150">
+                    <Bookmark size={20} className="text-muted-foreground" />
                   </button>
-                  <button className="p-2 hover:bg-gray-50 rounded-lg transition-colors">
-                    <Share2 size={20} className="text-gray-400" />
+                  <button className="p-2 hover:bg-muted rounded-lg transition-all duration-150">
+                    <Share2 size={20} className="text-muted-foreground" />
                   </button>
-                  <button className="p-2 hover:bg-gray-50 rounded-lg transition-colors">
-                    <Download size={20} className="text-gray-400" />
+                  <button className="p-2 hover:bg-muted rounded-lg transition-all duration-150">
+                    <Download size={20} className="text-muted-foreground" />
                   </button>
                 </div>
               </div>
 
               {/* Description */}
-              <p className="text-sm text-gray-600 mb-4 line-clamp-3">
+              <p className="text-sm text-muted-foreground mb-4 line-clamp-3">
                 In this episode, Josh discusses the key market trends heading into Q1 2026. We explore
                 inflation concerns, interest rate predictions, and sector rotation strategies. Josh breaks down
                 how geopolitical tensions are affecting global markets and provides actionable insights for
@@ -112,7 +112,7 @@ export default async function DashboardPage() {
               </p>
 
               {/* Thumbnail placeholder */}
-              <div className="mb-4 rounded-lg overflow-hidden bg-gray-900 aspect-video flex items-center justify-center">
+              <div className="mb-4 rounded-lg overflow-hidden bg-muted aspect-video flex items-center justify-center">
                 <span className="text-6xl">📊</span>
               </div>
 
