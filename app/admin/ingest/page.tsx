@@ -102,33 +102,22 @@ export default async function AdminIngestPage() {
             </h2>
           </div>
           <div className="p-6">
-            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
-              <p className="text-sm text-yellow-800">
-                <strong>Note:</strong> Manual ingestion is currently disabled. 
-                Automated ingestion scheduling will be implemented in Milestone 4.
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+              <p className="text-sm text-blue-800 mb-3">
+                <strong>Manual episode submission is now available!</strong>
+              </p>
+              <p className="text-sm text-blue-700">
+                Users can submit YouTube videos via the public upload page. Episodes will be processed
+                automatically and appear in the approval queue.
               </p>
             </div>
             
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  YouTube Video URL
-                </label>
-                <input
-                  type="text"
-                  disabled
-                  placeholder="https://www.youtube.com/watch?v=..."
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100 cursor-not-allowed"
-                />
-              </div>
-              
-              <button
-                disabled
-                className="px-6 py-2 bg-gray-300 text-gray-500 rounded-lg cursor-not-allowed"
-              >
-                Ingest Episode (Coming Soon)
-              </button>
-            </div>
+            <a
+              href="/upload"
+              className="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+            >
+              Go to Upload Page →
+            </a>
           </div>
         </div>
 

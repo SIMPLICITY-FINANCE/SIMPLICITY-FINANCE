@@ -47,6 +47,11 @@ export default function HomePage() {
                   🔍 Search - Find episodes and key points
                 </a>
               </li>
+              <li>
+                <a href="/upload" className="text-blue-600 hover:underline">
+                  📤 Upload - Submit a YouTube video for processing
+                </a>
+              </li>
             </ul>
           </div>
           
