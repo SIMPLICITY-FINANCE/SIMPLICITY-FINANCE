@@ -134,11 +134,71 @@ async function fetchYouTubeMetadata(videoId: string, apiKey: string): Promise<Yo
   return response.json() as Promise<YouTubeAPIResponse>;
 }
 
+async function downloadYouTubeAudio(videoId: string, outputDir: string): Promise<string> {
+  const audioPath = path.join(outputDir, `${videoId}.mp3`);
+  
+  // Use yt-dlp to download audio
+  const command = `yt-dlp -x --audio-format mp3 --audio-quality 0 -o "${audioPath}" "https://www.youtube.com/watch?v=${videoId}"`;
+  
+  try {
+    const { stdout, stderr } = await execAsync(command);
+    console.log("yt-dlp output:", stdout);
+    if (stderr) console.error("yt-dlp stderr:", stderr);
+    
+    if (!fs.existsSync(audioPath)) {
+      throw new Error("Audio file was not created");
+    }
+    
+    return audioPath;
+  } catch (error) {
+    console.error("yt-dlp error:", error);
+    throw new Error(`Failed to download audio: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
 async function transcribeWithDeepgram(audioUrl: string, apiKey: string): Promise<TranscriptSegment[]> {
   const deepgram = createClient(apiKey);
 
   const response = await deepgram.listen.prerecorded.transcribeUrl(
     { url: audioUrl },
+    {
+      model: "nova-2",
+      smart_format: true,
+      punctuate: true,
+    }
+  );
+
+  if (response.error) {
+    throw new Error(response.error.message ?? "Deepgram API error");
+  }
+  const result = response.result;
+
+  const segments: TranscriptSegment[] = [];
+  const words = result?.results?.channels?.[0]?.alternatives?.[0]?.words ?? [];
+
+  for (const word of words) {
+    const start_ms = Math.round((word.start ?? 0) * 1000);
+    const end_ms = Math.round((word.end ?? 0) * 1000);
+    
+    segments.push({
+      start_ms,
+      end_ms,
+      speaker: null,
+      text: word.punctuated_word ?? word.word ?? "",
+    });
+  }
+
+  return segments;
+}
+
+async function transcribeLocalFile(audioPath: string, apiKey: string): Promise<TranscriptSegment[]> {
+  const deepgram = createClient(apiKey);
+  
+  // Read the audio file
+  const audioBuffer = fs.readFileSync(audioPath);
+  
+  const response = await deepgram.listen.prerecorded.transcribeFile(
+    audioBuffer,
     {
       model: "nova-2",
       smart_format: true,
@@ -314,16 +374,30 @@ export const processEpisode = inngest.createFunction(
         throw new Error("DEEPGRAM_API_KEY is required for transcription");
       }
 
-      if (metadata.source === "youtube") {
-        throw new Error("YouTube caption extraction not supported in workflow. Use audio URL for transcription.");
-      }
+      let segments: TranscriptSegment[];
 
-      const segments = await transcribeWithDeepgram(url, DEEPGRAM_API_KEY);
+      if (metadata.source === "youtube") {
+        // Download audio from YouTube first
+        const outputDir = path.join(process.cwd(), "output", metadata.id);
+        ensureOutputDir(outputDir);
+        
+        console.log(`Downloading audio for video ${metadata.videoId}...`);
+        const audioPath = await downloadYouTubeAudio(metadata.videoId, outputDir);
+        console.log(`Audio downloaded to: ${audioPath}`);
+        
+        // Transcribe from local file
+        console.log("Transcribing audio with Deepgram...");
+        segments = await transcribeLocalFile(audioPath, DEEPGRAM_API_KEY);
+      } else {
+        // Direct URL transcription for non-YouTube sources
+        segments = await transcribeWithDeepgram(url, DEEPGRAM_API_KEY);
+      }
 
       if (segments.length === 0) {
         throw new Error("Transcription returned no segments");
       }
 
+      console.log(`Transcription complete: ${segments.length} segments`);
       return segments;
     });
 
