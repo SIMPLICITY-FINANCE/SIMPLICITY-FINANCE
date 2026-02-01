@@ -1,4 +1,5 @@
 import postgres from "postgres";
+import { unsaveEpisode } from "../lib/actions";
 
 const sql = postgres(process.env.DATABASE_URL!, {
   max: 1,
@@ -148,9 +149,14 @@ export default async function SavedPage() {
                     >
                       Watch on YouTube →
                     </a>
-                    <button className="px-4 py-2 text-red-600 text-sm font-medium hover:text-red-700 transition-colors">
-                      Remove
-                    </button>
+                    <form action={unsaveEpisode.bind(null, item.episode_id)}>
+                      <button
+                        type="submit"
+                        className="px-4 py-2 text-red-600 text-sm font-medium hover:text-red-700 transition-colors"
+                      >
+                        Remove
+                      </button>
+                    </form>
                   </div>
                 </div>
               </div>
