@@ -194,20 +194,9 @@ export default async function OpsPage() {
                       {new Date(episode.created_at).toLocaleDateString()}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm">
-                      <form action="/admin/ops/delete" method="POST" className="inline">
-                        <input type="hidden" name="episode_id" value={episode.id} />
-                        <button
-                          type="submit"
-                          className="text-red-600 hover:text-red-900 font-medium"
-                          onClick={(e) => {
-                            if (!confirm(`Delete episode "${episode.youtube_title || episode.video_id}"? This will delete all associated data.`)) {
-                              e.preventDefault();
-                            }
-                          }}
-                        >
-                          Delete
-                        </button>
-                      </form>
+                      <span className="text-gray-400 text-xs">
+                        (Delete feature coming soon)
+                      </span>
                     </td>
                   </tr>
                 ))}
