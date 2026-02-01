@@ -7,10 +7,10 @@ interface CardProps {
 }
 
 export function Card({ children, className = '', hover = false }: CardProps) {
-  const hoverStyles = hover ? 'hover:shadow-md transition-shadow duration-200' : '';
+  const hoverStyles = hover ? 'hover:shadow-md hover:bg-accent/30 hover:border-border transition-all duration-200' : '';
   
   return (
-    <div className={`bg-white border border-gray-200 rounded-xl shadow-sm ${hoverStyles} ${className}`}>
+    <div className={`bg-card border border-border/50 rounded-xl shadow-sm ${hoverStyles} ${className}`}>
       {children}
     </div>
   );
@@ -18,7 +18,7 @@ export function Card({ children, className = '', hover = false }: CardProps) {
 
 export function CardHeader({ children, className = '' }: { children: React.ReactNode; className?: string }) {
   return (
-    <div className={`px-6 py-4 border-b border-gray-200 ${className}`}>
+    <div className={`px-6 py-4 border-b border-border/30 ${className}`}>
       {children}
     </div>
   );

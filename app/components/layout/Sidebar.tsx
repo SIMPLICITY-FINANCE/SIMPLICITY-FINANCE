@@ -30,13 +30,13 @@ export function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="fixed left-0 top-0 h-screen w-60 bg-white border-r border-gray-200 flex flex-col">
+    <aside className="fixed left-0 top-0 h-screen w-60 bg-sidebar border-r border-sidebar-border flex flex-col">
       {/* Logo */}
       <div className="flex items-center gap-3 px-4 py-6">
         <div className="w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center">
           <span className="text-xl">👑</span>
         </div>
-        <span className="text-lg font-bold text-gray-900">SIMPLICITY</span>
+        <span className="text-lg font-bold text-sidebar-foreground">SIMPLICITY</span>
       </div>
 
       {/* Main Navigation */}
@@ -48,10 +48,10 @@ export function Sidebar() {
               <a
                 key={item.href}
                 href={item.href}
-                className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
+                className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-150 ${
                   isActive
-                    ? 'bg-gray-100 text-gray-900'
-                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                    ? 'bg-sidebar-accent text-sidebar-accent-foreground'
+                    : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50'
                 }`}
               >
                 {item.icon}
@@ -67,41 +67,41 @@ export function Sidebar() {
         </div>
 
         {/* Shows Section */}
-        <div className="mt-6 pt-6 border-t border-gray-200">
+        <div className="mt-6 pt-6 border-t border-sidebar-border">
           <div className="space-y-1">
             {shows.map((show) => (
               <a
                 key={show.href}
                 href={show.href}
-                className="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors"
+                className="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-sidebar-foreground/70 hover:bg-sidebar-accent/50 transition-all duration-150"
               >
-                <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-base">
+                <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-base">
                   {show.avatar}
                 </div>
                 <span>{show.name}</span>
               </a>
             ))}
           </div>
-          <button className="mt-2 px-4 py-2 text-sm text-gray-600 hover:text-gray-900 transition-colors">
+          <button className="mt-2 px-4 py-2 text-sm text-sidebar-foreground/70 hover:text-sidebar-foreground transition-colors">
             Show More ↓
           </button>
         </div>
       </nav>
 
       {/* Footer */}
-      <div className="px-4 py-4 border-t border-gray-200">
-        <div className="flex items-center justify-around text-gray-400">
-          <a href="/about" className="hover:text-gray-600 transition-colors">
+      <div className="px-4 py-4 border-t border-sidebar-border">
+        <div className="flex items-center justify-around text-muted-foreground">
+          <a href="/about" className="hover:text-sidebar-foreground transition-colors">
             <span className="text-xl">✕</span>
           </a>
-          <a href="/archive" className="hover:text-gray-600 transition-colors">
+          <a href="/archive" className="hover:text-sidebar-foreground transition-colors">
             <span className="text-xl">📁</span>
           </a>
-          <a href="/contact" className="hover:text-gray-600 transition-colors">
+          <a href="/contact" className="hover:text-sidebar-foreground transition-colors">
             <span className="text-xl">✉</span>
           </a>
         </div>
-        <div className="mt-3 text-center text-xs text-gray-400">
+        <div className="mt-3 text-center text-xs text-muted-foreground">
           <p>ABOUT | PRIVACY | TERMS | DATA</p>
           <p className="mt-1">© 2026 SIMPLICITY. ALL RIGHTS RESERVED.</p>
         </div>

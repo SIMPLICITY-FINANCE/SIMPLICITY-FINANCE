@@ -412,4 +412,349 @@ This document extracts the design system from the Figma screenshots to ensure vi
 
 ---
 
+## Figma Export Token Map
+
+**Source:** Extracted from `/docs/simplicity-export/src/styles/globals.css` and `/docs/simplicity-export/src/DESIGN_SYSTEM.md`
+
+This section contains the **exact design tokens** from the Figma code export. These are the authoritative values that should be implemented in our Next.js application.
+
+### Semantic Color Tokens (Light Mode)
+
+```css
+--background: #ffffff;           /* Page background */
+--foreground: #1a1a1a;          /* Primary text */
+--card: #ffffff;                 /* Card backgrounds */
+--card-foreground: #1a1a1a;     /* Card text */
+--popover: #ffffff;              /* Popover/dropdown backgrounds */
+--popover-foreground: #1a1a1a;  /* Popover text */
+--primary: #1a1a1a;             /* Primary brand color */
+--primary-foreground: #ffffff;   /* Text on primary */
+--secondary: #f5f5f5;           /* Secondary backgrounds */
+--secondary-foreground: #1a1a1a; /* Secondary text */
+--muted: #f5f5f5;               /* Muted backgrounds (hover states) */
+--muted-foreground: #737373;    /* Secondary/muted text */
+--accent: #f5f5f5;              /* Accent backgrounds */
+--accent-foreground: #1a1a1a;   /* Accent text */
+--destructive: #dc2626;         /* Error/danger states */
+--destructive-foreground: #ffffff; /* Text on destructive */
+--border: rgba(0, 0, 0, 0.1);   /* Border color */
+--input: transparent;            /* Input background */
+--input-background: #f9f9f9;    /* Input field background */
+--ring: #a3a3a3;                /* Focus ring color */
+```
+
+### Semantic Color Tokens (Dark Mode)
+
+```css
+.dark {
+  --background: #242424;
+  --foreground: #e5e5e5;
+  --card: #2a2a2a;
+  --card-foreground: #e5e5e5;
+  --popover: #2a2a2a;
+  --popover-foreground: #e5e5e5;
+  --primary: #f5f5f5;
+  --primary-foreground: #1a1a1a;
+  --secondary: #323232;
+  --secondary-foreground: #e5e5e5;
+  --muted: #2d2d2d;
+  --muted-foreground: #a3a3a3;
+  --accent: #323232;
+  --accent-foreground: #e5e5e5;
+  --destructive: #ef4444;
+  --destructive-foreground: #fecaca;
+  --border: #3a3a3a;
+  --input: #2d2d2d;
+  --ring: #525252;
+}
+```
+
+### Sidebar Tokens
+
+```css
+--sidebar: #fafafa;                      /* Sidebar background (light) */
+--sidebar-foreground: #1a1a1a;          /* Sidebar text */
+--sidebar-primary: #1a1a1a;             /* Active nav item */
+--sidebar-primary-foreground: #fafafa;  /* Active nav text */
+--sidebar-accent: #f5f5f5;              /* Hover state */
+--sidebar-accent-foreground: #262626;   /* Hover text */
+--sidebar-border: #e5e5e5;              /* Sidebar borders */
+--sidebar-ring: #a3a3a3;                /* Focus ring */
+
+/* Dark mode */
+.dark {
+  --sidebar: #1a1a1a;
+  --sidebar-foreground: #e5e5e5;
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: #f5f5f5;
+  --sidebar-accent: #252525;
+  --sidebar-accent-foreground: #e5e5e5;
+  --sidebar-border: #2d2d2d;
+  --sidebar-ring: oklch(0.439 0 0);
+}
+```
+
+### Border Radius Scale
+
+```css
+--radius: 0.625rem;                    /* Base radius = 10px */
+--radius-sm: calc(var(--radius) - 4px); /* 6px - buttons, inputs */
+--radius-md: calc(var(--radius) - 2px); /* 8px - standard */
+--radius-lg: var(--radius);             /* 10px - cards */
+--radius-xl: calc(var(--radius) + 4px); /* 14px - large cards */
+--radius-2xl: 1rem;                     /* 16px - modals */
+--radius-3xl: 1.5rem;                   /* 24px - sidebar containers */
+```
+
+### Typography Scale
+
+```css
+--font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+--font-size: 17px;                      /* Base font size */
+
+/* Font Sizes */
+--text-xs: 0.75rem;                     /* 12px */
+--text-sm: 0.875rem;                    /* 14px */
+--text-base: 1rem;                      /* 16px */
+--text-lg: 1.125rem;                    /* 18px */
+--text-xl: 1.25rem;                     /* 20px */
+--text-2xl: 1.5rem;                     /* 24px */
+--text-3xl: 1.875rem;                   /* 30px */
+
+/* Font Weights */
+--font-weight-normal: 400;
+--font-weight-medium: 500;
+--font-weight-semibold: 600;
+--font-weight-bold: 700;
+
+/* Line Heights */
+--leading-tight: 1.25;
+--leading-snug: 1.375;
+--leading-relaxed: 1.625;
+```
+
+### Spacing Scale (8px Base Grid)
+
+```css
+--spacing: 0.25rem;                     /* 4px base unit */
+
+/* Common spacing values */
+0.5 = 2px   (micro spacing)
+1   = 4px   (tight spacing)
+1.5 = 6px   (small spacing)
+2   = 8px   (base spacing)
+2.5 = 10px  (card padding small)
+3   = 12px  (card padding default)
+4   = 16px  (section padding)
+5   = 20px  (large gaps)
+7   = 28px  (section separators)
+```
+
+### Shadow Scale
+
+**3-Level Shadow System:**
+
+```css
+/* Base shadow - default card state */
+shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05)
+
+/* Elevated shadow - hover state, active elements */
+shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)
+
+/* Floating shadow - dropdowns, modals, sidebars */
+shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)
+```
+
+### Border Opacity Hierarchy
+
+```css
+border-border       /* 100% - Active states, hover */
+border-border/50    /* 50% - Default card borders */
+border-border/40    /* 40% - Subtle borders (note cards) */
+border-border/30    /* 30% - Separators, dividers */
+```
+
+---
+
+## Interaction State Patterns
+
+**Extracted from Figma export components - these are the exact hover/focus/active patterns to implement.**
+
+### Button States
+
+**Primary Button:**
+```tsx
+className="px-4 py-2 bg-primary text-primary-foreground rounded-lg font-medium 
+           hover:bg-primary/90 active:scale-[0.98] 
+           focus:outline-none focus:ring-2 focus:ring-ring/20 
+           transition-all duration-150 shadow-sm"
+```
+
+**Secondary Button:**
+```tsx
+className="px-4 py-2 bg-secondary text-secondary-foreground rounded-lg font-medium 
+           hover:bg-muted transition-all duration-150 shadow-sm"
+```
+
+**Ghost Button:**
+```tsx
+className="px-4 py-2 bg-transparent text-foreground rounded-lg font-medium 
+           hover:bg-muted transition-all duration-150"
+```
+
+**Icon Button (Small):**
+```tsx
+className="w-7 h-7 rounded-lg hover:bg-muted transition-all 
+           flex items-center justify-center"
+```
+
+**Icon Button (Medium):**
+```tsx
+className="w-10 h-10 rounded-lg bg-card border border-border/50 
+           hover:bg-muted transition-all shadow-sm 
+           flex items-center justify-center"
+```
+
+### Card States
+
+**Standard Card (Grid/Feed):**
+```tsx
+className="bg-card rounded-xl border border-border/50 shadow-sm 
+           hover:shadow-md hover:bg-accent/30 hover:border-border 
+           transition-all duration-200"
+```
+
+**Carousel Card (Compact):**
+```tsx
+className="bg-card rounded-xl border border-border/50 shadow-sm 
+           hover:shadow-md hover:bg-accent/30 hover:border-border 
+           transition-all"
+```
+
+**Large Note Card:**
+```tsx
+className="bg-card border border-border/40 rounded-2xl shadow-sm 
+           hover:shadow-md hover:bg-accent/30 hover:border-border 
+           transition-all"
+```
+
+**Sidebar Container:**
+```tsx
+className="bg-card border border-border/50 rounded-3xl shadow-lg"
+```
+
+### Input States
+
+**Standard Input:**
+```tsx
+className="w-full px-4 py-2 bg-card border border-border rounded-lg 
+           text-sm text-foreground placeholder:text-muted-foreground
+           focus:outline-none focus:ring-2 focus:ring-indigo-500/20 
+           focus:border-indigo-500 transition-all shadow-sm"
+```
+
+**Search Input with Icon:**
+```tsx
+<div className="relative flex-1">
+  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+  <input 
+    className="w-full pl-9 pr-4 py-2 bg-card border border-border rounded-lg 
+               text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 
+               focus:border-indigo-500 transition-all shadow-sm"
+  />
+</div>
+```
+
+### Link States
+
+**Standard Link:**
+```tsx
+className="text-foreground hover:text-primary transition-colors"
+```
+
+**Underline Link:**
+```tsx
+className="text-foreground underline-offset-4 hover:underline"
+```
+
+### Dropdown/Menu States
+
+**Dropdown Container:**
+```tsx
+className="absolute right-0 top-full mt-2 w-56 bg-popover border border-border/50 
+           rounded-xl shadow-lg z-20 overflow-hidden"
+```
+
+**Menu Item:**
+```tsx
+className="w-full px-3 py-2 rounded-lg text-sm font-medium 
+           transition-all text-left hover:bg-muted/50"
+```
+
+**Menu Separator:**
+```tsx
+className="border-t border-border/30 my-1"
+```
+
+### Focus Ring Pattern
+
+**Standard Focus Ring (Indigo):**
+```css
+focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500
+```
+
+**Neutral Focus Ring:**
+```css
+focus:outline-none focus:ring-2 focus:ring-ring/50
+```
+
+### Transition Timing
+
+**Standard Transition:**
+```css
+transition-all duration-150
+```
+
+**Card Hover Transition:**
+```css
+transition-all duration-200
+```
+
+**Ease Functions:**
+```css
+--ease-out: cubic-bezier(0, 0, 0.2, 1);
+--ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+```
+
+---
+
+## Icon Sizing Standards
+
+From Figma export:
+
+| Size | Class | Pixels | Usage |
+|------|-------|--------|-------|
+| **Micro** | `w-[10px] h-[10px]` | 10px | Carousel card icons |
+| **Small** | `w-[11px] h-[11px]` | 11px | Grid card icons |
+| **Standard** | `w-3 h-3` | 12px | Metadata icons |
+| **Medium** | `w-3.5 h-3.5` | 14px | Button icons |
+| **Large** | `w-4 h-4` | 16px | Search icons, nav icons |
+
+---
+
+## Implementation Rules
+
+1. **Always use semantic tokens** - Never hardcode colors like `#ffffff` or `bg-white`
+2. **Use CSS variables** - Implement tokens as CSS custom properties in `app/globals.css`
+3. **Follow exact hover patterns** - Use the interaction states documented above
+4. **Maintain border opacity hierarchy** - Use `/50`, `/40`, `/30` consistently
+5. **Apply shadow scale correctly** - `shadow-sm` default, `shadow-md` hover, `shadow-lg` floating
+6. **Use 8px spacing grid** - Stick to defined spacing values (2, 2.5, 3, 4, 7)
+7. **Support dark mode** - All tokens must work in both light and dark themes
+8. **Focus rings are indigo** - Use `focus:ring-indigo-500/20` pattern
+9. **Transitions are 150-200ms** - Use `duration-150` or `duration-200`
+10. **Border radius follows scale** - `rounded-lg` (10px) for cards, `rounded-xl` (12px) for larger cards
+
+---
+
 This specification should be used as the source of truth for all UI implementation going forward.
