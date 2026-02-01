@@ -1,6 +1,7 @@
 "use client";
 
 import { Crown, Calendar, TrendingUp, Bell } from 'lucide-react';
+import { IconButton } from '../../components/ui/IconButton.js';
 
 const upNextItems = [
   {
@@ -49,24 +50,24 @@ export function RightRail() {
   return (
     <aside className="fixed right-4 top-4 bottom-4 w-[320px] bg-white rounded-2xl shadow-lg overflow-y-auto">
       {/* Header Icons */}
-      <div className="flex items-center justify-between px-4 py-4 border-b border-border">
-        <div className="flex items-center gap-2">
-          <button className="w-10 h-10 flex items-center justify-center rounded-lg bg-yellow-50 hover:bg-yellow-100 transition-colors">
+      <div className="flex items-center justify-between px-4 py-4 border-b border-gray-100">
+        <div className="flex items-center gap-1">
+          <IconButton variant="subtle" className="w-10 h-10 bg-yellow-50 hover:bg-yellow-100">
             <Crown size={20} className="text-yellow-600" />
-          </button>
-          <button className="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-gray-50 transition-colors">
+          </IconButton>
+          <IconButton className="w-10 h-10">
             <Calendar size={20} className="text-gray-600" />
-          </button>
-          <button className="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-gray-50 transition-colors">
+          </IconButton>
+          <IconButton className="w-10 h-10">
             <TrendingUp size={20} className="text-gray-600" />
-          </button>
+          </IconButton>
         </div>
-        <div className="flex items-center gap-2">
-          <button className="relative w-10 h-10 flex items-center justify-center rounded-lg hover:bg-gray-50 transition-colors">
+        <div className="flex items-center gap-1">
+          <IconButton className="relative w-10 h-10">
             <Bell size={20} className="text-gray-600" />
             <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-          </button>
-          <button className="w-10 h-10 rounded-full bg-gray-200 overflow-hidden">
+          </IconButton>
+          <button className="w-10 h-10 rounded-full bg-gray-200 overflow-hidden hover:bg-gray-300 transition-colors">
             <span className="text-xl">👤</span>
           </button>
         </div>
@@ -81,14 +82,14 @@ export function RightRail() {
           </h3>
         </div>
 
-        <div className="space-y-3">
+        <div className="space-y-2">
           {upNextItems.map((item) => (
             <div
               key={item.id}
-              className="bg-white border border-gray-200 rounded-xl p-3 hover:shadow-lg transition-all duration-200 cursor-pointer"
+              className="bg-white border border-gray-100 rounded-xl p-3 shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer"
             >
               <div className="flex gap-3">
-                <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center text-2xl flex-shrink-0">
+                <div className="w-16 h-16 bg-gray-50 rounded-lg flex items-center justify-center text-2xl flex-shrink-0">
                   {item.thumbnail}
                 </div>
                 <div className="flex-1 min-w-0">
@@ -159,7 +160,7 @@ export function RightRail() {
         <div className="grid grid-cols-4 gap-3">
           {suggestions.map((suggestion, idx) => (
             <div key={idx} className="text-center">
-              <div className="w-full aspect-square bg-gray-100 rounded-xl flex items-center justify-center text-2xl mb-2 hover:bg-gray-200 transition-colors cursor-pointer">
+              <div className="w-full aspect-square bg-gray-50 rounded-xl flex items-center justify-center text-2xl mb-2 hover:bg-gray-100 transition-colors cursor-pointer">
                 {suggestion.avatar}
               </div>
               <p className="text-[10px] font-medium text-foreground truncate">
@@ -176,7 +177,7 @@ export function RightRail() {
           {quickActions.map((action, idx) => (
             <button
               key={idx}
-              className="flex flex-col items-center gap-2 py-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+              className="flex flex-col items-center gap-2 py-3 border border-gray-100 rounded-lg hover:bg-gray-50 transition-colors"
             >
               <span className="text-xl">{action.icon}</span>
               <span className="text-[10px] font-medium text-foreground">

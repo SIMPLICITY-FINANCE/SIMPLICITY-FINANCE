@@ -1,4 +1,6 @@
 import { Bookmark, Share2, Download, FileText, Mic, User, Calendar } from "lucide-react";
+import { IconButton } from "../ui/IconButton.js";
+import { Chip } from "../ui/Chip.js";
 
 interface FeedEpisodeCardProps {
   title: string;
@@ -24,7 +26,7 @@ export function FeedEpisodeCard({
   episodeId,
 }: FeedEpisodeCardProps) {
   return (
-    <div className="bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-all duration-200">
+    <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-200">
       {/* Header: Title + Actions */}
       <div className="flex items-start justify-between gap-4 mb-4">
         <div className="flex items-start gap-2 flex-1 min-w-0">
@@ -33,16 +35,16 @@ export function FeedEpisodeCard({
             {title}
           </h3>
         </div>
-        <div className="flex items-center gap-2 flex-shrink-0">
-          <button className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-muted transition-colors">
+        <div className="flex items-center gap-1 flex-shrink-0">
+          <IconButton>
             <Bookmark size={16} className="text-foreground/60" />
-          </button>
-          <button className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-muted transition-colors">
+          </IconButton>
+          <IconButton>
             <Share2 size={16} className="text-foreground/60" />
-          </button>
-          <button className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-muted transition-colors">
+          </IconButton>
+          <IconButton>
             <Download size={16} className="text-foreground/60" />
-          </button>
+          </IconButton>
         </div>
       </div>
 
@@ -71,7 +73,7 @@ export function FeedEpisodeCard({
 
       {/* Thumbnail */}
       {thumbnail && (
-        <div className="mb-4 rounded-lg overflow-hidden aspect-video">
+        <div className="mb-4 rounded-xl overflow-hidden aspect-video">
           <img
             src={thumbnail}
             alt={title}
@@ -84,12 +86,7 @@ export function FeedEpisodeCard({
       {topics.length > 0 && (
         <div className="flex flex-wrap gap-2">
           {topics.map((topic, idx) => (
-            <span
-              key={idx}
-              className="px-3 py-1 bg-gray-100 text-gray-600 text-[11px] rounded-full"
-            >
-              {topic}
-            </span>
+            <Chip key={idx}>{topic}</Chip>
           ))}
         </div>
       )}

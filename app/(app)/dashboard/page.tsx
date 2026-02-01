@@ -48,7 +48,7 @@ export default async function DashboardPage() {
           </p>
         </Card>
       ) : (
-        <div className="space-y-6">
+        <div className="space-y-4">
           {approvedSummaries.map((summary) => (
             <FeedEpisodeCard
               key={summary.id}
