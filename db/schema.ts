@@ -229,6 +229,42 @@ export const followedPeople = pgTable("followed_people", {
 }));
 
 // ─────────────────────────────────────────────────────────────────────────────
+// Ingest Requests - Track upload/processing status
+// ─────────────────────────────────────────────────────────────────────────────
+
+export const ingestRequests = pgTable("ingest_requests", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id").notNull().references(() => users.id),
+  
+  url: text("url").notNull().unique(), // Prevent duplicate submissions
+  source: text("source").notNull(), // "youtube" | "audio"
+  
+  // Status tracking
+  status: text("status").notNull().default("queued"), // "queued" | "running" | "succeeded" | "failed"
+  
+  // Inngest event ID for tracking
+  inngestEventId: text("inngest_event_id"),
+  
+  // Episode ID once created
+  episodeId: uuid("episode_id").references(() => episodes.id),
+  
+  // Error tracking
+  errorMessage: text("error_message"),
+  errorDetails: jsonb("error_details"),
+  
+  // Timestamps
+  startedAt: timestamp("started_at"),
+  completedAt: timestamp("completed_at"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+}, (table) => ({
+  userIdIdx: index("ingest_requests_user_id_idx").on(table.userId),
+  statusIdx: index("ingest_requests_status_idx").on(table.status),
+  urlIdx: index("ingest_requests_url_idx").on(table.url),
+  episodeIdIdx: index("ingest_requests_episode_id_idx").on(table.episodeId),
+}));
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Notebook Items - Bullets only (NOT episodes or reports)
 // ─────────────────────────────────────────────────────────────────────────────
 

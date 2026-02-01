@@ -3,6 +3,7 @@ import * as path from "node:path";
 import * as crypto from "node:crypto";
 import { createClient } from "@deepgram/sdk";
 import OpenAI from "openai";
+import postgres from "postgres";
 import { inngest } from "../client";
 import { SummarySchema, type Summary } from "../../schemas/summary.schema";
 import { QCSchema, type QC } from "../../schemas/qc.schema";
@@ -10,6 +11,8 @@ import { exec } from "node:child_process";
 import { promisify } from "node:util";
 
 const execAsync = promisify(exec);
+
+const sql = postgres(process.env.DATABASE_URL!, { max: 1 });
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Types & Schemas
@@ -302,7 +305,20 @@ export const processEpisode = inngest.createFunction(
   },
   { event: "episode/submitted" },
   async ({ event, step }) => {
-    const { url } = event.data;
+    const { url, requestId } = event.data;
+
+    // Update status to running
+    if (requestId) {
+      await step.run("update-status-running", async () => {
+        await sql`
+          UPDATE ingest_requests
+          SET status = 'running',
+              started_at = NOW(),
+              updated_at = NOW()
+          WHERE id = ${requestId}
+        `;
+      });
+    }
 
     // Step 1: Ingest Metadata
     const metadata = await step.run("ingest-metadata", async () => {
@@ -474,6 +490,28 @@ export const processEpisode = inngest.createFunction(
       };
     });
 
+    // Update status to succeeded
+    if (requestId) {
+      await step.run("update-status-succeeded", async () => {
+        // Find the episode ID from the database
+        const [episode] = await sql<Array<{ id: string }>>`
+          SELECT id FROM episodes
+          WHERE video_id = ${metadata.videoId}
+             OR audio_id = ${metadata.audioId}
+          LIMIT 1
+        `;
+
+        await sql`
+          UPDATE ingest_requests
+          SET status = 'succeeded',
+              episode_id = ${episode?.id},
+              completed_at = NOW(),
+              updated_at = NOW()
+          WHERE id = ${requestId}
+        `;
+      });
+    }
+
     return {
       success: true,
       episodeId: metadata.id,
@@ -482,5 +520,62 @@ export const processEpisode = inngest.createFunction(
       qcScore: qc.qc_score,
       qcStatus: qc.qc_status,
     };
+  }
+);
+
+// Error handler to update failed status
+export const processEpisodeOnFailure = inngest.createFunction(
+  {
+    id: "process-episode-on-failure",
+    name: "Process Episode - On Failure",
+  },
+  { event: "inngest/function.failed" },
+  async ({ event }) => {
+    // Only handle failures for process-episode function
+    if (event.data.function_id !== "process-episode") {
+      return;
+    }
+
+    const originalEvent = event.data.event;
+    const requestId = originalEvent?.data?.requestId;
+    const error = event.data.error;
+
+    if (requestId) {
+      await sql`
+        UPDATE ingest_requests
+        SET status = 'failed',
+            error_message = ${error?.message ?? "Unknown error"},
+            error_details = ${JSON.stringify(error ?? {})},
+            completed_at = NOW(),
+            updated_at = NOW()
+        WHERE id = ${requestId}
+      `;
+
+      // Also write error.json to output directory if we have metadata
+      const url = originalEvent?.data?.url;
+      if (url) {
+        try {
+          const videoId = extractYouTubeVideoId(url);
+          const audioId = videoId ? null : generateAudioId(url);
+          const id = videoId ?? audioId;
+          
+          if (id) {
+            const outputDir = path.join(process.cwd(), "output", id);
+            ensureOutputDir(outputDir);
+            
+            fs.writeFileSync(
+              path.join(outputDir, "error.json"),
+              JSON.stringify({
+                error: error?.message ?? "Unknown error",
+                details: error,
+                timestamp: new Date().toISOString(),
+              }, null, 2)
+            );
+          }
+        } catch (err) {
+          console.error("Failed to write error.json:", err);
+        }
+      }
+    }
   }
 );
