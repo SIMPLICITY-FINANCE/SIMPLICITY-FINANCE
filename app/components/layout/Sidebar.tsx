@@ -63,15 +63,6 @@ export function Sidebar() {
 
       {/* Footer */}
       <div className="px-6 py-4 border-t border-sidebar-border">
-        <div className="mb-3">
-          <a 
-            href="/admin/ingest" 
-            className="flex items-center justify-center gap-2 px-3 py-2 text-xs font-medium text-muted-foreground hover:text-sidebar-foreground hover:bg-sidebar-accent/50 rounded-lg transition-all"
-          >
-            <span>⚙️</span>
-            <span>Admin: Ingest</span>
-          </a>
-        </div>
         <div className="flex items-center justify-around text-muted-foreground">
           <a href="/about" className="hover:text-sidebar-foreground transition-colors">
             <span className="text-xl">✕</span>
