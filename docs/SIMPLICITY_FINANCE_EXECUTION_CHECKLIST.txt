@@ -212,9 +212,20 @@ PHASE 4 — ADMIN MVP (APPROVALS + TRUST TIERS)
 =====================================================================
 
 4.1 Admin page skeleton + authz guard
-[ ] Not started
+[x] Done
 DoD: /admin visible only to admin
 Acceptance: normal user blocked
+Notes: ✅ Created app/lib/auth.ts with getCurrentUser() and requireAdmin()
+       ✅ Created app/admin/page.tsx with dashboard layout and tabs
+       ✅ Created app/unauthorized/page.tsx for access denied
+       ✅ Created app/dev/login/page.tsx for testing auth flow
+       ✅ Created app/page.tsx home page with dev links
+       ✅ Created app/layout.tsx root layout
+       ✅ Installed Tailwind CSS v4 with @tailwindcss/postcss
+       ✅ Fixed Turbopack cache corruption (.next directory)
+       ✅ Auth guard redirects non-admin users to /unauthorized
+       ✅ Server-side auth checks using cookies
+       ✅ HTTP 200 OK on all pages
 
 4.2 Approvals list (summaries/reports/suggestions)
 [ ] Not started
