@@ -87,6 +87,25 @@ export default async function AdminPage() {
             <p className="text-sm text-gray-500">No recent activity</p>
           </div>
         </div>
+        <div className="bg-white rounded-lg shadow p-6">
+          <h2 className="text-lg font-medium text-gray-900 mb-4">Quick Actions</h2>
+          <div className="space-y-3">
+            <a
+              href="/admin/approvals"
+              className="block px-4 py-3 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors"
+            >
+              <div className="font-semibold">Approvals</div>
+              <div className="text-sm">Review pending summaries</div>
+            </a>
+            <a
+              href="/admin/ops"
+              className="block px-4 py-3 bg-purple-50 text-purple-700 rounded-lg hover:bg-purple-100 transition-colors"
+            >
+              <div className="font-semibold">Operations</div>
+              <div className="text-sm">System monitoring & cleanup</div>
+            </a>
+          </div>
+        </div>
       </main>
     </div>
   );
