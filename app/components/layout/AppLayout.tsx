@@ -53,6 +53,13 @@ export function AppLayout({
       </main>
 
       {showRightRail && <RightRail />}
+      
+      {/* Dev Build Stamp - Prevents cached confusion */}
+      {process.env.NODE_ENV === 'development' && (
+        <div className="fixed bottom-2 left-2 z-50 bg-gray-800 text-white px-2 py-1 rounded text-[10px] font-mono opacity-50">
+          dev-49f310a
+        </div>
+      )}
     </div>
   );
 }
