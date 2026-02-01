@@ -188,7 +188,7 @@ export default async function ApprovalsPage() {
                     <span className="text-sm font-medium text-gray-700">QC Score:</span>
                     <span className="text-sm text-gray-900">{summary.qc_score || 'N/A'}/100</span>
                   </div>
-                  {summary.risk_flags && summary.risk_flags.length > 0 && (
+                  {summary.risk_flags && Array.isArray(summary.risk_flags) && summary.risk_flags.length > 0 && (
                     <div className="flex items-center gap-2">
                       <span className="text-sm font-medium text-gray-700">Risk Flags:</span>
                       <div className="flex gap-1">
