@@ -5,13 +5,13 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 }
 
 export function Input({ icon, className = '', ...props }: InputProps) {
-  const baseStyles = 'w-full h-11 px-4 text-sm bg-card border border-border rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all shadow-sm';
-  const iconStyles = icon ? 'pl-11' : '';
+  const baseStyles = 'w-full h-10 px-4 text-sm bg-white border border-gray-100 rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all';
+  const iconStyles = icon ? 'pl-10' : '';
   
   return (
     <div className="relative">
       {icon && (
-        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground">
+        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
           {icon}
         </div>
       )}
