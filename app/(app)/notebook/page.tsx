@@ -1,5 +1,6 @@
 import postgres from "postgres";
 import { Card } from "../../components/ui/Card.js";
+import { Chip } from "../../components/ui/Chip.js";
 import { BookOpen, Trash2 } from "lucide-react";
 
 const sql = postgres(process.env.DATABASE_URL!, {
@@ -83,7 +84,7 @@ export default async function NotebookPage() {
       ) : (
         <div className="space-y-4">
           {notebookBullets.map((item) => (
-            <div key={item.id} className="bg-white border border-gray-200 rounded-xl p-6">
+            <div key={item.id} className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm">
               <div className="mb-4">
                 <div className="flex items-start justify-between mb-2">
                   <h3 className="text-sm font-semibold text-foreground">
@@ -106,10 +107,9 @@ export default async function NotebookPage() {
                         href={`https://www.youtube.com/watch?v=${item.video_id}&t=${Math.floor(span.start_ms / 1000)}s`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center px-2 py-1 bg-gray-100 text-gray-600 text-[11px] font-medium rounded-full hover:bg-gray-200 transition-colors"
                         title="Jump to timestamp in video"
                       >
-                        [{formatTimestamp(span.start_ms)}]
+                        <Chip>[{formatTimestamp(span.start_ms)}]</Chip>
                       </a>
                     ))}
                   </div>

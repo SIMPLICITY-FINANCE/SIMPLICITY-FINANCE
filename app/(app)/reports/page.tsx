@@ -1,5 +1,6 @@
 import postgres from "postgres";
 import { Card } from "../../components/ui/Card.js";
+import { Chip } from "../../components/ui/Chip.js";
 import { FileText, Bookmark, ExternalLink } from "lucide-react";
 
 const sql = postgres(process.env.DATABASE_URL!, {
@@ -61,16 +62,16 @@ export default async function ReportsPage() {
       ) : (
         <div className="space-y-4">
           {approvedReports.map((report) => (
-            <div key={report.id} className="bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-all duration-200">
+            <div key={report.id} className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-200">
               <div className="flex justify-between items-start mb-4">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-2">
                     <h3 className="text-base font-semibold text-foreground">
                           {report.title}
                     </h3>
-                    <span className="px-2 py-1 bg-gray-100 text-gray-600 text-[11px] font-medium rounded-full">
+                    <Chip>
                       {report.report_type.charAt(0).toUpperCase() + report.report_type.slice(1)}
-                    </span>
+                    </Chip>
                   </div>
                   <div className="flex items-center gap-2 text-xs text-muted-foreground mb-3">
                     <span>

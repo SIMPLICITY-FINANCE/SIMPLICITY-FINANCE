@@ -1,6 +1,7 @@
 import postgres from "postgres";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ExternalLink, Bookmark } from "lucide-react";
+import { Chip } from "../../../components/ui/Chip.js";
 
 const sql = postgres(process.env.DATABASE_URL!, {
   max: 1,
@@ -95,7 +96,7 @@ export default async function EpisodeDetailPage({ params }: { params: Promise<{ 
         </a>
       </div>
 
-      <div className="bg-white border border-gray-200 rounded-xl p-6 mb-6">
+      <div className="bg-white border border-gray-100 rounded-2xl p-6 mb-6 shadow-sm">
         <h1 className="text-xl font-semibold text-foreground mb-4 leading-tight">
             {episode.title}
         </h1>
@@ -157,7 +158,7 @@ export default async function EpisodeDetailPage({ params }: { params: Promise<{ 
         )}
       </div>
 
-      <div className="bg-white border border-gray-200 rounded-xl p-6">
+      <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm">
         <h2 className="text-lg font-semibold text-foreground mb-4">Summary</h2>
 
         {Object.keys(bulletsBySection).length === 0 ? (
@@ -186,10 +187,9 @@ export default async function EpisodeDetailPage({ params }: { params: Promise<{ 
                                 href={`https://www.youtube.com/watch?v=${episode.video_id}&t=${Math.floor(span.start_ms / 1000)}s`}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="inline-flex items-center px-2 py-1 bg-gray-100 text-gray-600 text-[11px] font-medium rounded-full hover:bg-gray-200 transition-colors"
                                 title="Jump to timestamp in video"
                               >
-                                [{formatTimestamp(span.start_ms)}]
+                                <Chip>[{formatTimestamp(span.start_ms)}]</Chip>
                               </a>
                             ))}
                           </div>
