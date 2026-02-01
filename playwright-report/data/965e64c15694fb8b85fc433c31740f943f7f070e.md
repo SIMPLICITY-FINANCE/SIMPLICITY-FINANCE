@@ -1,0 +1,61 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - generic [ref=e5]:
+        - generic [ref=e6]:
+          - heading "Simplicity Finance" [level=1] [ref=e7]
+          - paragraph [ref=e8]: Finance podcast intelligence from long-form audio
+        - navigation [ref=e9]:
+          - link "Feed" [ref=e10] [cursor=pointer]:
+            - /url: /dashboard
+          - link "Saved" [ref=e11] [cursor=pointer]:
+            - /url: /saved
+          - link "Notebook" [ref=e12] [cursor=pointer]:
+            - /url: /notebook
+          - link "Reports" [ref=e13] [cursor=pointer]:
+            - /url: /reports
+    - main [ref=e14]:
+      - generic [ref=e15]:
+        - heading "Reports" [level=2] [ref=e16]
+        - paragraph [ref=e17]: Curated summaries of key insights from multiple episodes
+      - paragraph [ref=e19]:
+        - strong [ref=e20]: What are Reports?
+        - text: Reports aggregate the most important insights from multiple episodes into daily, weekly, or monthly summaries.
+      - generic [ref=e21]:
+        - generic [ref=e23]:
+          - generic [ref=e25]:
+            - generic [ref=e26]:
+              - heading "Weekly Finance Highlights - Jan 15-21, 2024" [level=3] [ref=e27]
+              - generic [ref=e28]: Weekly
+            - generic [ref=e29]:
+              - generic [ref=e30]: Jan 15, 2024 - Jan 21, 2024
+              - generic [ref=e31]: •
+              - generic [ref=e32]: 0 key insights
+            - paragraph [ref=e33]: "Key insights from this week: Federal Reserve signals potential rate cuts in Q2 2024. Tech earnings season shows mixed results with AI companies outperforming. Bitcoin ETF approval drives crypto market rally."
+          - generic [ref=e34]:
+            - link "View Report" [ref=e35] [cursor=pointer]:
+              - /url: /reports/4444d9e6-1713-4bed-a3e4-d2d271bdae31
+            - button "Save" [ref=e36]
+        - generic [ref=e38]:
+          - generic [ref=e40]:
+            - generic [ref=e41]:
+              - heading "Weekly Finance Highlights - Jan 15-21, 2024" [level=3] [ref=e42]
+              - generic [ref=e43]: Weekly
+            - generic [ref=e44]:
+              - generic [ref=e45]: Jan 15, 2024 - Jan 21, 2024
+              - generic [ref=e46]: •
+              - generic [ref=e47]: 0 key insights
+            - paragraph [ref=e48]: "Key insights from this week: Federal Reserve signals potential rate cuts in Q2 2024. Tech earnings season shows mixed results with AI companies outperforming. Bitcoin ETF approval drives crypto market rally."
+          - generic [ref=e49]:
+            - link "View Report" [ref=e50] [cursor=pointer]:
+              - /url: /reports/8fdb2c30-a222-42b4-89d0-d6f65ae2dcf6
+            - button "Save" [ref=e51]
+    - contentinfo [ref=e52]:
+      - paragraph [ref=e54]: Simplicity Finance - Evidence-grounded finance podcast intelligence
+  - button "Open Next.js Dev Tools" [ref=e60] [cursor=pointer]:
+    - img [ref=e61]
+  - alert [ref=e64]
+```

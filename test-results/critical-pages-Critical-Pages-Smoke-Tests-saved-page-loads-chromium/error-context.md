@@ -1,0 +1,63 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - generic [ref=e5]:
+        - generic [ref=e6]:
+          - heading "Simplicity Finance" [level=1] [ref=e7]
+          - paragraph [ref=e8]: Finance podcast intelligence from long-form audio
+        - navigation [ref=e9]:
+          - link "Feed" [ref=e10] [cursor=pointer]:
+            - /url: /dashboard
+          - link "Saved" [ref=e11] [cursor=pointer]:
+            - /url: /saved
+          - link "Notebook" [ref=e12] [cursor=pointer]:
+            - /url: /notebook
+          - link "Reports" [ref=e13] [cursor=pointer]:
+            - /url: /reports
+    - main [ref=e14]:
+      - generic [ref=e15]:
+        - heading "Saved Episodes" [level=2] [ref=e16]
+        - paragraph [ref=e17]: Episodes and reports you've saved for later
+      - paragraph [ref=e19]:
+        - strong [ref=e20]: "Saved vs Notebook:"
+        - text: Save full episodes and reports here. Individual key points go in your Notebook.
+      - generic [ref=e21]:
+        - generic [ref=e23]:
+          - generic [ref=e25]:
+            - link "Tech Earnings Season Preview" [ref=e26] [cursor=pointer]:
+              - /url: /episode/fbcffc08-582e-4af4-b74d-27f0fb203095
+            - generic [ref=e27]:
+              - generic [ref=e28]: January 20, 2024
+              - generic [ref=e29]: •
+              - generic [ref=e30]: All-In Podcast
+              - generic [ref=e31]: •
+              - generic [ref=e32]: Saved 2/1/2026
+          - generic [ref=e33]:
+            - link "View Episode" [ref=e34] [cursor=pointer]:
+              - /url: /episode/fbcffc08-582e-4af4-b74d-27f0fb203095
+            - link "Watch on YouTube →" [ref=e35] [cursor=pointer]:
+              - /url: https://www.youtube.com/watch?v=demo-ep-002
+            - button "Remove" [ref=e37]
+        - generic [ref=e39]:
+          - generic [ref=e41]:
+            - link "Local Transcript" [ref=e42] [cursor=pointer]:
+              - /url: /episode/1ee2f6ff-faa2-49af-a54c-7fa57228e299
+            - generic [ref=e43]:
+              - generic [ref=e44]: January 31, 2026
+              - generic [ref=e45]: •
+              - generic [ref=e46]: Saved 2/1/2026
+          - generic [ref=e47]:
+            - link "View Episode" [ref=e48] [cursor=pointer]:
+              - /url: /episode/1ee2f6ff-faa2-49af-a54c-7fa57228e299
+            - link "Watch on YouTube →" [ref=e49] [cursor=pointer]:
+              - /url: https://www.youtube.com/watch?v=sample_transcript
+            - button "Remove" [ref=e51]
+    - contentinfo [ref=e52]:
+      - paragraph [ref=e54]: Simplicity Finance - Evidence-grounded finance podcast intelligence
+  - button "Open Next.js Dev Tools" [ref=e60] [cursor=pointer]:
+    - img [ref=e61]
+  - alert [ref=e64]
+```

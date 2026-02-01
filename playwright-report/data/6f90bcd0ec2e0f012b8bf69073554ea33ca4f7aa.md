@@ -1,0 +1,103 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - generic [ref=e5]:
+        - generic [ref=e6]:
+          - heading "Simplicity Finance" [level=1] [ref=e7]
+          - paragraph [ref=e8]: Finance podcast intelligence from long-form audio
+        - navigation [ref=e9]:
+          - link "Feed" [ref=e10] [cursor=pointer]:
+            - /url: /dashboard
+          - link "Saved" [ref=e11] [cursor=pointer]:
+            - /url: /saved
+          - link "Notebook" [ref=e12] [cursor=pointer]:
+            - /url: /notebook
+          - link "Reports" [ref=e13] [cursor=pointer]:
+            - /url: /reports
+    - main [ref=e14]:
+      - generic [ref=e15]:
+        - heading "Search" [level=2] [ref=e16]
+        - generic [ref=e18]:
+          - textbox "Search episodes and key points..." [active] [ref=e19]: tech
+          - button "Search" [ref=e20]
+        - paragraph [ref=e21]: 7 results for "tech"
+      - generic [ref=e22]:
+        - generic [ref=e24]:
+          - generic [ref=e25]: Episode
+          - generic [ref=e26]:
+            - link "Tech Earnings Season Preview" [ref=e27] [cursor=pointer]:
+              - /url: /episode/fbcffc08-582e-4af4-b74d-27f0fb203095
+            - paragraph [ref=e28]: Tech Earnings Season Preview
+            - generic [ref=e29]:
+              - generic [ref=e30]: Jan 20, 2024
+              - link "View Episode →" [ref=e31] [cursor=pointer]:
+                - /url: /episode/fbcffc08-582e-4af4-b74d-27f0fb203095
+        - generic [ref=e33]:
+          - generic [ref=e34]: Key Point
+          - generic [ref=e35]:
+            - link "Local Transcript" [ref=e36] [cursor=pointer]:
+              - /url: /episode/1ee2f6ff-faa2-49af-a54c-7fa57228e299
+            - paragraph [ref=e37]: S&P 500 closed up 1.2% due to strong tech earnings.
+            - generic [ref=e38]:
+              - generic [ref=e39]: Jan 31, 2026
+              - link "View Episode →" [ref=e40] [cursor=pointer]:
+                - /url: /episode/1ee2f6ff-faa2-49af-a54c-7fa57228e299
+        - generic [ref=e42]:
+          - generic [ref=e43]: Key Point
+          - generic [ref=e44]:
+            - link "Tech Earnings Season Preview" [ref=e45] [cursor=pointer]:
+              - /url: /episode/fbcffc08-582e-4af4-b74d-27f0fb203095
+            - paragraph [ref=e46]: "Tech sector earnings show divergence: AI-focused companies beat estimates while legacy tech misses."
+            - generic [ref=e47]:
+              - generic [ref=e48]: Jan 20, 2024
+              - link "View Episode →" [ref=e49] [cursor=pointer]:
+                - /url: /episode/fbcffc08-582e-4af4-b74d-27f0fb203095
+        - generic [ref=e51]:
+          - generic [ref=e52]: Key Point
+          - generic [ref=e53]:
+            - link "Tech Earnings Season Preview" [ref=e54] [cursor=pointer]:
+              - /url: /episode/fbcffc08-582e-4af4-b74d-27f0fb203095
+            - paragraph [ref=e55]: Aggregate tech sector revenue growth at 8% YoY, below historical 12% average.
+            - generic [ref=e56]:
+              - generic [ref=e57]: Jan 20, 2024
+              - link "View Episode →" [ref=e58] [cursor=pointer]:
+                - /url: /episode/fbcffc08-582e-4af4-b74d-27f0fb203095
+        - generic [ref=e60]:
+          - generic [ref=e61]: Key Point
+          - generic [ref=e62]:
+            - link "Tech Earnings Season Preview" [ref=e63] [cursor=pointer]:
+              - /url: /episode/fbcffc08-582e-4af4-b74d-27f0fb203095
+            - paragraph [ref=e64]: Major tech companies increasing AI infrastructure spending by 40% in 2024.
+            - generic [ref=e65]:
+              - generic [ref=e66]: Jan 20, 2024
+              - link "View Episode →" [ref=e67] [cursor=pointer]:
+                - /url: /episode/fbcffc08-582e-4af4-b74d-27f0fb203095
+        - generic [ref=e69]:
+          - generic [ref=e70]: Key Point
+          - generic [ref=e71]:
+            - link "Tech Earnings Season Preview" [ref=e72] [cursor=pointer]:
+              - /url: /episode/fbcffc08-582e-4af4-b74d-27f0fb203095
+            - paragraph [ref=e73]: Tech sector trading at 28x forward earnings, above 10-year average of 22x.
+            - generic [ref=e74]:
+              - generic [ref=e75]: Jan 20, 2024
+              - link "View Episode →" [ref=e76] [cursor=pointer]:
+                - /url: /episode/fbcffc08-582e-4af4-b74d-27f0fb203095
+        - generic [ref=e78]:
+          - generic [ref=e79]: Key Point
+          - generic [ref=e80]:
+            - link "Tech Earnings Season Preview" [ref=e81] [cursor=pointer]:
+              - /url: /episode/fbcffc08-582e-4af4-b74d-27f0fb203095
+            - paragraph [ref=e82]: Analysts cautioning on stretched valuations in mega-cap tech names.
+            - generic [ref=e83]:
+              - generic [ref=e84]: Jan 20, 2024
+              - link "View Episode →" [ref=e85] [cursor=pointer]:
+                - /url: /episode/fbcffc08-582e-4af4-b74d-27f0fb203095
+    - contentinfo [ref=e86]:
+      - paragraph [ref=e88]: Simplicity Finance - Evidence-grounded finance podcast intelligence
+  - button "Open Next.js Dev Tools" [ref=e94] [cursor=pointer]:
+    - img [ref=e95]
+  - alert [ref=e98]
+```
