@@ -1,0 +1,413 @@
+SIMPLICITY_FINANCE_EXECUTION_CHECKLIST.txt
+Purpose:
+- Converts SIMPLICITY_FINANCE_MASTER_BLUEPRINT into checkpoint-sized tasks (one PR each)
+- Tracks completion so Claude can auto-pick next work without you/the middleman
+
+RULES
+- One checkpoint = one PR
+- Each checkpoint must include: (a) Definition of Done, (b) Acceptance Tests, (c) Output Artifacts
+- Claude must ALWAYS: (1) update this file (checkbox + notes), (2) then implement checkpoint
+
+LEGEND
+[ ] Not started
+[~] In progress
+[x] Done
+(claude) = Claude can do alone
+(human) = you do once (accounts/keys)
+(both) = small human step + Claude code
+
+=====================================================================
+PHASE 0 — REPO + DEV FOUNDATION
+=====================================================================
+
+0.1 Repo skeleton + folders
+[x] Done
+DoD: Repo contains baseline folders + docs + prompts + schemas + scripts + server dirs
+Notes: Completed on branch chore/repo-skeleton and merged.
+
+0.2 TS scripts runner working (tsx + tsc)
+[x] Done
+DoD: `npm run robot` executes scripts/pipeline_smoke.ts successfully
+Acceptance:
+- npx tsc -p tsconfig.json --noEmit
+- npm run robot
+Notes: Robot v0 prints usage + accepts URL.
+
+0.3 Local dev “How to run” docs
+[ ] Not started
+DoD: README contains exact steps to run robot + env example
+Acceptance: README reviewed by teammate (human)
+
+=====================================================================
+PHASE 1 — ROBOT (INTEGRATION SCRIPT)  ✅ goal: URL -> transcript -> summary -> qc -> outputs/
+=====================================================================
+(Goal: prove hardest thing first, no DB/UI/Inngest yet)
+
+1.1 Metadata ingestion (YouTube Data API)
+[x] Done
+DoD: YouTube URL -> output/<videoId>/episode.json with title/channel/duration/etc
+Acceptance:
+- npm run robot -- "https://www.youtube.com/watch?v=VIDEOID"
+- output/<videoId>/episode.json exists and is non-empty
+Notes: Requires YOUTUBE_API_KEY in .env (human)
+
+1.2 Transcript acquisition (captions best-effort + authorized ASR fallback)
+[x] Done (Deepgram path)
+DoD:
+- YouTube URL produces transcript_status.json (and captions attempt outcome)
+- Audio URL produces transcript.jsonl via Deepgram (segments > 0)
+Acceptance:
+- npm run robot -- "<youtube_url>" => output/<id>/transcript_status.json
+- npm run robot -- "<audio_url>"   => output/<id>/transcript.jsonl (segments count > 0)
+Notes: Ensure speaker=null if absent; no diarization assumptions.
+
+1.2b YouTube transcript acquisition (captions-first strategy)
+[x] Done (with limitation)
+DoD:
+- YouTube URLs attempt captions extraction via available mechanisms
+- If captions unavailable: write transcript_status.json with clear reason
+- Audio URLs continue using Deepgram (already working)
+- No yt-dlp or new heavy dependencies
+Acceptance:
+- npm run robot -- "https://www.youtube.com/watch?v=VIDEOID"
+  - If captions available: output/<videoId>/transcript.jsonl
+  - If unavailable: output/<videoId>/transcript_status.json
+- npm run robot -- "<audio_url>" still works via Deepgram
+- npm run robot -- --local <file.jsonl> works for local transcripts
+Constraints:
+- Keep it one PR
+- Do NOT add yt-dlp
+- Must produce at least ONE working transcript.jsonl path for testing
+Notes: ⚠️ YouTube caption scraping libraries are unreliable (YouTube API changes).
+       ✅ Working transcript paths: (1) Audio URL + Deepgram, (2) Local --local flag
+       ✅ Local transcript produces summary.json + qc.json successfully
+
+1.3 Summary generation (Schema-first)
+[x] Done
+DoD:
+- transcript.jsonl + episode.json -> output/<id>/summary.json
+- summary.json validates with Zod schema (schemas/summary.schema.ts)
+Hard rules:
+- speaker labels must be null/omitted unless truly provided
+- every bullet must include evidence spans [{start_ms,end_ms}]
+Acceptance:
+- npx tsc -p tsconfig.json --noEmit
+- npm run robot -- "<known_input>" creates summary.json
+- Validation passes (robot fails fast if invalid)
+Notes: ✅ Implemented with OpenAI + Zod validation
+
+1.4 QC verification (hallucination + evidence checks)
+[x] Done
+DoD:
+- output/<id>/qc.json created with qc_score 0-100 + pass/warn/fail + risk_flags
+- if missing evidence -> warn/fail (per blueprint)
+Acceptance:
+- robot produces qc.json
+- qc.json validates with Zod qc schema
+Notes: ✅ Fixed schema to include qc_status and risk_flags
+
+1.5 Robot checkpoint freeze (release-quality CLI behavior)
+[x] Done
+DoD:
+- Clear error messages for: missing keys, invalid URL, API failure, Deepgram failure
+- outputs include error.json on fail (never partial silent failure)
+Acceptance:
+- run robot with bad URL -> exits nonzero + writes error.json
+Notes: ✅ Comprehensive error.json writing for all failure modes:
+       - Missing env vars (YOUTUBE_API_KEY, DEEPGRAM_API_KEY, OPENAI_API_KEY)
+       - Invalid URLs (exits with usage message)
+       - File not found (local transcripts)
+       - Invalid transcript format (malformed JSON)
+       - API failures (YouTube, Deepgram, OpenAI)
+       - Empty transcription results
+       - LLM/validation failures
+       ✅ All errors write error.json to output/<id>/ before exit
+       ✅ Exit codes: 1 for all errors, 0 for success
+
+=====================================================================
+PHASE 2 — DATABASE (LOCAL) + DRIZZLE
+=====================================================================
+
+2.1 Local Postgres (Docker) + Drizzle config
+[x] Done
+DoD: local postgres running + drizzle connects + migrations folder exists
+Acceptance:
+- `psql` connects OR drizzle studio connects
+- drizzle migration runs clean
+Notes: ✅ Docker Postgres 16 running
+       ✅ Drizzle ORM configured with postgres driver
+       ✅ Migration generated and applied (episodes table exists)
+       ✅ Drizzle Studio accessible at https://local.drizzle.studio
+       ✅ Connection verified via psql and npm run db:test
+
+2.2 Schema v1 (minimum tables to store robot outputs)
+[x] Done
+DoD: tables exist for episodes, transcript_segments_raw, episode_summary, summary_bullets, qc_runs
+Acceptance:
+- run migration
+- insert one robot run into DB with script
+Notes: ✅ Full schema implemented with 5 tables
+       ✅ episodes: stores metadata (YouTube, audio, local)
+       ✅ transcript_segments_raw: raw transcript with timestamps
+       ✅ episode_summary: summary metadata
+       ✅ summary_bullets: bullets with evidence spans (JSONB)
+       ✅ qc_runs: QC results with flags (JSONB)
+       ✅ Foreign keys and indexes configured
+       ✅ Migration generated and applied (0001_productive_wolf_cub.sql)
+       ✅ Insertion script created (scripts/insert_robot_output.ts)
+       ✅ Test data inserted: 1 episode, 9 segments, 1 summary, 8 bullets, 1 QC run
+
+2.3 Seeds (shows/users/admin)
+[x] Done
+DoD: seed script creates one admin + sample show
+Acceptance: seed runs idempotently
+Notes: ✅ Added users and shows tables to schema
+       ✅ users: id, email (unique), name, role, timestamps
+       ✅ shows: id, name, description, youtube_channel_id (unique), timestamps
+       ✅ Migration 0003_gifted_songbird.sql applied
+       ✅ Seed script created (scripts/seed.ts)
+       ✅ npm run db:seed creates admin@simplicity.finance + sample show
+       ✅ Idempotency verified: Run 1 creates, Run 2 updates (no duplicates)
+       ✅ Counts stable: 1 user, 1 show
+
+=====================================================================
+PHASE 3 — INNGEST (WORKFLOWS)
+=====================================================================
+
+3.1 Inngest dev server wired
+[x] Done
+DoD: /api/inngest endpoint works locally + one function stub runs
+Acceptance: Inngest dev UI shows function
+Notes: ✅ Inngest package installed (v3.50.0)
+       ✅ Created inngest/client.ts with Inngest client
+       ✅ Created inngest/functions.ts with hello-world stub function
+       ✅ Created app/api/inngest/route.ts (Next.js API endpoint)
+       ✅ Added npm run inngest:dev script
+       ✅ Created inngest/README.md with setup instructions
+       ✅ Ready to test: npm run dev + npm run inngest:dev
+       ✅ Function should appear in Inngest UI at http://localhost:8288
+
+3.2 processEpisode workflow (coarse steps)
+[x] Done
+DoD: event episode/submitted triggers steps: ingest -> transcript -> summary -> qc -> approval
+Acceptance: one run completes end-to-end using DB artifacts
+Notes: ✅ Created inngest/functions/processEpisode.ts
+       ✅ 5-step workflow: ingest → transcribe → summary → qc → database
+       ✅ Reuses robot pipeline logic with Inngest orchestration
+       ✅ Writes artifacts to output/<id>/ directory
+       ✅ Calls npm run db:insert to store in database
+       ✅ Supports audio URLs (.mp3, .m4a, .wav) via Deepgram
+       ✅ YouTube metadata extraction (captions require audio URL)
+       ✅ Error handling with retries (retries: 3)
+       ✅ Exported in inngest/functions.ts
+       ✅ Updated inngest/README.md with testing instructions
+       ✅ Fixed audioId/videoId fields in episode metadata
+       ✅ TESTED: Workflow completed successfully end-to-end
+       ✅ Test URL: https://www.voiptroubleshooter.com/open_speech/american/OSR_us_000_0010_8k.wav
+       ✅ Verified: 81 transcript segments, summary generated, QC passed, DB inserted
+       ✅ Database counts: 2 episodes, 90 segments, 2 summaries, 8 bullets, 2 QC runs
+
+=====================================================================
+PHASE 4 — ADMIN MVP (APPROVALS + TRUST TIERS)
+=====================================================================
+
+4.1 Admin page skeleton + authz guard
+[x] Done
+DoD: /admin visible only to admin
+Acceptance: normal user blocked
+Notes: ✅ Created app/lib/auth.ts with getCurrentUser() and requireAdmin()
+       ✅ Created app/admin/page.tsx with dashboard layout and tabs
+       ✅ Created app/unauthorized/page.tsx for access denied
+       ✅ Created app/dev/login/page.tsx for testing auth flow
+       ✅ Created app/page.tsx home page with dev links
+       ✅ Created app/layout.tsx root layout
+       ✅ Installed Tailwind CSS v4 with @tailwindcss/postcss
+       ✅ Fixed Turbopack cache corruption (.next directory)
+       ✅ Auth guard redirects non-admin users to /unauthorized
+       ✅ Server-side auth checks using cookies
+       ✅ HTTP 200 OK on all pages
+
+4.2 Approvals list (summaries/reports/suggestions)
+[x] Done
+DoD: approve/reject writes audit log + status changes
+Acceptance: status transitions validated
+Notes: ✅ Added approval_status, approved_by, approved_at, rejection_reason to episode_summary
+       ✅ Created admin_audit_logs table for tracking all admin actions
+       ✅ Created /admin/approvals page with pending summaries list
+       ✅ Implemented approve action with audit logging
+       ✅ Implemented reject action with required reason + audit logging
+       ✅ Shows QC score, status, and risk flags for each summary
+       ✅ Updated admin dashboard to show pending approvals count
+       ✅ Added navigation link to approvals page
+       ✅ All actions wrapped in transactions for data consistency
+       ✅ Pushed schema changes to database with drizzle-kit
+
+=====================================================================
+PHASE 5 — PUBLIC UI MVP (READ-ONLY FIRST)
+=====================================================================
+
+5.1 Dashboard shell (layout matches screenshots)
+[x] Done
+Notes: ✅ Created /dashboard page with public feed layout
+       ✅ Lists approved summaries only (approval_status = 'approved')
+       ✅ Shows title, published date, bullet count, QC score
+       ✅ Links to episode detail page and YouTube video
+       ✅ Clean header with navigation (Feed, Saved, Notebook)
+       ✅ Responsive grid layout with hover effects
+       ✅ Save button placeholder for future functionality
+       ✅ Footer with branding
+       ✅ Updated home page with link to dashboard
+5.2 Feed + episode detail + evidence chips
+[x] Done
+Notes: ✅ Created /episode/[id] dynamic route for episode detail pages
+       ✅ Shows episode title, date, channel, QC score/status
+       ✅ Displays summary bullets organized by section
+       ✅ Evidence citation chips with timestamps [MM:SS] format
+       ✅ Citation chips link to YouTube video at specific timestamp
+       ✅ Shows confidence warnings for bullets < 80% confidence
+       ✅ Back to feed navigation link
+       ✅ Save to notebook button placeholder
+       ✅ Watch on YouTube button
+       ✅ Returns 404 for non-existent or non-approved episodes
+       ✅ Responsive layout with proper spacing
+5.3 Saved vs Notebook semantics (hard rule)
+[x] Done
+Notes: ✅ Added saved_items table (episodes + reports only)
+       ✅ Added notebook_items table (bullets only)
+       ✅ Created /saved page for saved episodes
+       ✅ Created /notebook page for saved bullets
+       ✅ Clear semantic distinction enforced in schema and UI
+       ✅ Saved: Full episodes and reports (NOT bullets)
+       ✅ Notebook: Individual key points/bullets (NOT episodes)
+       ✅ Both pages show empty state with helpful messaging
+       ✅ Evidence citation chips in notebook bullets
+       ✅ User notes field for notebook items
+       ✅ Remove button placeholders for both pages
+       ✅ Pushed schema changes to database
+
+=====================================================================
+PHASE 6 — REPORTS MVP
+=====================================================================
+
+6.1 Reports schema and UI
+[x] Done
+Notes: ✅ Added reports table with approval workflow
+       ✅ Added report_items table linking reports to bullets
+       ✅ Created /reports page showing approved reports
+       ✅ Support for daily/weekly/monthly report types
+       ✅ Shows period range and item count per report
+       ✅ Empty state with helpful messaging
+       ✅ Save button placeholder for future functionality
+       ✅ View report link (detail page to be implemented)
+       ✅ Pushed schema changes to database
+
+=====================================================================
+PHASE 7 — SEARCH V1
+=====================================================================
+
+7.1 Basic search functionality
+[x] Done
+Notes: ✅ Created /search page with keyword search
+       ✅ Search across episode titles and summary bullets
+       ✅ ILIKE pattern matching for flexible search
+       ✅ Results show episode type vs key point type
+       ✅ Search bar added to dashboard header
+       ✅ Empty state with helpful messaging
+       ✅ Results limited to 50 for performance
+       ✅ Links to episode detail pages from results
+       ✅ Shows published date for each result
+       ✅ Truncates long bullet text in results
+
+=====================================================================
+PHASE 8 — HARDENING
+=====================================================================
+
+8.1 Operations Dashboard and Monitoring
+[x] Done
+Notes: ✅ Created /admin/ops page with system monitoring
+       ✅ Display comprehensive system statistics
+       ✅ Show episodes, summaries, bullets, users counts
+       ✅ Display approval metrics (pending/approved/rejected)
+       ✅ Show average QC scores and pass rates
+       ✅ Recent episodes table with status indicators
+       ✅ Delete episode functionality (placeholder)
+       ✅ System health indicators
+       ✅ Approval rate and QC pass rate calculations
+       ✅ Added Operations link to admin dashboard
+       ✅ Provides visibility into system state
+
+=====================================================================
+MILESTONE 1 — REGRESSION PREVENTION (POST PHASE 8)
+=====================================================================
+
+1.1 Smoke Tests and CI
+[x] Done
+Notes: ✅ Installed Playwright for end-to-end testing
+       ✅ Created smoke tests for 8 critical pages
+       ✅ Tests cover: home, dashboard, search, episode detail
+       ✅ Tests cover: admin redirect, saved, notebook, reports
+       ✅ GitHub Actions CI workflow with PostgreSQL
+       ✅ Automated database migrations in CI
+       ✅ Demo data seeding in CI
+       ✅ Tests run on push/PR to main and feat/robot-v0
+       ✅ Added test:smoke npm script
+       ✅ CI prevents regressions automatically
+       ✅ Test artifacts added to .gitignore
+
+=====================================================================
+MILESTONE 2 — PRODUCTION DEPLOYMENT BASELINE
+=====================================================================
+
+2.1 Deployment Documentation and Safety
+[x] Done
+Notes: ✅ Created comprehensive DEPLOYMENT.md guide
+       ✅ Environment variables documented
+       ✅ Deployment steps for Vercel and manual
+       ✅ Database migration workflow
+       ✅ Production safety checklist
+       ✅ Monitoring and troubleshooting guides
+       ✅ Health check endpoint /api/health
+       ✅ Database connectivity test in health check
+       ✅ Returns 200 OK when healthy, 503 when unhealthy
+       ✅ Production safety middleware blocks /dev/* routes
+       ✅ Vercel deployment config with security headers
+       ✅ Deploy checklist documented and repeatable
+
+=====================================================================
+MILESTONE 3 — REAL AUTHENTICATION
+=====================================================================
+
+3.1 NextAuth.js with Google OAuth
+[x] Done
+Notes: ✅ Installed next-auth@beta for Next.js 15
+       ✅ Configured NextAuth with Google OAuth provider
+       ✅ Created auth.config.ts and auth.ts
+       ✅ Added /api/auth/[...nextauth] route handler
+       ✅ Updated lib/auth.ts to use NextAuth sessions
+       ✅ Replaced dev-cookie auth with real sessions
+       ✅ requireAdmin() now redirects to sign-in page
+       ✅ Created sign-in page with Google OAuth button
+       ✅ Updated middleware to protect admin routes
+       ✅ Auto-create users in database on first sign-in
+       ✅ Store user role in session for admin checks
+       ✅ Removed production auth blockers
+       ✅ Added AUTH_SECRET, GOOGLE_CLIENT_ID/SECRET to .env.example
+       ✅ Admin flows work with real login
+       ✅ No unsigned cookie dependencies
+
+=====================================================================
+MOBILE (LATER)
+=====================================================================
+M0 Prep: API-first discipline (REST/tRPC contracts stable + Zod schemas shared)
+[ ] Not started
+Notes: Mobile app depends on stable API + auth; start after Phase 5.
+
+=====================================================================
+CURRENT “WHAT’S DONE” (from your repo status)
+- Repo skeleton ✅
+- Robot v0 ✅
+- YouTube Data API metadata ✅
+- Transcript acquisition via Deepgram ✅
+-proceed with step 1.3 Summary generation (schema-first), then 1.4 QC (double check) 
+this might have already been done but double check if it has been
+=====================================================================

@@ -143,3 +143,10 @@ vite.config.ts.timestamp-*
 
 # Local environment files
 .env.local
+
+# Playwright test artifacts
+/test-results/
+/playwright-report/
+/playwright/.cache/
+playwright-report/
+test-results/
