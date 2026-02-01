@@ -85,10 +85,10 @@ export function RightRail() {
           {upNextItems.map((item) => (
             <div
               key={item.id}
-              className="bg-card border border-border/50 rounded-xl p-3 hover:shadow-md hover:bg-accent/30 hover:border-border transition-all duration-200 cursor-pointer"
+              className="bg-white border border-gray-200 rounded-xl p-3 hover:shadow-lg transition-all duration-200 cursor-pointer"
             >
               <div className="flex gap-3">
-                <div className="w-16 h-16 bg-muted rounded-lg flex items-center justify-center text-2xl flex-shrink-0">
+                <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center text-2xl flex-shrink-0">
                   {item.thumbnail}
                 </div>
                 <div className="flex-1 min-w-0">
@@ -159,7 +159,7 @@ export function RightRail() {
         <div className="grid grid-cols-4 gap-3">
           {suggestions.map((suggestion, idx) => (
             <div key={idx} className="text-center">
-              <div className="w-full aspect-square bg-muted rounded-xl flex items-center justify-center text-2xl mb-2 hover:bg-muted/80 transition-colors cursor-pointer">
+              <div className="w-full aspect-square bg-gray-100 rounded-xl flex items-center justify-center text-2xl mb-2 hover:bg-gray-200 transition-colors cursor-pointer">
                 {suggestion.avatar}
               </div>
               <p className="text-[10px] font-medium text-foreground truncate">
@@ -176,7 +176,7 @@ export function RightRail() {
           {quickActions.map((action, idx) => (
             <button
               key={idx}
-              className="flex flex-col items-center gap-2 py-3 border border-border/50 rounded-lg hover:bg-muted transition-colors"
+              className="flex flex-col items-center gap-2 py-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
             >
               <span className="text-xl">{action.icon}</span>
               <span className="text-[10px] font-medium text-foreground">

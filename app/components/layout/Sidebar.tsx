@@ -48,10 +48,10 @@ export function Sidebar() {
               <a
                 key={item.href}
                 href={item.href}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-normal transition-all duration-150 ${
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all duration-150 ${
                   isActive
-                    ? 'bg-sidebar-accent text-sidebar-accent-foreground'
-                    : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50'
+                    ? 'font-semibold text-sidebar-foreground'
+                    : 'font-normal text-sidebar-foreground/70 hover:bg-sidebar-accent/50'
                 }`}
               >
                 {item.icon}
@@ -75,7 +75,7 @@ export function Sidebar() {
                 href={show.href}
                 className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-normal text-sidebar-foreground/70 hover:bg-sidebar-accent/50 transition-all duration-150"
               >
-                <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-base">
+                <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-base">
                   {show.avatar}
                 </div>
                 <span>{show.name}</span>
