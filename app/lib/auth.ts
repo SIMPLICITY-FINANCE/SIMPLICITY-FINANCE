@@ -9,10 +9,14 @@ export interface User {
   id: string;
   email: string;
   role: "admin" | "user";
-  display_name: string | null;
+  name: string | null;
 }
 
 export async function getCurrentUser(): Promise<User | null> {
+  if (process.env.NODE_ENV === "production") {
+    return null;
+  }
+
   try {
     const cookieStore = await cookies();
     const userEmail = cookieStore.get("user_email")?.value;
@@ -22,7 +26,7 @@ export async function getCurrentUser(): Promise<User | null> {
     }
 
     const [user] = await sql<User[]>`
-      SELECT id, email, role, display_name
+      SELECT id, email, role, name
       FROM users
       WHERE email = ${userEmail}
       LIMIT 1
@@ -36,6 +40,10 @@ export async function getCurrentUser(): Promise<User | null> {
 }
 
 export async function requireAdmin(): Promise<User> {
+  if (process.env.NODE_ENV === "production") {
+    throw new Error("Unauthorized: Auth not implemented for production");
+  }
+
   const user = await getCurrentUser();
 
   if (!user) {

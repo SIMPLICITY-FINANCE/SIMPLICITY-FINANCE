@@ -1,5 +1,5 @@
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
+import { redirect, notFound } from "next/navigation";
 import postgres from "postgres";
 
 const sql = postgres(process.env.DATABASE_URL!, {
@@ -55,6 +55,10 @@ async function logout() {
 }
 
 export default function DevLoginPage() {
+  if (process.env.NODE_ENV === "production") {
+    notFound();
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center">
       <div className="max-w-md w-full bg-white shadow-lg rounded-lg p-8">

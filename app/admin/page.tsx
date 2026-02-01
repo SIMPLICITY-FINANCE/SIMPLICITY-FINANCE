@@ -20,7 +20,7 @@ export default async function AdminPage() {
             </h1>
             <div className="flex items-center gap-4">
               <span className="text-sm text-gray-600">
-                {user.display_name || user.email}
+                {user.name || user.email}
               </span>
               <span className="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded">
                 Admin
