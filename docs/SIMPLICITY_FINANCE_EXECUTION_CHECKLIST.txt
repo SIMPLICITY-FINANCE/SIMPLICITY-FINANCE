@@ -319,6 +319,24 @@ Notes: ✅ Created /search page with keyword search
        ✅ Truncates long bullet text in results
 
 =====================================================================
+PHASE 8 — HARDENING
+=====================================================================
+
+8.1 Operations Dashboard and Monitoring
+[x] Done
+Notes: ✅ Created /admin/ops page with system monitoring
+       ✅ Display comprehensive system statistics
+       ✅ Show episodes, summaries, bullets, users counts
+       ✅ Display approval metrics (pending/approved/rejected)
+       ✅ Show average QC scores and pass rates
+       ✅ Recent episodes table with status indicators
+       ✅ Delete episode functionality (placeholder)
+       ✅ System health indicators
+       ✅ Approval rate and QC pass rate calculations
+       ✅ Added Operations link to admin dashboard
+       ✅ Provides visibility into system state
+
+=====================================================================
 MOBILE (LATER)
 =====================================================================
 M0 Prep: API-first discipline (REST/tRPC contracts stable + Zod schemas shared)
