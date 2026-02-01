@@ -17,9 +17,10 @@ interface SearchResult {
 export default async function SearchPage({
   searchParams,
 }: {
-  searchParams: { q?: string };
+  searchParams: Promise<{ q?: string }>;
 }) {
-  const query = searchParams.q || "";
+  const params = await searchParams;
+  const query = params.q || "";
   let results: SearchResult[] = [];
 
   if (query.length >= 2) {
