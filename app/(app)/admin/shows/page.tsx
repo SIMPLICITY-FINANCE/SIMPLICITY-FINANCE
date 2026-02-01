@@ -1,6 +1,7 @@
 import { requireAdmin } from "../../../lib/auth.js";
 import postgres from "postgres";
 import Link from "next/link.js";
+import { RunIngestButton } from "./RunIngestButton.js";
 
 const sql = postgres(process.env.DATABASE_URL!, {
   max: 1,
@@ -176,12 +177,7 @@ export default async function AdminShowsPage() {
                             Edit
                           </Link>
                           <span className="text-gray-300">|</span>
-                          <button
-                            className="text-green-600 hover:text-green-800"
-                            disabled
-                          >
-                            Run Now
-                          </button>
+                          <RunIngestButton showId={show.id} showName={show.name} />
                           <span className="text-gray-300">|</span>
                           <Link
                             href={`/discover/shows/${show.id}`}
