@@ -98,7 +98,7 @@ This creates an optimized production build in `.next/`.
 - [ ] All required environment variables set
 - [ ] Database migrations applied
 - [ ] Health check endpoint accessible (`/api/health`)
-- [ ] `/dev/*` routes return 404 in production
+- [ ] Dev/test routes (`/dev/*`, `/test-auth`, `/debug/*`) return 404 in production (automatic via middleware)
 - [ ] Admin auth configured (Milestone 3)
 - [ ] API rate limits configured
 - [ ] Error monitoring enabled
