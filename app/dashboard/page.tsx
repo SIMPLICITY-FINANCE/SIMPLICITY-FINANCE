@@ -1,5 +1,8 @@
 import postgres from "postgres";
-import { saveEpisode } from "../lib/actions";
+import { AppLayout } from "../components/layout/AppLayout.js";
+import { Card } from "../components/ui/Card.js";
+import { Chip } from "../components/ui/Chip.js";
+import { Bookmark, Share2, Download } from "lucide-react";
 
 const sql = postgres(process.env.DATABASE_URL!, {
   max: 1,
@@ -14,6 +17,7 @@ interface ApprovedSummary {
   created_at: Date;
   episode_id: string;
   bullet_count: number;
+  youtube_channel_title?: string;
 }
 
 export default async function DashboardPage() {
@@ -26,151 +30,104 @@ export default async function DashboardPage() {
       s.created_at,
       s.episode_id,
       q.qc_score,
+      e.youtube_channel_title,
       (SELECT COUNT(*) FROM summary_bullets WHERE summary_id = s.id) as bullet_count
     FROM episode_summary s
     LEFT JOIN qc_runs q ON s.id = q.summary_id
+    LEFT JOIN episodes e ON s.episode_id = e.id
     WHERE s.approval_status = 'approved'
     ORDER BY s.published_at DESC
     LIMIT 50
   `;
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex justify-between items-center">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">
-                Simplicity Finance
-              </h1>
-              <p className="text-sm text-gray-600 mt-1">
-                Finance podcast intelligence from long-form audio
-              </p>
-            </div>
-            <nav className="flex gap-6">
-              <a href="/dashboard" className="text-sm font-medium text-blue-600">
-                Feed
-              </a>
-              <a href="/saved" className="text-sm font-medium text-gray-500 hover:text-gray-700">
-                Saved
-              </a>
-              <a href="/notebook" className="text-sm font-medium text-gray-500 hover:text-gray-700">
-                Notebook
-              </a>
-              <a href="/reports" className="text-sm font-medium text-gray-500 hover:text-gray-700">
-                Reports
-              </a>
-            </nav>
-          </div>
-        </div>
-      </header>
-
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-6">
-          <form method="GET" action="/search" className="mb-6">
-            <div className="flex gap-3">
-              <input
-                type="text"
-                name="q"
-                placeholder="Search episodes and key points..."
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-              <button
-                type="submit"
-                className="px-6 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                Search
-              </button>
-            </div>
-          </form>
-          
-          <h2 className="text-2xl font-bold text-gray-900">Latest Summaries</h2>
-          <p className="text-sm text-gray-600 mt-1">
-            {approvedSummaries.length} approved episode summaries
+    <AppLayout showRightRail={true} searchPlaceholder="Search episodes...">
+      {approvedSummaries.length === 0 ? (
+        <Card className="p-12 text-center">
+          <p className="text-gray-500 text-lg">No summaries available yet</p>
+          <p className="text-gray-400 text-sm mt-2">
+            Check back soon for finance podcast summaries
           </p>
-        </div>
-
-        {approvedSummaries.length === 0 ? (
-          <div className="bg-white rounded-lg shadow p-12 text-center">
-            <p className="text-gray-500 text-lg">No summaries available yet</p>
-            <p className="text-gray-400 text-sm mt-2">
-              Check back soon for finance podcast summaries
-            </p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 gap-6">
-            {approvedSummaries.map((summary) => (
-              <div key={summary.id} className="bg-white rounded-lg shadow hover:shadow-lg transition-shadow">
-                <div className="p-6">
-                  <div className="flex justify-between items-start mb-4">
-                    <div className="flex-1">
-                      <a 
-                        href={`/episode/${summary.episode_id}`}
-                        className="text-xl font-semibold text-gray-900 hover:text-blue-600 transition-colors"
-                      >
-                        {summary.title}
-                      </a>
-                      <div className="flex items-center gap-4 mt-2 text-sm text-gray-500">
-                        <span>
-                          {new Date(summary.published_at).toLocaleDateString('en-US', {
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric'
-                          })}
-                        </span>
-                        <span>•</span>
-                        <span>{summary.bullet_count} key points</span>
-                        {summary.qc_score && (
-                          <>
-                            <span>•</span>
-                            <span className="flex items-center gap-1">
-                              <span className="text-green-600">✓</span>
-                              QC Score: {summary.qc_score}/100
-                            </span>
-                          </>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-3">
-                    <a
-                      href={`/episode/${summary.episode_id}`}
-                      className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded hover:bg-blue-700 transition-colors"
-                    >
-                      View Summary
-                    </a>
-                    <a
-                      href={`https://www.youtube.com/watch?v=${summary.video_id}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="px-4 py-2 bg-gray-100 text-gray-700 text-sm font-medium rounded hover:bg-gray-200 transition-colors"
-                    >
-                      Watch on YouTube →
-                    </a>
-                    <form action={saveEpisode.bind(null, summary.episode_id)}>
-                      <button
-                        type="submit"
-                        className="px-4 py-2 text-gray-600 text-sm font-medium hover:text-gray-900 transition-colors"
-                      >
-                        Save
-                      </button>
-                    </form>
+        </Card>
+      ) : (
+        <div className="space-y-4">
+          {approvedSummaries.map((summary) => (
+            <Card key={summary.id} hover className="p-6">
+              {/* Header */}
+              <div className="flex items-start justify-between mb-4">
+                <div className="flex-1">
+                  <a 
+                    href={`/episode/${summary.episode_id}`}
+                    className="text-lg font-semibold text-gray-900 hover:text-blue-600 transition-colors block mb-2"
+                  >
+                    📄 {summary.title}
+                  </a>
+                  
+                  {/* Metadata */}
+                  <div className="flex items-center gap-3 text-sm text-gray-500">
+                    <span className="flex items-center gap-1">
+                      <span>🎙️</span>
+                      <span>{summary.youtube_channel_title || 'Unknown Show'}</span>
+                    </span>
+                    <span>•</span>
+                    <span className="flex items-center gap-1">
+                      <span>👤</span>
+                      <span>Host Name</span>
+                    </span>
+                    <span>•</span>
+                    <span className="flex items-center gap-1">
+                      <span>📅</span>
+                      <span>
+                        {new Date(summary.published_at).toLocaleDateString('en-US', {
+                          weekday: 'long',
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric'
+                        })}
+                      </span>
+                    </span>
                   </div>
                 </div>
+                
+                {/* Action Icons */}
+                <div className="flex items-center gap-2">
+                  <button className="p-2 hover:bg-gray-50 rounded-lg transition-colors">
+                    <Bookmark size={20} className="text-gray-400" />
+                  </button>
+                  <button className="p-2 hover:bg-gray-50 rounded-lg transition-colors">
+                    <Share2 size={20} className="text-gray-400" />
+                  </button>
+                  <button className="p-2 hover:bg-gray-50 rounded-lg transition-colors">
+                    <Download size={20} className="text-gray-400" />
+                  </button>
+                </div>
               </div>
-            ))}
-          </div>
-        )}
-      </main>
 
-      <footer className="bg-white border-t border-gray-200 mt-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <p className="text-center text-sm text-gray-500">
-            Simplicity Finance - Evidence-grounded finance podcast intelligence
-          </p>
+              {/* Description */}
+              <p className="text-sm text-gray-600 mb-4 line-clamp-3">
+                In this episode, Josh discusses the key market trends heading into Q1 2026. We explore
+                inflation concerns, interest rate predictions, and sector rotation strategies. Josh breaks down
+                how geopolitical tensions are affecting global markets and provides actionable insights for
+                portfolio positioning.
+              </p>
+
+              {/* Thumbnail placeholder */}
+              <div className="mb-4 rounded-lg overflow-hidden bg-gray-900 aspect-video flex items-center justify-center">
+                <span className="text-6xl">📊</span>
+              </div>
+
+              {/* Tags */}
+              <div className="flex flex-wrap gap-2">
+                <Chip>Federal Reserve</Chip>
+                <Chip>Interest Rates</Chip>
+                <Chip>Stock Market</Chip>
+                <Chip>Portfolio Strategy</Chip>
+                <Chip>Geopolitics</Chip>
+              </div>
+            </Card>
+          ))}
         </div>
-      </footer>
-    </div>
+      )}
+    </AppLayout>
   );
 }
