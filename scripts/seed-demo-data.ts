@@ -120,7 +120,7 @@ async function seedDemoData() {
           SELECT COUNT(*) as count FROM summary_bullets WHERE summary_id = ${summaryId}
         `;
         
-        if (existingBullets[0].count === 0) {
+        if (Number(existingBullets[0].count) === 0) {
           const bullets = getBulletsForEpisode(i);
           for (const bullet of bullets) {
             await tx`
@@ -141,14 +141,14 @@ async function seedDemoData() {
           SELECT COUNT(*) as count FROM qc_runs WHERE summary_id = ${summaryId}
         `;
         
-        if (existingQC[0].count === 0) {
+        if (Number(existingQC[0].count) === 0) {
           await tx`
             INSERT INTO qc_runs (
-              summary_id, qc_status, qc_score, risk_flags
+              episode_id, summary_id, version, video_id, qc_status, qc_score, risk_flags, flags
             )
             VALUES (
-              ${summaryId}, 'passed', ${0.85 + Math.random() * 0.1},
-              ${JSON.stringify([])}
+              ${episodeId}, ${summaryId}, '1', ${ep.videoId}, 'pass', ${Math.floor(85 + Math.random() * 10)},
+              ${JSON.stringify([])}, ${JSON.stringify([])}
             )
           `;
         }
