@@ -89,15 +89,6 @@ export default async function DiscoverPage({
 
   return (
     <>
-      {/* Search Bar */}
-      <div className="mb-6">
-        <Input
-          type="text"
-          placeholder="Search shows and people..."
-          icon={<Search size={20} />}
-        />
-      </div>
-
       {/* Tabs */}
       <div className="flex items-center gap-1 mb-6 border-b border-gray-100">
         <a
