@@ -2,8 +2,10 @@ import postgres from "postgres";
 import { Card } from "../../../../components/ui/Card.js";
 import { Chip } from "../../../../components/ui/Chip.js";
 import { Button } from "../../../../components/ui/Button.js";
-import { ArrowLeft, ExternalLink, Bookmark } from "lucide-react";
+import { FollowButton } from "../../../../components/ui/FollowButton.js";
+import { ArrowLeft, ExternalLink } from "lucide-react";
 import { notFound } from "next/navigation";
+import { isFollowingShow, followShow, unfollowShow } from "../../../../lib/actions/follow.js";
 
 const sql = postgres(process.env.DATABASE_URL!, {
   max: 1,
@@ -60,6 +62,7 @@ export default async function ShowDetailPage({
   const show = channelInfo[0];
   const episodeCount = episodes.length;
   const latestEpisode = episodes[0];
+  const isFollowing = await isFollowingShow(channelId);
 
   return (
     <>
@@ -117,10 +120,18 @@ export default async function ShowDetailPage({
                   View on YouTube
                 </Button>
               </a>
-              <Button variant="secondary" size="sm">
-                <Bookmark size={16} className="mr-2" />
-                Follow
-              </Button>
+              <FollowButton
+                isFollowing={isFollowing}
+                onFollow={async () => {
+                  "use server";
+                  return await followShow(channelId, show.channel_title);
+                }}
+                onUnfollow={async () => {
+                  "use server";
+                  return await unfollowShow(channelId);
+                }}
+                size="sm"
+              />
             </div>
           </div>
         </div>

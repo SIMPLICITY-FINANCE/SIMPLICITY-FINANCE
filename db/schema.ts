@@ -191,6 +191,44 @@ export const savedItems = pgTable("saved_items", {
 }));
 
 // ─────────────────────────────────────────────────────────────────────────────
+// Followed Shows - User follows for shows/channels
+// ─────────────────────────────────────────────────────────────────────────────
+
+export const followedShows = pgTable("followed_shows", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id").notNull().references(() => users.id),
+  
+  // Store YouTube channel ID directly (no FK to shows table since we aggregate from episodes)
+  youtubeChannelId: text("youtube_channel_id").notNull(),
+  youtubeChannelTitle: text("youtube_channel_title").notNull(),
+  
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+}, (table) => ({
+  userIdIdx: index("followed_shows_user_id_idx").on(table.userId),
+  channelIdIdx: index("followed_shows_channel_id_idx").on(table.youtubeChannelId),
+  uniqueUserChannel: index("followed_shows_user_channel_unique").on(table.userId, table.youtubeChannelId),
+}));
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Followed People - User follows for people/hosts
+// ─────────────────────────────────────────────────────────────────────────────
+
+export const followedPeople = pgTable("followed_people", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id").notNull().references(() => users.id),
+  
+  // Store person ID (matches demo data for now, will be FK when people table exists)
+  personId: text("person_id").notNull(),
+  personName: text("person_name").notNull(),
+  
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+}, (table) => ({
+  userIdIdx: index("followed_people_user_id_idx").on(table.userId),
+  personIdIdx: index("followed_people_person_id_idx").on(table.personId),
+  uniqueUserPerson: index("followed_people_user_person_unique").on(table.userId, table.personId),
+}));
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Notebook Items - Bullets only (NOT episodes or reports)
 // ─────────────────────────────────────────────────────────────────────────────
 
