@@ -37,8 +37,8 @@ function formatTimestamp(ms: number): string {
   return `${minutes}:${seconds.toString().padStart(2, '0')}`;
 }
 
-export default async function EpisodeDetailPage({ params }: { params: { id: string } }) {
-  const episodeId = params.id;
+export default async function EpisodeDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id: episodeId } = await params;
 
   const [episode] = await sql<EpisodeDetail[]>`
     SELECT 
