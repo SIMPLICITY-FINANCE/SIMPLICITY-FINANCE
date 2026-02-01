@@ -374,6 +374,28 @@ Notes: ✅ Created comprehensive DEPLOYMENT.md guide
        ✅ Deploy checklist documented and repeatable
 
 =====================================================================
+MILESTONE 3 — REAL AUTHENTICATION
+=====================================================================
+
+3.1 NextAuth.js with Google OAuth
+[x] Done
+Notes: ✅ Installed next-auth@beta for Next.js 15
+       ✅ Configured NextAuth with Google OAuth provider
+       ✅ Created auth.config.ts and auth.ts
+       ✅ Added /api/auth/[...nextauth] route handler
+       ✅ Updated lib/auth.ts to use NextAuth sessions
+       ✅ Replaced dev-cookie auth with real sessions
+       ✅ requireAdmin() now redirects to sign-in page
+       ✅ Created sign-in page with Google OAuth button
+       ✅ Updated middleware to protect admin routes
+       ✅ Auto-create users in database on first sign-in
+       ✅ Store user role in session for admin checks
+       ✅ Removed production auth blockers
+       ✅ Added AUTH_SECRET, GOOGLE_CLIENT_ID/SECRET to .env.example
+       ✅ Admin flows work with real login
+       ✅ No unsigned cookie dependencies
+
+=====================================================================
 MOBILE (LATER)
 =====================================================================
 M0 Prep: API-first discipline (REST/tRPC contracts stable + Zod schemas shared)
