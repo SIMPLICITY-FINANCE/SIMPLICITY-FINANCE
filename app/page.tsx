@@ -11,6 +11,17 @@ export default function HomePage() {
         
         <div className="space-y-4">
           <div className="border-t pt-4">
+            <h2 className="text-lg font-semibold mb-2">Public Pages</h2>
+            <ul className="space-y-2">
+              <li>
+                <a href="/dashboard" className="text-blue-600 hover:underline">
+                  Dashboard (Feed)
+                </a>
+              </li>
+            </ul>
+          </div>
+          
+          <div className="border-t pt-4">
             <h2 className="text-lg font-semibold mb-2">Development Links</h2>
             <ul className="space-y-2">
               <li>

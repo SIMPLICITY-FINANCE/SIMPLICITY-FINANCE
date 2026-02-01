@@ -247,7 +247,16 @@ PHASE 5 — PUBLIC UI MVP (READ-ONLY FIRST)
 =====================================================================
 
 5.1 Dashboard shell (layout matches screenshots)
-[ ] Not started
+[x] Done
+Notes: ✅ Created /dashboard page with public feed layout
+       ✅ Lists approved summaries only (approval_status = 'approved')
+       ✅ Shows title, published date, bullet count, QC score
+       ✅ Links to episode detail page and YouTube video
+       ✅ Clean header with navigation (Feed, Saved, Notebook)
+       ✅ Responsive grid layout with hover effects
+       ✅ Save button placeholder for future functionality
+       ✅ Footer with branding
+       ✅ Updated home page with link to dashboard
 5.2 Feed + episode detail + evidence chips
 [ ] Not started
 5.3 Saved vs Notebook semantics (hard rule)
