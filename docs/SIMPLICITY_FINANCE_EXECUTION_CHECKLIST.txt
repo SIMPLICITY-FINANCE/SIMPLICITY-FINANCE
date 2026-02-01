@@ -355,6 +355,25 @@ Notes: ✅ Installed Playwright for end-to-end testing
        ✅ Test artifacts added to .gitignore
 
 =====================================================================
+MILESTONE 2 — PRODUCTION DEPLOYMENT BASELINE
+=====================================================================
+
+2.1 Deployment Documentation and Safety
+[x] Done
+Notes: ✅ Created comprehensive DEPLOYMENT.md guide
+       ✅ Environment variables documented
+       ✅ Deployment steps for Vercel and manual
+       ✅ Database migration workflow
+       ✅ Production safety checklist
+       ✅ Monitoring and troubleshooting guides
+       ✅ Health check endpoint /api/health
+       ✅ Database connectivity test in health check
+       ✅ Returns 200 OK when healthy, 503 when unhealthy
+       ✅ Production safety middleware blocks /dev/* routes
+       ✅ Vercel deployment config with security headers
+       ✅ Deploy checklist documented and repeatable
+
+=====================================================================
 MOBILE (LATER)
 =====================================================================
 M0 Prep: API-first discipline (REST/tRPC contracts stable + Zod schemas shared)
