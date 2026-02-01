@@ -7,13 +7,7 @@ const sql = postgres(process.env.DATABASE_URL!, {
 });
 
 export default async function AdminPage() {
-  let user;
-  
-  try {
-    user = await requireAdmin();
-  } catch (error) {
-    redirect("/unauthorized");
-  }
+  const user = await requireAdmin();
 
   const [stats] = await sql`
     SELECT 
