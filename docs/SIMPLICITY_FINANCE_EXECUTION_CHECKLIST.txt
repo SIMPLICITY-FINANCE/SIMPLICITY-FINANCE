@@ -337,6 +337,24 @@ Notes: ✅ Created /admin/ops page with system monitoring
        ✅ Provides visibility into system state
 
 =====================================================================
+MILESTONE 1 — REGRESSION PREVENTION (POST PHASE 8)
+=====================================================================
+
+1.1 Smoke Tests and CI
+[x] Done
+Notes: ✅ Installed Playwright for end-to-end testing
+       ✅ Created smoke tests for 8 critical pages
+       ✅ Tests cover: home, dashboard, search, episode detail
+       ✅ Tests cover: admin redirect, saved, notebook, reports
+       ✅ GitHub Actions CI workflow with PostgreSQL
+       ✅ Automated database migrations in CI
+       ✅ Demo data seeding in CI
+       ✅ Tests run on push/PR to main and feat/robot-v0
+       ✅ Added test:smoke npm script
+       ✅ CI prevents regressions automatically
+       ✅ Test artifacts added to .gitignore
+
+=====================================================================
 MOBILE (LATER)
 =====================================================================
 M0 Prep: API-first discipline (REST/tRPC contracts stable + Zod schemas shared)
