@@ -18,6 +18,11 @@ export function AppLayout({
 }: AppLayoutProps) {
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* DEBUG MARKER - REMOVE AFTER TESTING */}
+      <div className="fixed top-2 right-2 z-50 bg-red-500 text-white px-3 py-2 rounded text-sm font-bold shadow">
+        APP_LAYOUT_MOUNTED
+      </div>
+      
       <Sidebar />
       
       <main className={`ml-[220px] ${showRightRail ? 'mr-[320px]' : ''}`}>
