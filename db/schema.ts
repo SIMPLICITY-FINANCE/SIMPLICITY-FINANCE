@@ -170,3 +170,42 @@ export const adminAuditLogs = pgTable("admin_audit_logs", {
   resourceIdx: index("admin_audit_logs_resource_idx").on(table.resourceType, table.resourceId),
   actionIdx: index("admin_audit_logs_action_idx").on(table.action),
 }));
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Saved Items - Episodes and Reports only (NOT bullets)
+// ─────────────────────────────────────────────────────────────────────────────
+
+export const savedItems = pgTable("saved_items", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id").notNull().references(() => users.id),
+  
+  itemType: text("item_type").notNull(), // "episode" | "report"
+  episodeId: uuid("episode_id").references(() => episodes.id, { onDelete: "cascade" }),
+  // reportId will be added when reports table is created
+  
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+}, (table) => ({
+  userIdIdx: index("saved_items_user_id_idx").on(table.userId),
+  episodeIdIdx: index("saved_items_episode_id_idx").on(table.episodeId),
+  uniqueUserEpisode: index("saved_items_user_episode_unique").on(table.userId, table.episodeId),
+}));
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Notebook Items - Bullets only (NOT episodes or reports)
+// ─────────────────────────────────────────────────────────────────────────────
+
+export const notebookItems = pgTable("notebook_items", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id").notNull().references(() => users.id),
+  
+  bulletId: uuid("bullet_id").notNull().references(() => summaryBullets.id, { onDelete: "cascade" }),
+  
+  // Optional user notes on this bullet
+  userNotes: text("user_notes"),
+  
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+}, (table) => ({
+  userIdIdx: index("notebook_items_user_id_idx").on(table.userId),
+  bulletIdIdx: index("notebook_items_bullet_id_idx").on(table.bulletId),
+  uniqueUserBullet: index("notebook_items_user_bullet_unique").on(table.userId, table.bulletId),
+}));

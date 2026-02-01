@@ -271,7 +271,19 @@ Notes: ✅ Created /episode/[id] dynamic route for episode detail pages
        ✅ Returns 404 for non-existent or non-approved episodes
        ✅ Responsive layout with proper spacing
 5.3 Saved vs Notebook semantics (hard rule)
-[ ] Not started
+[x] Done
+Notes: ✅ Added saved_items table (episodes + reports only)
+       ✅ Added notebook_items table (bullets only)
+       ✅ Created /saved page for saved episodes
+       ✅ Created /notebook page for saved bullets
+       ✅ Clear semantic distinction enforced in schema and UI
+       ✅ Saved: Full episodes and reports (NOT bullets)
+       ✅ Notebook: Individual key points/bullets (NOT episodes)
+       ✅ Both pages show empty state with helpful messaging
+       ✅ Evidence citation chips in notebook bullets
+       ✅ User notes field for notebook items
+       ✅ Remove button placeholders for both pages
+       ✅ Pushed schema changes to database
 
 =====================================================================
 MOBILE (LATER)
