@@ -1,5 +1,10 @@
 import { redirect } from "next/navigation";
 import { requireAdmin } from "../lib/auth";
+import postgres from "postgres";
+
+const sql = postgres(process.env.DATABASE_URL!, {
+  max: 1,
+});
 
 export default async function AdminPage() {
   let user;
@@ -9,6 +14,12 @@ export default async function AdminPage() {
   } catch (error) {
     redirect("/unauthorized");
   }
+
+  const [stats] = await sql`
+    SELECT 
+      (SELECT COUNT(*) FROM episode_summary WHERE approval_status = 'pending') as pending_approvals,
+      (SELECT COUNT(*) FROM episodes) as total_episodes
+  `;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -33,18 +44,12 @@ export default async function AdminPage() {
       <nav className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex space-x-8">
-            <button className="px-3 py-4 text-sm font-medium text-blue-600 border-b-2 border-blue-600">
+            <a href="/admin" className="px-3 py-4 text-sm font-medium text-blue-600 border-b-2 border-blue-600">
               Dashboard
-            </button>
-            <button className="px-3 py-4 text-sm font-medium text-gray-500 hover:text-gray-700">
-              Summaries
-            </button>
-            <button className="px-3 py-4 text-sm font-medium text-gray-500 hover:text-gray-700">
-              Reports
-            </button>
-            <button className="px-3 py-4 text-sm font-medium text-gray-500 hover:text-gray-700">
-              Suggestions
-            </button>
+            </a>
+            <a href="/admin/approvals" className="px-3 py-4 text-sm font-medium text-gray-500 hover:text-gray-700">
+              Approvals
+            </a>
             <button className="px-3 py-4 text-sm font-medium text-gray-500 hover:text-gray-700">
               Users
             </button>
@@ -59,11 +64,14 @@ export default async function AdminPage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <div className="bg-white p-6 rounded-lg shadow">
             <h3 className="text-sm font-medium text-gray-500">Pending Approvals</h3>
-            <p className="mt-2 text-3xl font-semibold text-gray-900">0</p>
+            <p className="mt-2 text-3xl font-semibold text-gray-900">{stats.pending_approvals}</p>
+            <a href="/admin/approvals" className="mt-2 text-sm text-blue-600 hover:underline">
+              Review →
+            </a>
           </div>
           <div className="bg-white p-6 rounded-lg shadow">
             <h3 className="text-sm font-medium text-gray-500">Total Episodes</h3>
-            <p className="mt-2 text-3xl font-semibold text-gray-900">0</p>
+            <p className="mt-2 text-3xl font-semibold text-gray-900">{stats.total_episodes}</p>
           </div>
           <div className="bg-white p-6 rounded-lg shadow">
             <h3 className="text-sm font-medium text-gray-500">Failed Runs</h3>

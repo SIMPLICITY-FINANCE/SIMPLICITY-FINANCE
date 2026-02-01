@@ -228,9 +228,19 @@ Notes: ✅ Created app/lib/auth.ts with getCurrentUser() and requireAdmin()
        ✅ HTTP 200 OK on all pages
 
 4.2 Approvals list (summaries/reports/suggestions)
-[ ] Not started
+[x] Done
 DoD: approve/reject writes audit log + status changes
 Acceptance: status transitions validated
+Notes: ✅ Added approval_status, approved_by, approved_at, rejection_reason to episode_summary
+       ✅ Created admin_audit_logs table for tracking all admin actions
+       ✅ Created /admin/approvals page with pending summaries list
+       ✅ Implemented approve action with audit logging
+       ✅ Implemented reject action with required reason + audit logging
+       ✅ Shows QC score, status, and risk flags for each summary
+       ✅ Updated admin dashboard to show pending approvals count
+       ✅ Added navigation link to approvals page
+       ✅ All actions wrapped in transactions for data consistency
+       ✅ Pushed schema changes to database with drizzle-kit
 
 =====================================================================
 PHASE 5 — PUBLIC UI MVP (READ-ONLY FIRST)

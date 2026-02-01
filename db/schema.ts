@@ -92,9 +92,16 @@ export const episodeSummary = pgTable("episode_summary", {
   title: text("title").notNull(),
   publishedAt: text("published_at").notNull(),
   
+  // Approval workflow
+  approvalStatus: text("approval_status").notNull().default("pending"), // "pending" | "approved" | "rejected"
+  approvedBy: uuid("approved_by").references(() => users.id),
+  approvedAt: timestamp("approved_at"),
+  rejectionReason: text("rejection_reason"),
+  
   createdAt: timestamp("created_at").notNull().defaultNow(),
 }, (table) => ({
   episodeIdIdx: index("episode_summary_episode_id_idx").on(table.episodeId),
+  approvalStatusIdx: index("episode_summary_approval_status_idx").on(table.approvalStatus),
 }));
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -140,4 +147,26 @@ export const qcRuns = pgTable("qc_runs", {
   episodeIdIdx: index("qc_runs_episode_id_idx").on(table.episodeId),
   summaryIdIdx: index("qc_runs_summary_id_idx").on(table.summaryId),
   qcStatusIdx: index("qc_runs_qc_status_idx").on(table.qcStatus),
+}));
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Admin Audit Logs - track all admin actions
+// ─────────────────────────────────────────────────────────────────────────────
+
+export const adminAuditLogs = pgTable("admin_audit_logs", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id").notNull().references(() => users.id),
+  
+  action: text("action").notNull(), // "approve_summary" | "reject_summary" | "reprocess_summary" | etc
+  resourceType: text("resource_type").notNull(), // "summary" | "report" | "suggestion"
+  resourceId: uuid("resource_id").notNull(),
+  
+  // Additional context stored as JSONB
+  metadata: jsonb("metadata"), // { reason: string, qc_score: number, etc }
+  
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+}, (table) => ({
+  userIdIdx: index("admin_audit_logs_user_id_idx").on(table.userId),
+  resourceIdx: index("admin_audit_logs_resource_idx").on(table.resourceType, table.resourceId),
+  actionIdx: index("admin_audit_logs_action_idx").on(table.action),
 }));
