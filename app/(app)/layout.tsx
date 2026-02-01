@@ -1,4 +1,5 @@
 import { AppLayout } from "../components/layout/AppLayout.js";
+import { RightRail } from "../components/layout/RightRail.js";
 
 export default function AppGroupLayout({
   children,
@@ -6,8 +7,11 @@ export default function AppGroupLayout({
   children: React.ReactNode;
 }) {
   return (
-    <AppLayout showRightRail={true} searchPlaceholder="Search episodes...">
-      {children}
-    </AppLayout>
+    <>
+      <AppLayout searchPlaceholder="Search episodes...">
+        {children}
+      </AppLayout>
+      <RightRail />
+    </>
   );
 }
