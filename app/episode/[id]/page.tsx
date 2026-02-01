@@ -108,6 +108,9 @@ export default async function EpisodeDetailPage({ params }: { params: { id: stri
               <a href="/notebook" className="text-sm font-medium text-gray-500 hover:text-gray-700">
                 Notebook
               </a>
+              <a href="/reports" className="text-sm font-medium text-gray-500 hover:text-gray-700">
+                Reports
+              </a>
             </nav>
           </div>
         </div>

@@ -15,23 +15,49 @@ export default function HomePage() {
             <ul className="space-y-2">
               <li>
                 <a href="/dashboard" className="text-blue-600 hover:underline">
-                  Dashboard (Feed)
+                  📰 Dashboard (Feed) - Browse approved episode summaries
+                </a>
+              </li>
+              <li>
+                <a href="/saved" className="text-blue-600 hover:underline">
+                  🔖 Saved - Your saved episodes and reports
+                </a>
+              </li>
+              <li>
+                <a href="/notebook" className="text-blue-600 hover:underline">
+                  📓 Notebook - Your saved key points
+                </a>
+              </li>
+              <li>
+                <a href="/reports" className="text-blue-600 hover:underline">
+                  📊 Reports - Daily/weekly/monthly summaries
                 </a>
               </li>
             </ul>
           </div>
           
           <div className="border-t pt-4">
-            <h2 className="text-lg font-semibold mb-2">Development Links</h2>
+            <h2 className="text-lg font-semibold mb-2">Admin Pages (Requires Login)</h2>
             <ul className="space-y-2">
               <li>
                 <a href="/admin" className="text-blue-600 hover:underline">
-                  Admin Dashboard
+                  🔐 Admin Dashboard - Overview and stats
                 </a>
               </li>
               <li>
+                <a href="/admin/approvals" className="text-blue-600 hover:underline">
+                  ✅ Approvals - Review pending summaries
+                </a>
+              </li>
+            </ul>
+          </div>
+          
+          <div className="border-t pt-4">
+            <h2 className="text-lg font-semibold mb-2">Development Tools</h2>
+            <ul className="space-y-2">
+              <li>
                 <a href="/dev/login" className="text-blue-600 hover:underline">
-                  Dev Login (Set Cookie)
+                  🔑 Dev Login - Set authentication cookie
                 </a>
               </li>
             </ul>
