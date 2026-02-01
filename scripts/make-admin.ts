@@ -8,7 +8,7 @@ const sql = postgres(process.env.DATABASE_URL!, {
 });
 
 async function makeAdmin() {
-  const email = 'admin@simplicity-finance.com';
+  const email = 'simplicity.finance88@gmail.com';
   
   console.log(`Making ${email} an admin...`);
   
