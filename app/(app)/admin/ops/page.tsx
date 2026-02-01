@@ -48,6 +48,22 @@ export default async function OpsPage() {
       (SELECT COUNT(*) FROM reports) as total_reports
   `;
 
+  // Get recent failures from ingest requests
+  const recentFailures = await sql`
+    SELECT 
+      id,
+      url,
+      status,
+      error_message,
+      error_details,
+      created_at,
+      inngest_event_id
+    FROM ingest_requests
+    WHERE status = 'failed'
+    ORDER BY created_at DESC
+    LIMIT 20
+  `;
+
   // Get recent episodes for cleanup
   const recentEpisodes = await sql`
     SELECT 
@@ -142,6 +158,64 @@ export default async function OpsPage() {
               <div className="text-3xl font-bold text-gray-900">{stats.total_qc_runs}</div>
             </div>
           </div>
+        </div>
+
+        {/* Recent Failures */}
+        <div className="mb-8">
+          <h2 className="text-xl font-bold text-gray-900 mb-4">Recent Failures (Last 20)</h2>
+          {recentFailures.length === 0 ? (
+            <div className="bg-white rounded-lg shadow p-6 text-center text-gray-500">
+              No recent failures - system running smoothly! 🎉
+            </div>
+          ) : (
+            <div className="bg-white rounded-lg shadow overflow-hidden">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      URL
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Error
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Time
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {recentFailures.map((failure: any) => (
+                    <tr key={failure.id}>
+                      <td className="px-6 py-4">
+                        <div className="text-sm font-mono text-gray-900 truncate max-w-xs">
+                          {failure.url}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="text-sm text-red-600 truncate max-w-md">
+                          {failure.error_message || 'Unknown error'}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {new Date(failure.created_at).toLocaleString()}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm">
+                        <a
+                          href={`/admin/ingest`}
+                          className="text-blue-600 hover:text-blue-800"
+                        >
+                          View Details →
+                        </a>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
 
         {/* Recent Episodes & Cleanup Tools */}
