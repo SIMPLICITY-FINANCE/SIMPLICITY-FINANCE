@@ -1,4 +1,4 @@
-import { redirect } from "next/navigation";
+import { redirect } from "next/navigation.js";
 import { requireAdmin } from "../../../lib/auth.js";
 import postgres from "postgres";
 
