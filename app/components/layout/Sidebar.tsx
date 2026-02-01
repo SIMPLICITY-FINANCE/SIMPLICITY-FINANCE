@@ -30,9 +30,9 @@ export function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="fixed left-0 top-0 h-screen w-60 bg-sidebar border-r border-sidebar-border flex flex-col">
+    <aside className="fixed left-0 top-0 h-screen w-[220px] bg-sidebar border-r border-sidebar-border flex flex-col">
       {/* Logo */}
-      <div className="flex items-center gap-3 px-4 py-6">
+      <div className="flex items-center gap-3 px-6 py-6">
         <div className="w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center">
           <span className="text-xl">👑</span>
         </div>
@@ -40,7 +40,7 @@ export function Sidebar() {
       </div>
 
       {/* Main Navigation */}
-      <nav className="flex-1 px-3 overflow-y-auto">
+      <nav className="flex-1 px-4 overflow-y-auto">
         <div className="space-y-1">
           {mainNavItems.map((item) => {
             const isActive = pathname === item.href;
@@ -48,7 +48,7 @@ export function Sidebar() {
               <a
                 key={item.href}
                 href={item.href}
-                className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-150 ${
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-normal transition-all duration-150 ${
                   isActive
                     ? 'bg-sidebar-accent text-sidebar-accent-foreground'
                     : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50'
@@ -67,13 +67,13 @@ export function Sidebar() {
         </div>
 
         {/* Shows Section */}
-        <div className="mt-6 pt-6 border-t border-sidebar-border">
+        <div className="mt-4 pt-4 border-t border-sidebar-border">
           <div className="space-y-1">
             {shows.map((show) => (
               <a
                 key={show.href}
                 href={show.href}
-                className="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-sidebar-foreground/70 hover:bg-sidebar-accent/50 transition-all duration-150"
+                className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-normal text-sidebar-foreground/70 hover:bg-sidebar-accent/50 transition-all duration-150"
               >
                 <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-base">
                   {show.avatar}
@@ -82,14 +82,14 @@ export function Sidebar() {
               </a>
             ))}
           </div>
-          <button className="mt-2 px-4 py-2 text-sm text-sidebar-foreground/70 hover:text-sidebar-foreground transition-colors">
+          <button className="mt-2 px-3 py-1.5 text-xs text-sidebar-foreground/70 hover:text-sidebar-foreground transition-colors">
             Show More ↓
           </button>
         </div>
       </nav>
 
       {/* Footer */}
-      <div className="px-4 py-4 border-t border-sidebar-border">
+      <div className="px-6 py-4 border-t border-sidebar-border">
         <div className="flex items-center justify-around text-muted-foreground">
           <a href="/about" className="hover:text-sidebar-foreground transition-colors">
             <span className="text-xl">✕</span>
@@ -101,7 +101,7 @@ export function Sidebar() {
             <span className="text-xl">✉</span>
           </a>
         </div>
-        <div className="mt-3 text-center text-xs text-muted-foreground">
+        <div className="mt-3 text-center text-[10px] text-muted-foreground uppercase tracking-wide">
           <p>ABOUT | PRIVACY | TERMS | DATA</p>
           <p className="mt-1">© 2026 SIMPLICITY. ALL RIGHTS RESERVED.</p>
         </div>

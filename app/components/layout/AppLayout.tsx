@@ -20,9 +20,9 @@ export function AppLayout({
     <div className="min-h-screen bg-gray-50">
       <Sidebar />
       
-      <main className={`ml-60 ${showRightRail ? 'mr-80' : ''}`}>
+      <main className={`ml-[220px] ${showRightRail ? 'mr-[320px]' : ''}`}>
         {/* Top Search Bar */}
-        <div className="sticky top-0 z-10 bg-white border-b border-gray-200 px-6 py-4">
+        <div className="sticky top-0 z-10 bg-background border-b border-border px-6 py-4">
           <div className="max-w-3xl mx-auto flex items-center gap-4">
             <div className="flex-1">
               <Input
@@ -31,7 +31,7 @@ export function AppLayout({
                 icon={<Search size={20} />}
               />
             </div>
-            <button className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+            <button className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-foreground bg-card border border-border rounded-lg hover:bg-muted transition-colors shadow-sm">
               <Filter size={18} />
               <span>Full Feed</span>
               <span className="text-gray-400">↓</span>

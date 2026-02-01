@@ -47,9 +47,9 @@ const quickActions = [
 
 export function RightRail() {
   return (
-    <aside className="fixed right-0 top-0 h-screen w-80 bg-white border-l border-gray-200 overflow-y-auto">
+    <aside className="fixed right-0 top-0 h-screen w-[320px] bg-background border-l border-border overflow-y-auto">
       {/* Header Icons */}
-      <div className="flex items-center justify-between px-4 py-4 border-b border-gray-200">
+      <div className="flex items-center justify-between px-4 py-4 border-b border-border">
         <div className="flex items-center gap-2">
           <button className="w-10 h-10 flex items-center justify-center rounded-lg bg-yellow-50 hover:bg-yellow-100 transition-colors">
             <Crown size={20} className="text-yellow-600" />
@@ -85,17 +85,17 @@ export function RightRail() {
           {upNextItems.map((item) => (
             <div
               key={item.id}
-              className="bg-white border border-gray-200 rounded-xl p-4 hover:shadow-md transition-shadow cursor-pointer"
+              className="bg-card border border-border/50 rounded-xl p-3 hover:shadow-md hover:bg-accent/30 hover:border-border transition-all duration-200 cursor-pointer"
             >
               <div className="flex gap-3">
-                <div className="w-20 h-20 bg-gray-900 rounded-lg flex items-center justify-center text-3xl flex-shrink-0">
+                <div className="w-16 h-16 bg-muted rounded-lg flex items-center justify-center text-2xl flex-shrink-0">
                   {item.thumbnail}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h4 className="text-sm font-semibold text-gray-900 line-clamp-2 mb-2">
+                  <h4 className="text-xs font-semibold text-foreground line-clamp-2 mb-2">
                     {item.title}
                   </h4>
-                  <div className="space-y-1 text-xs text-gray-500">
+                  <div className="space-y-1 text-[10px] text-muted-foreground">
                     <p className="flex items-center gap-1">
                       <span>🎙️</span>
                       <span>{item.show}</span>
@@ -134,7 +134,7 @@ export function RightRail() {
           ))}
         </div>
 
-        <button className="w-full mt-4 py-2 text-sm text-gray-600 hover:text-gray-900 transition-colors">
+        <button className="w-full mt-4 py-2 text-xs text-muted-foreground hover:text-foreground transition-colors">
           Show More ↓
         </button>
       </div>
@@ -159,10 +159,10 @@ export function RightRail() {
         <div className="grid grid-cols-4 gap-3">
           {suggestions.map((suggestion, idx) => (
             <div key={idx} className="text-center">
-              <div className="w-full aspect-square bg-gray-100 rounded-xl flex items-center justify-center text-2xl mb-2 hover:bg-gray-200 transition-colors cursor-pointer">
+              <div className="w-full aspect-square bg-muted rounded-xl flex items-center justify-center text-2xl mb-2 hover:bg-muted/80 transition-colors cursor-pointer">
                 {suggestion.avatar}
               </div>
-              <p className="text-xs font-medium text-gray-700 truncate">
+              <p className="text-[10px] font-medium text-foreground truncate">
                 {suggestion.name}
               </p>
             </div>
@@ -176,10 +176,10 @@ export function RightRail() {
           {quickActions.map((action, idx) => (
             <button
               key={idx}
-              className="flex flex-col items-center gap-2 py-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+              className="flex flex-col items-center gap-2 py-3 border border-border/50 rounded-lg hover:bg-muted transition-colors"
             >
               <span className="text-xl">{action.icon}</span>
-              <span className="text-xs font-medium text-gray-700">
+              <span className="text-[10px] font-medium text-foreground">
                 {action.label}
               </span>
             </button>
