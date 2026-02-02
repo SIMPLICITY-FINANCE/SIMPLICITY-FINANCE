@@ -1,153 +1,297 @@
 # SIMPLICITY FINANCE
 
-Finance podcast summarization platform focused on trustworthy, evidence-grounded outputs.
-
-## Overview
+**Finance podcast summarization platform focused on trustworthy, evidence-grounded outputs.**
 
 SIMPLICITY FINANCE ingests long-form finance podcasts, generates structured summaries with evidence citations, and provides search, discovery, and reporting tools for financial content.
 
-## Current Status
+---
 
-**Branch:** `feat/robot-v0`  
-**Phase:** Production Readiness (Post Phase 8)
+## 🎯 What It Does
 
-### Features Delivered
-- ✅ **Admin Dashboard** - Approvals workflow with audit logging
-- ✅ **Public Feed** - Dashboard with approved episodes
-- ✅ **Episode Detail** - Summaries with evidence chips linked to timestamps
-- ✅ **Search** - Keyword search across episodes and bullets
-- ✅ **Reports** - Weekly/monthly aggregations
-- ✅ **Saved/Notebook** - Saved episodes vs. saved bullets distinction
-- ✅ **Upload** - Submit YouTube/audio URLs with live status tracking
-- ✅ **Discover** - Browse and follow shows and people
-- ✅ **Admin Ingest** - Manage upload requests with retry functionality
+**For Listeners:**
+- Browse approved episode summaries with evidence-backed bullet points
+- Search across episodes and specific claims
+- Follow shows and people to track new content
+- Save episodes and individual insights to your notebook
+- View weekly/monthly aggregated reports
 
-## Quick Start
+**For Admins:**
+- Upload YouTube videos or audio URLs for processing
+- Review and approve AI-generated summaries
+- Manage shows and configure automatic ingestion
+- Monitor processing pipeline and debug failures
+
+---
+
+## 🏗️ System Architecture
+
+```
+┌─────────────┐
+│   Upload    │ User submits YouTube/audio URL
+└──────┬──────┘
+       │
+       ▼
+┌─────────────────────────────────────────────────┐
+│              Inngest Pipeline                    │
+│  1. Fetch metadata (YouTube API)                │
+│  2. Transcribe audio (Deepgram)                 │
+│  3. Generate summary (OpenAI GPT-4)             │
+│  4. Quality check (OpenAI)                      │
+│  5. Store in database + files                   │
+└──────────────────┬──────────────────────────────┘
+                   │
+                   ▼
+            ┌──────────────┐
+            │ Admin Review │ Approve/reject summary
+            └──────┬───────┘
+                   │
+                   ▼
+            ┌──────────────┐
+            │ Public Feed  │ Dashboard, search, discover
+            └──────────────┘
+```
+
+---
+
+## 🛠️ Tech Stack
+
+- **Frontend:** Next.js 16 (App Router), React 19, TailwindCSS
+- **Backend:** Next.js API Routes, Server Actions
+- **Database:** PostgreSQL (Supabase in production, Docker locally)
+- **ORM:** Drizzle ORM with migrations
+- **Auth:** NextAuth.js v5 with Google OAuth
+- **Background Jobs:** Inngest for workflow orchestration
+- **AI/ML:** OpenAI GPT-4, Deepgram transcription
+- **Deployment:** Vercel (production), Docker Compose (local)
+
+---
+
+## 🚀 Quick Start
 
 ### Prerequisites
-- Node.js 18+
-- Docker & Docker Compose
-- API Keys: YouTube, Deepgram, OpenAI
 
-### Setup
+- **Node.js** 20+
+- **Docker** & Docker Compose
+- **API Keys:**
+  - YouTube Data API v3
+  - Deepgram API
+  - OpenAI API
+  - Google OAuth credentials
 
-1. **Clone and install dependencies**
-   ```bash
-   git clone <repo-url>
-   cd SIMPLICITY-FINANCE
-   npm install
-   ```
+### Local Development Setup
 
-2. **Start PostgreSQL**
-   ```bash
-   docker compose up -d
-   ```
+```bash
+# 1. Clone repository
+git clone https://github.com/SIMPLICITY-FINANCE/SIMPLICITY-FINANCE.git
+cd SIMPLICITY-FINANCE
 
-3. **Set up environment**
-   ```bash
-   cp .env.example .env.local
-   # Edit .env.local with your API keys
-   ```
+# 2. Install dependencies
+npm install
 
-4. **Run migrations and seed demo data**
-   ```bash
-   npm run db:push
-   npm run db:seed:demo
-   ```
+# 3. Start PostgreSQL
+docker compose up -d
 
-5. **Start development servers**
-   ```bash
-   # Terminal 1: Next.js
-   npm run dev
+# 4. Configure environment
+cp .env.example .env.local
+# Edit .env.local with your API keys
 
-   # Terminal 2: Inngest
-   npx inngest-cli@latest dev
-   ```
+# 5. Apply database schema
+npm run db:push
 
-6. **Access the app**
-   - App: http://localhost:3000
-   - Inngest UI: http://localhost:8288
+# 6. Seed demo data (optional)
+npm run db:seed:demo
 
-## Project Structure
+# 7. Start development servers
+# Terminal 1: Next.js
+npm run dev
+
+# Terminal 2: Inngest (background jobs)
+npx inngest-cli@latest dev
+```
+
+**Access the app:**
+- App: http://localhost:3000
+- Inngest UI: http://localhost:8288
+
+**First-time setup?** See [docs/ONBOARDING.md](docs/ONBOARDING.md) for detailed instructions.
+
+---
+
+## 📦 Project Structure
 
 ```
 SIMPLICITY-FINANCE/
-├── app/                    # Next.js App Router
-│   ├── (app)/             # Main application routes
-│   ├── api/               # API routes
-│   ├── components/        # React components
-│   └── lib/               # Utilities and actions
-├── db/                    # Database schema and migrations
-├── docs/                  # Documentation
-│   ├── planning/          # Execution roadmap and specs
-│   ├── deployment/        # Deployment guides
-│   └── screenshots/       # Figma references
-├── inngest/               # Workflow orchestration
-├── prompts/               # LLM prompts (versioned)
-├── schemas/               # Zod validation schemas
-└── scripts/               # Operational scripts
+├── app/                      # Next.js App Router
+│   ├── (app)/               # Main application routes (authenticated)
+│   ├── api/                 # API routes (health, admin, auth)
+│   ├── components/          # React components
+│   └── lib/                 # Utilities, actions, database client
+├── db/                      # Database schema and migrations
+│   ├── schema.ts            # Drizzle schema definitions
+│   └── migrations/          # SQL migration files
+├── docs/                    # Documentation
+│   ├── RELEASE_RUNBOOK.md   # Deployment guide
+│   ├── ONBOARDING.md        # New contributor guide
+│   ├── API.md               # API reference
+│   ├── PIPELINE.md          # Episode processing workflow
+│   └── deployment/          # Deployment-specific docs
+├── inngest/                 # Workflow orchestration
+│   └── functions/           # Background job definitions
+├── prompts/                 # LLM prompts (versioned)
+├── schemas/                 # Zod validation schemas
+└── scripts/                 # Operational scripts
 ```
 
-## Core Workflows
+---
 
-### Upload → Processing → Feed
-1. User submits YouTube/audio URL at `/upload`
-2. Inngest workflow processes: metadata → transcription → summary → QC
-3. Admin approves summary at `/admin/approvals`
-4. Episode appears in public feed at `/dashboard`
-
-### Discovery → Follow → Saved
-1. User browses shows/people at `/discover`
-2. Follows interesting content
-3. Followed items appear at `/saved`
-
-## Key Commands
-
-```bash
-# Development
-npm run dev                 # Start Next.js dev server
-npm run dev:clean          # Clean build and start dev server
-
-# Database
-npm run db:push            # Apply schema changes
-npm run db:seed:demo       # Seed demo data (idempotent)
-npm run db:studio          # Open Drizzle Studio
-
-# Scripts
-npm run robot              # Run pipeline smoke test
-```
-
-## Documentation
-
-### Getting Started
-- **README:** This file - Quick start and overview
-- **Pipeline Workflow:** `docs/PIPELINE.md` - How episodes are processed
-- **API Documentation:** `docs/API.md` - Server actions, routes, and Inngest functions
-
-### Deployment & Operations
-- **Deployment Guide:** `docs/deployment/DEPLOYMENT.md` - Production deployment
-- **Auth Setup:** `docs/deployment/AUTH_SETUP.md` - Google OAuth configuration
-- **Execution Roadmap:** `docs/planning/EXECUTE_V2.md` - Milestones and roadmap
+## 🔑 Key Commands
 
 ### Development
-- **Inngest Setup:** `inngest/README.md` - Workflow orchestration
-- **Design Spec:** `docs/planning/FIGMA_STYLE_SPEC.md` - UI design system
+```bash
+npm run dev              # Start Next.js dev server
+npm run dev:clean        # Clean build and start dev server
+npx inngest-cli dev      # Start Inngest dev server
+```
 
-## Production Readiness
+### Database
+```bash
+npm run db:push          # Apply schema changes to database
+npm run db:generate      # Generate migration files
+npm run db:studio        # Open Drizzle Studio (DB GUI)
+npm run db:seed:demo     # Seed demo data (idempotent)
+```
 
-**Status:** 5 of 6 milestones complete
+### Testing & Verification
+```bash
+npm run test:smoke       # Run Playwright smoke tests
+npm run verify:deploy    # Verify deployment readiness
+```
 
-- ✅ **Milestone 1:** Regression Prevention (Smoke Tests + CI)
-- ✅ **Milestone 2:** Production Deployment Baseline
-- ✅ **Milestone 3:** Real Authentication (NextAuth.js + Google OAuth)
-- ✅ **Milestone 4:** Real Data Ingestion Scheduling
-- ✅ **Milestone 5:** Operational Hardening
-- 🔄 **Milestone 6:** Documentation & Developer UX (In Progress)
+### Scripts
+```bash
+npm run robot            # Run pipeline smoke test
+```
 
-## Contributing
+---
 
-See `CONTRIBUTING.md` for development workflow and PR guidelines.
+## 🌐 Deployment
 
-## License
+**Production:** Deployed on Vercel with Supabase PostgreSQL
 
-See `LICENSE` file.
+### Environment Variables Required
+
+See `.env.example` for full list. Key variables:
+
+```bash
+DATABASE_URL=postgresql://...           # Supabase connection string
+NEXTAUTH_SECRET=...                     # Generate: openssl rand -base64 32
+NEXTAUTH_URL=https://your-domain.com
+GOOGLE_CLIENT_ID=...
+GOOGLE_CLIENT_SECRET=...
+DEEPGRAM_API_KEY=...
+YOUTUBE_API_KEY=...
+OPENAI_API_KEY=...
+INNGEST_EVENT_KEY=...
+INNGEST_SIGNING_KEY=...
+```
+
+### Deployment Steps
+
+1. **Configure Vercel environment variables**
+2. **Set up Google OAuth** (see [docs/deployment/AUTH_SETUP.md](docs/deployment/AUTH_SETUP.md))
+3. **Push to main** → Vercel auto-deploys
+4. **Run migrations** against production database
+5. **Verify deployment** with health check
+
+**Complete deployment guide:** [docs/RELEASE_RUNBOOK.md](docs/RELEASE_RUNBOOK.md)
+
+---
+
+## 📚 Documentation
+
+### Getting Started
+- **[ONBOARDING.md](docs/ONBOARDING.md)** - First-time contributor setup
+- **[PIPELINE.md](docs/PIPELINE.md)** - Episode processing workflow
+- **[API.md](docs/API.md)** - Server actions, routes, and Inngest functions
+
+### Deployment & Operations
+- **[RELEASE_RUNBOOK.md](docs/RELEASE_RUNBOOK.md)** - Production deployment guide
+- **[AUTH_SETUP.md](docs/deployment/AUTH_SETUP.md)** - Google OAuth configuration
+- **[DEPLOYMENT.md](docs/deployment/DEPLOYMENT.md)** - Deployment overview
+
+### Development
+- **[FIGMA_STYLE_SPEC.md](docs/planning/FIGMA_STYLE_SPEC.md)** - UI design system
+- **[CONTRIBUTING.md](CONTRIBUTING.md)** - Development workflow and PR guidelines
+
+---
+
+## ✅ Production Status
+
+**Current Version:** v1.0.0 (Production Baseline)  
+**Deployment:** ✅ Live on Vercel  
+**Database:** ✅ Supabase PostgreSQL  
+**Status:** 🟢 Operational
+
+### What's Working
+- ✅ Vercel deployment builds and runs successfully
+- ✅ Google OAuth authentication
+- ✅ Admin approval workflow
+- ✅ Episode processing pipeline (upload → transcribe → summarize → QC)
+- ✅ Public feed with search and discovery
+- ✅ Scheduled episode ingestion (daily at 2 AM UTC)
+- ✅ Health check endpoint (`/api/health`)
+- ✅ Inngest background jobs
+
+### Known Non-Blocking Items
+- ⚠️ Middleware deprecation: `middleware.ts` → `proxy.ts` (Next.js 16 migration path)
+- ⚠️ npm audit: 4 moderate vulnerabilities (dev dependencies, non-blocking)
+
+---
+
+## 🗺️ Roadmap
+
+### Completed (v1.0.0)
+- ✅ Core episode processing pipeline
+- ✅ Admin approval workflow
+- ✅ Authentication with Google OAuth
+- ✅ Search and discovery features
+- ✅ Scheduled ingestion
+- ✅ Production deployment
+
+### Planned (v1.1+)
+- 🔄 Right rail data wiring (real episodes, suggestions)
+- 🔄 Advanced semantic search
+- 🔄 AI chatbot for episode Q&A
+- 🔄 User profile and settings management
+- 🔄 Premium features (priority processing, advanced analytics)
+
+---
+
+## 🤝 Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for development workflow and PR guidelines.
+
+**Quick summary:**
+1. Create feature branch from `main`
+2. Make changes and test locally (`npm run build`, `npm run test:smoke`)
+3. Push branch and create PR
+4. Wait for Vercel Preview build to pass
+5. Squash and merge to `main`
+
+---
+
+## 📄 License
+
+See [LICENSE](LICENSE) file.
+
+---
+
+## 🆘 Support
+
+- **Issues:** https://github.com/SIMPLICITY-FINANCE/SIMPLICITY-FINANCE/issues
+- **Documentation:** [docs/](docs/)
+- **Health Check:** https://simplicity-finance.vercel.app/api/health
+
+---
+
+**Built with ❤️ for finance podcast enthusiasts**
