@@ -60,6 +60,11 @@ export default async function ShowDetailPage({
   `;
 
   const show = channelInfo[0];
+  
+  if (!show) {
+    notFound();
+  }
+  
   const episodeCount = episodes.length;
   const latestEpisode = episodes[0];
   const isFollowing = await isFollowingShow(channelId);

@@ -1,7 +1,6 @@
 {
   "name": "simplicity-finance",
   "version": "1.0.0",
-  "type": "module",
   "description": "Finance podcast summarization platform focused on trustworthy, evidence-grounded outputs.",
   "main": "index.js",
   "directories": {
