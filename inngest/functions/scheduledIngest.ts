@@ -12,7 +12,7 @@ interface Show {
   youtubeChannelId: string | null;
   youtubePlaylistId: string | null;
   rssFeedUrl: string | null;
-  lastIngestedAt: Date | null;
+  lastIngestedAt: string | null;
 }
 
 /**
@@ -92,7 +92,7 @@ export const scheduledIngest = inngest.createFunction(
     // Trigger processing for new episodes
     const totalNewEpisodes = results
       .filter(r => r.success)
-      .reduce((sum, r) => sum + (r.newEpisodes || 0), 0);
+      .reduce((sum, r) => sum + ('newEpisodes' in r ? r.newEpisodes : 0), 0);
 
     return {
       showsProcessed: shows.length,
@@ -221,7 +221,7 @@ async function ingestFromRSS(show: Show): Promise<number> {
   let match;
   
   while ((match = enclosureRegex.exec(xml)) !== null) {
-    urls.push(match[1]);
+    if (match[1]) urls.push(match[1]);
   }
 
   let newCount = 0;
