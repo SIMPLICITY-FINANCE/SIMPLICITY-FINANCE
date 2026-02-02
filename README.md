@@ -228,23 +228,32 @@ INNGEST_SIGNING_KEY=...
 ## ✅ Production Status
 
 **Current Version:** v1.0.0 (Production Baseline)  
-**Deployment:** ✅ Live on Vercel  
-**Database:** ✅ Supabase PostgreSQL  
+**Deployment:** ✅ Live at https://simplicity-finance.vercel.app  
+**Database:** ✅ Supabase PostgreSQL (pooled connection)  
+**Background Jobs:** ✅ Inngest (scheduled ingestion + episode processing)  
 **Status:** 🟢 Operational
 
 ### What's Working
 - ✅ Vercel deployment builds and runs successfully
-- ✅ Google OAuth authentication
-- ✅ Admin approval workflow
+- ✅ Google OAuth authentication with role-based access control
+- ✅ Admin approval workflow for episode summaries
 - ✅ Episode processing pipeline (upload → transcribe → summarize → QC)
 - ✅ Public feed with search and discovery
 - ✅ Scheduled episode ingestion (daily at 2 AM UTC)
 - ✅ Health check endpoint (`/api/health`)
-- ✅ Inngest background jobs
+- ✅ Environment separation guardrails (local vs production)
 
 ### Known Non-Blocking Items
 - ⚠️ Middleware deprecation: `middleware.ts` → `proxy.ts` (Next.js 16 migration path)
 - ⚠️ npm audit: 4 moderate vulnerabilities (dev dependencies, non-blocking)
+
+### Next Steps
+See **[docs/EXECUTION_PLAN_V1_1.md](docs/EXECUTION_PLAN_V1_1.md)** for the v1.1+ roadmap covering:
+- Production observability and error tracking
+- Data pipeline hardening with retry logic
+- Daily batch report generation
+- Chatbot MVP (RAG over transcripts)
+- Right rail data wiring
 
 ---
 
@@ -257,13 +266,15 @@ INNGEST_SIGNING_KEY=...
 - ✅ Search and discovery features
 - ✅ Scheduled ingestion
 - ✅ Production deployment
+- ✅ Environment separation guardrails
 
-### Planned (v1.1+)
+### In Progress (v1.1+)
+See **[docs/EXECUTION_PLAN_V1_1.md](docs/EXECUTION_PLAN_V1_1.md)** for detailed roadmap:
+- 🔄 Production observability and error tracking
+- 🔄 Data pipeline hardening (retry logic, idempotency)
+- 🔄 Daily batch report generation
+- 🔄 AI chatbot for episode Q&A (RAG)
 - 🔄 Right rail data wiring (real episodes, suggestions)
-- 🔄 Advanced semantic search
-- 🔄 AI chatbot for episode Q&A
-- 🔄 User profile and settings management
-- 🔄 Premium features (priority processing, advanced analytics)
 
 ---
 
