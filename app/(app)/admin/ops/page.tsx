@@ -32,7 +32,7 @@ export default async function OpsPage() {
   await requireAdmin();
 
   // Get system stats
-  const [stats] = await sql<SystemStats[]>`
+  const statsResult = await sql<SystemStats[]>`
     SELECT 
       (SELECT COUNT(*) FROM episodes) as total_episodes,
       (SELECT COUNT(*) FROM episode_summary) as total_summaries,
@@ -47,6 +47,21 @@ export default async function OpsPage() {
       (SELECT COUNT(*) FROM notebook_items) as total_notebook_items,
       (SELECT COUNT(*) FROM reports) as total_reports
   `;
+  
+  const stats = statsResult[0] || {
+    total_episodes: 0,
+    total_summaries: 0,
+    total_bullets: 0,
+    total_users: 0,
+    pending_approvals: 0,
+    approved_summaries: 0,
+    rejected_summaries: 0,
+    total_qc_runs: 0,
+    avg_qc_score: 0,
+    total_saved_items: 0,
+    total_notebook_items: 0,
+    total_reports: 0,
+  };
 
   // Get recent failures from ingest requests
   const recentFailures = await sql`
