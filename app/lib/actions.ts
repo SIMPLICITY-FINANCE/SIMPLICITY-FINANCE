@@ -40,7 +40,9 @@ export async function saveEpisode(episodeId: string) {
   }
 }
 
-export async function unsaveEpisode(episodeId: string) {
+export async function unsaveEpisode(episodeId: string, formData: FormData): Promise<void> {
+  "use server";
+  
   try {
     await sql`
       DELETE FROM saved_items 
@@ -51,11 +53,9 @@ export async function unsaveEpisode(episodeId: string) {
 
     revalidatePath("/saved");
     revalidatePath("/dashboard");
-    
-    return { success: true, message: "Episode removed" };
   } catch (error) {
     console.error("Error unsaving episode:", error);
-    return { success: false, message: "Failed to remove episode" };
+    throw error;
   }
 }
 
