@@ -1,6 +1,8 @@
 import { AppLayout } from "../components/layout/AppLayout.js";
 import { RightRail } from "../components/layout/RightRail.js";
 
+export const dynamic = "force-dynamic";
+
 export default function AppGroupLayout({
   children,
 }: {

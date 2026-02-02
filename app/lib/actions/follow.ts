@@ -45,7 +45,7 @@ export async function isFollowingShow(channelId: string): Promise<boolean> {
       WHERE user_id = ${DEMO_USER_ID}
         AND youtube_channel_id = ${channelId}
     `;
-    return result[0].count > 0;
+    return (result[0]?.count ?? 0) > 0;
   } catch (error) {
     console.error("Error checking follow status:", error);
     return false;
@@ -88,7 +88,7 @@ export async function isFollowingPerson(personId: string): Promise<boolean> {
       WHERE user_id = ${DEMO_USER_ID}
         AND person_id = ${personId}
     `;
-    return result[0].count > 0;
+    return (result[0]?.count ?? 0) > 0;
   } catch (error) {
     console.error("Error checking follow status:", error);
     return false;

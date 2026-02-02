@@ -91,7 +91,7 @@ export async function runShowIngest(showId: string) {
             data: {
               url,
               source: "youtube",
-              requestId: request.id,
+              requestId: request!.id,
             },
           });
 
@@ -134,7 +134,7 @@ export async function runShowIngest(showId: string) {
             data: {
               url,
               source: "youtube",
-              requestId: request.id,
+              requestId: request!.id,
             },
           });
 
