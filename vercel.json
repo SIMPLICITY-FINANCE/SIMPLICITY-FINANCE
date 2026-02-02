@@ -7,14 +7,6 @@
   "env": {
     "NODE_ENV": "production"
   },
-  "build": {
-    "env": {
-      "DATABASE_URL": "@database_url",
-      "DEEPGRAM_API_KEY": "@deepgram_api_key",
-      "YOUTUBE_API_KEY": "@youtube_api_key",
-      "OPENAI_API_KEY": "@openai_api_key"
-    }
-  },
   "headers": [
     {
       "source": "/(.*)",
