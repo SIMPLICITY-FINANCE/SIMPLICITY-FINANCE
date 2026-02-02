@@ -23,26 +23,24 @@ async function approveSummary(formData: FormData) {
   const user = await requireAdmin();
   const summaryId = formData.get("summaryId") as string;
   
-  await sql.begin(async (tx) => {
-    await tx`
-      UPDATE episode_summary
-      SET approval_status = 'approved',
-          approved_by = ${user.id},
-          approved_at = NOW()
-      WHERE id = ${summaryId}
-    `;
-    
-    await tx`
-      INSERT INTO admin_audit_logs (user_id, action, resource_type, resource_id, metadata)
-      VALUES (
-        ${user.id},
-        'approve_summary',
-        'summary',
-        ${summaryId},
-        ${JSON.stringify({ approved_by: user.email })}
-      )
-    `;
-  });
+  await sql`
+    UPDATE episode_summary
+    SET approval_status = 'approved',
+        approved_by = ${user.id},
+        approved_at = NOW()
+    WHERE id = ${summaryId}
+  `;
+  
+  await sql`
+    INSERT INTO admin_audit_logs (user_id, action, resource_type, resource_id, metadata)
+    VALUES (
+      ${user.id},
+      'approve_summary',
+      'summary',
+      ${summaryId},
+      ${JSON.stringify({ approved_by: user.email })}
+    )
+  `;
   
   redirect("/admin/approvals");
 }
@@ -58,27 +56,25 @@ async function rejectSummary(formData: FormData) {
     throw new Error("Rejection reason is required");
   }
   
-  await sql.begin(async (tx) => {
-    await tx`
-      UPDATE episode_summary
-      SET approval_status = 'rejected',
-          approved_by = ${user.id},
-          approved_at = NOW(),
-          rejection_reason = ${reason}
-      WHERE id = ${summaryId}
-    `;
-    
-    await tx`
-      INSERT INTO admin_audit_logs (user_id, action, resource_type, resource_id, metadata)
-      VALUES (
-        ${user.id},
-        'reject_summary',
-        'summary',
-        ${summaryId},
-        ${JSON.stringify({ rejected_by: user.email, reason })}
-      )
-    `;
-  });
+  await sql`
+    UPDATE episode_summary
+    SET approval_status = 'rejected',
+        approved_by = ${user.id},
+        approved_at = NOW(),
+        rejection_reason = ${reason}
+    WHERE id = ${summaryId}
+  `;
+  
+  await sql`
+    INSERT INTO admin_audit_logs (user_id, action, resource_type, resource_id, metadata)
+    VALUES (
+      ${user.id},
+      'reject_summary',
+      'summary',
+      ${summaryId},
+      ${JSON.stringify({ rejected_by: user.email, reason })}
+    )
+  `;
   
   redirect("/admin/approvals");
 }
