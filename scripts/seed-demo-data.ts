@@ -19,10 +19,10 @@ async function seedDemoData() {
   console.log("🌱 Seeding demo data...\n");
 
   try {
-    await sql.begin(async (tx) => {
+    // Transaction removed - using direct sql queries
       // 1. Ensure demo user exists
       console.log("1️⃣  Creating demo user...");
-      const [demoUser] = await tx`
+      const [demoUser] = await sql`
         INSERT INTO users (id, email, name, role)
         VALUES ('00000000-0000-0000-0000-000000000001', 'demo@simplicity-finance.com', 'Demo User', 'user')
         ON CONFLICT (email) DO UPDATE SET name = EXCLUDED.name
@@ -40,7 +40,7 @@ async function seedDemoData() {
 
       const showIds: Record<string, string> = {};
       for (const show of shows) {
-        const [result] = await tx`
+        const [result] = await sql`
           INSERT INTO shows (name, youtube_channel_id)
           VALUES (${show.name}, ${show.channel_id})
           ON CONFLICT (youtube_channel_id) DO UPDATE SET name = EXCLUDED.name
@@ -62,7 +62,7 @@ async function seedDemoData() {
 
       const episodeIds: string[] = [];
       for (const ep of episodes) {
-        const [episode] = await tx`
+        const [episode] = await sql`
           INSERT INTO episodes (
             source, url, video_id, youtube_channel_title, youtube_channel_id,
             youtube_title, youtube_description, youtube_published_at
@@ -93,13 +93,13 @@ async function seedDemoData() {
         const ep = episodes[i];
         
         // Check if summary already exists
-        let summary = await tx`
+        let summary = await sql`
           SELECT id FROM episode_summary WHERE episode_id = ${episodeId}
         `;
         
         if (summary.length === 0) {
           // Create summary
-          summary = await tx`
+          summary = await sql`
             INSERT INTO episode_summary (
               episode_id, title, published_at, video_id, version,
               approval_status, approved_by, approved_at
@@ -116,14 +116,14 @@ async function seedDemoData() {
 
         // Create bullets for this summary (only if not already created)
         const summaryId = summary[0].id;
-        const existingBullets = await tx`
+        const existingBullets = await sql`
           SELECT COUNT(*) as count FROM summary_bullets WHERE summary_id = ${summaryId}
         `;
         
         if (Number(existingBullets[0].count) === 0) {
           const bullets = getBulletsForEpisode(i);
           for (const bullet of bullets) {
-            await tx`
+            await sql`
               INSERT INTO summary_bullets (
                 summary_id, section_name, bullet_text, confidence, evidence_spans
               )
@@ -137,12 +137,12 @@ async function seedDemoData() {
         }
 
         // Create QC run (only if not already created)
-        const existingQC = await tx`
+        const existingQC = await sql`
           SELECT COUNT(*) as count FROM qc_runs WHERE summary_id = ${summaryId}
         `;
         
         if (Number(existingQC[0].count) === 0) {
-          await tx`
+          await sql`
             INSERT INTO qc_runs (
               episode_id, summary_id, version, video_id, qc_status, qc_score, risk_flags, flags
             )
@@ -157,7 +157,7 @@ async function seedDemoData() {
 
       // 5. Create a demo report
       console.log("5️⃣  Creating demo report...");
-      const [report] = await tx`
+      const [report] = await sql`
         INSERT INTO reports (
           title, report_type, period_start, period_end, summary,
           approval_status, approved_by, approved_at
@@ -176,12 +176,11 @@ async function seedDemoData() {
         RETURNING id
       `;
       
-      if (report) {
-        console.log(`   ✓ Created 1 report\n`);
-      } else {
-        console.log(`   ✓ Report already exists\n`);
-      }
-    });
+    if (report) {
+      console.log(`   ✓ Created 1 report\n`);
+    } else {
+      console.log(`   ✓ Report already exists\n`);
+    }
 
     console.log("✅ Demo data seeded successfully!\n");
     console.log("📊 Summary:");
