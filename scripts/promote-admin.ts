@@ -15,15 +15,17 @@
 
 import postgres from 'postgres';
 
-const email = process.argv[2];
+const emailArg = process.argv[2];
 const isDemote = process.argv[3] === '--demote';
 
-if (!email) {
+if (!emailArg) {
   console.error('❌ ERROR: Email address required');
   console.error('Usage: npx tsx scripts/promote-admin.ts user@example.com');
   console.error('To demote: npx tsx scripts/promote-admin.ts user@example.com --demote');
   process.exit(1);
 }
+
+const email: string = emailArg;
 
 if (!process.env.DATABASE_URL) {
   console.error('❌ ERROR: DATABASE_URL environment variable not set');
