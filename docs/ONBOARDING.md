@@ -12,6 +12,10 @@ Before you begin, ensure you have:
 - **Node.js** 20+ ([Download](https://nodejs.org/))
 - **Docker Desktop** ([Download](https://www.docker.com/products/docker-desktop/))
 - **Git** ([Download](https://git-scm.com/downloads))
+- **yt-dlp** (for downloading YouTube audio)
+  - macOS: `brew install yt-dlp`
+  - Linux: `sudo apt install yt-dlp` or `pip install yt-dlp`
+  - Windows: Download from [yt-dlp releases](https://github.com/yt-dlp/yt-dlp/releases)
 - **Code Editor** (VS Code recommended)
 
 ### Required API Keys
