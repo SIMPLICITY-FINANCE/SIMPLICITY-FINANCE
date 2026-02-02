@@ -94,19 +94,17 @@ async function insertRobotOutput(outputDir: string) {
       throw new Error("Episode must have at least one of: videoId, audioId, or fileId");
     }
 
-    console.log(`\n🔄 Starting transaction...`);
+    console.log(`\n🔄 Starting data insertion...`);
     
-    // Begin transaction - wrap everything in sql.begin()
-    await sql.begin(async (sql) => {
-      // Upsert episode - handle video_id, audio_id, or file_id
-      console.log("\n📝 Upserting episode...");
-      
-      // Build conflict target based on which ID is present
-      let conflictColumn = 'video_id';
-      if (episodeData.audioId) conflictColumn = 'audio_id';
-      if (episodeData.fileId) conflictColumn = 'file_id';
-      
-      const [episode] = await sql`
+    // Upsert episode - handle video_id, audio_id, or file_id
+    console.log("\n📝 Upserting episode...");
+    
+    // Build conflict target based on which ID is present
+    let conflictColumn = 'video_id';
+    if (episodeData.audioId) conflictColumn = 'audio_id';
+    if (episodeData.fileId) conflictColumn = 'file_id';
+    
+    const [episode] = await sql`
         INSERT INTO episodes (
           source, url, video_id, audio_id, file_id,
           youtube_title, youtube_channel_title, youtube_channel_id,
@@ -254,13 +252,12 @@ async function insertRobotOutput(outputDir: string) {
       console.log(`✅ QC run inserted: ${qc.id}`);
 
       console.log(`\n🎉 All data ${wasInserted ? 'inserted' : 'replaced'} successfully!`);
-      console.log(`\nSummary:`);
-      console.log(`  Episode ID: ${episode.id}`);
-      console.log(`  Summary ID: ${summary.id}`);
-      console.log(`  QC Run ID: ${qc.id}`);
-      console.log(`  Transcript segments: ${segments.length}`);
-      console.log(`  Summary bullets: ${bulletCount}`);
-    });
+    console.log(`\nSummary:`);
+    console.log(`  Episode ID: ${episode.id}`);
+    console.log(`  Summary ID: ${summary.id}`);
+    console.log(`  QC Run ID: ${qc.id}`);
+    console.log(`  Transcript segments: ${segments.length}`);
+    console.log(`  Summary bullets: ${bulletCount}`);
 
   } catch (err) {
     console.error("❌ Error inserting robot output:");
