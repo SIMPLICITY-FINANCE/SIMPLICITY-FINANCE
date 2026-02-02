@@ -7,11 +7,6 @@
   "env": {
     "NODE_ENV": "production"
   },
-  "build": {
-    "env": {
-      "DATABASE_URL": "postgresql://build:build@localhost:5432/build"
-    }
-  },
   "headers": [
     {
       "source": "/(.*)",
