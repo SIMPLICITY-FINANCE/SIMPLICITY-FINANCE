@@ -7,9 +7,13 @@
 
 import { config } from "dotenv";
 import postgres from "postgres";
+import { assertSafeDatabaseUrl } from "./lib/db-safety.js";
 
 // Load environment variables
 config({ path: ".env.local" });
+
+// Safety check: prevent accidental writes to production
+assertSafeDatabaseUrl();
 
 const sql = postgres(process.env.DATABASE_URL!, {
   max: 1,
