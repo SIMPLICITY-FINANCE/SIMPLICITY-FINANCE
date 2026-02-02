@@ -5,8 +5,12 @@ import postgres from "postgres";
 import { episodes, transcriptSegmentsRaw, episodeSummary, summaryBullets, qcRuns } from "../db/schema.js";
 import type { Summary } from "../schemas/summary.schema.js";
 import type { QC } from "../schemas/qc.schema.js";
+import { assertSafeDatabaseUrl } from "./lib/db-safety.js";
 
 config({ path: ".env.local" });
+
+// Safety check: prevent accidental writes to production
+assertSafeDatabaseUrl();
 
 interface TranscriptSegment {
   start_ms: number;
