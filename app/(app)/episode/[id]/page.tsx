@@ -83,7 +83,7 @@ export default async function EpisodeDetailPage({ params }: { params: Promise<{ 
     if (!acc[bullet.section_name]) {
       acc[bullet.section_name] = [];
     }
-    acc[bullet.section_name].push(bullet);
+    acc[bullet.section_name]!.push(bullet);
     return acc;
   }, {} as Record<string, SummaryBullet[]>);
 
