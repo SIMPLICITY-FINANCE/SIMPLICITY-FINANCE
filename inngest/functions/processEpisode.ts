@@ -398,7 +398,7 @@ export const processEpisode = inngest.createFunction(
         ensureOutputDir(outputDir);
         
         console.log(`Downloading audio for video ${metadata.videoId}...`);
-        const audioPath = await downloadYouTubeAudio(metadata.videoId, outputDir);
+        const audioPath = await downloadYouTubeAudio(metadata.videoId!, outputDir);
         console.log(`Audio downloaded to: ${audioPath}`);
         
         // Transcribe from local file
@@ -496,15 +496,15 @@ export const processEpisode = inngest.createFunction(
         // Find the episode ID from the database
         const [episode] = await sql<Array<{ id: string }>>`
           SELECT id FROM episodes
-          WHERE video_id = ${metadata.videoId}
-             OR audio_id = ${metadata.audioId}
+          WHERE video_id = ${metadata.videoId ?? null}
+             OR audio_id = ${metadata.audioId ?? null}
           LIMIT 1
         `;
 
         await sql`
           UPDATE ingest_requests
           SET status = 'succeeded',
-              episode_id = ${episode?.id},
+              episode_id = ${episode?.id ?? null},
               completed_at = NOW(),
               updated_at = NOW()
           WHERE id = ${requestId}
