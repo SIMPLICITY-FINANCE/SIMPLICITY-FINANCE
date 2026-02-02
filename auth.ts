@@ -39,7 +39,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           `;
           
           if (userRecord.length > 0) {
-            (session.user as any).role = userRecord[0].role;
+            (session.user as any).role = userRecord[0]!.role;
           }
         }
       }

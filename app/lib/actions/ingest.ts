@@ -46,7 +46,7 @@ export async function submitIngestRequest(url: string): Promise<IngestResult> {
     if (existing.length > 0) {
       return {
         success: true,
-        requestId: existing[0].id,
+        requestId: existing[0]!.id,
         isExisting: true,
       };
     }
@@ -117,7 +117,7 @@ function extractYouTubeVideoId(url: string): string | null {
       const parts = urlObj.pathname.split("/").filter(Boolean);
       const embedIndex = parts.indexOf("embed");
       if (embedIndex >= 0 && parts[embedIndex + 1]) {
-        return parts[embedIndex + 1];
+        return parts[embedIndex + 1] ?? null;
       }
     }
     
