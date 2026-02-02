@@ -44,12 +44,15 @@ export default async function AdminPage() {
             <a href="/admin/approvals" className="px-3 py-4 text-sm font-medium text-gray-500 hover:text-gray-700">
               Approvals
             </a>
-            <button className="px-3 py-4 text-sm font-medium text-gray-500 hover:text-gray-700">
-              Users
-            </button>
-            <button className="px-3 py-4 text-sm font-medium text-gray-500 hover:text-gray-700">
-              Errors
-            </button>
+            <a href="/admin/shows" className="px-3 py-4 text-sm font-medium text-gray-500 hover:text-gray-700">
+              Shows
+            </a>
+            <a href="/admin/ops" className="px-3 py-4 text-sm font-medium text-gray-500 hover:text-gray-700">
+              Ops
+            </a>
+            <a href="/admin/ingest" className="px-3 py-4 text-sm font-medium text-gray-500 hover:text-gray-700">
+              Ingest
+            </a>
           </div>
         </div>
       </nav>

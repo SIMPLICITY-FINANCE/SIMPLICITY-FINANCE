@@ -1,26 +1,23 @@
 "use client";
 
 import { Sidebar } from './Sidebar.js';
-import { RightRail } from './RightRail.js';
 import { Input } from '../ui/Input.js';
 import { Search, Filter } from 'lucide-react';
 
 interface AppLayoutProps {
   children: React.ReactNode;
-  showRightRail?: boolean;
   searchPlaceholder?: string;
 }
 
 export function AppLayout({ 
   children, 
-  showRightRail = true,
   searchPlaceholder = "Search episodes..."
 }: AppLayoutProps) {
   return (
     <div className="min-h-screen bg-gray-50">
       <Sidebar />
       
-      <main className={`ml-[236px] ${showRightRail ? 'mr-[336px]' : ''}`}>
+      <main className="ml-[236px] mr-[336px]">
         {/* Top Search Bar */}
         <div className="sticky top-0 z-10 bg-background border-b border-border px-6 py-4">
           <div className="max-w-3xl mx-auto flex items-center gap-4">
@@ -47,8 +44,6 @@ export function AppLayout({
           </div>
         </div>
       </main>
-
-      {showRightRail && <RightRail />}
       
       {/* Dev Build Stamp - Prevents cached confusion */}
       {process.env.NODE_ENV === 'development' && (

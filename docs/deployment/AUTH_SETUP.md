@@ -147,15 +147,15 @@ if (session?.user) {
 
 ### Development
 
-- `/dev/login` route available for quick testing
+- `/dev/login` route available for quick testing (development only)
 - Sets cookie to simulate authentication
 - Bypasses Google OAuth
-- **Blocked in production** via middleware
+- **Automatically blocked in production** via middleware
 
 ### Production
 
-- `/dev/login` returns 404
-- Only Google OAuth available
+- `/dev/login` returns 404 (blocked by middleware)
+- Only Google OAuth available via `/auth/signin`
 - Secure session cookies
 - HTTPS required
 
@@ -234,10 +234,12 @@ SELECT email, role FROM users WHERE email = 'your-email@example.com';
 
 ## Migration from Dev Auth
 
-If migrating from `/dev/login` cookie auth:
+If migrating from `/dev/login` cookie auth (development only):
 
 1. Clear all cookies: `document.cookie.split(";").forEach(c => document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"));`
-2. Sign in with Google OAuth
+2. Sign in with Google OAuth via `/auth/signin`
+
+**Note:** `/dev/login` is automatically blocked in production environments.
 3. Verify user created in database
 4. Update role to admin if needed
 
