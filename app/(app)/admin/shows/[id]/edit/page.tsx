@@ -10,7 +10,7 @@ const sql = postgres(process.env.DATABASE_URL!, {
 export default async function EditShowPage({ params }: { params: { id: string } }) {
   await requireAdmin();
 
-  const [show] = await sql`
+  const result = await sql`
     SELECT 
       id,
       name,
@@ -24,6 +24,18 @@ export default async function EditShowPage({ params }: { params: { id: string } 
     FROM shows
     WHERE id = ${params.id}
   `;
+
+  const show = result[0] as {
+    id: string;
+    name: string;
+    description: string | null;
+    ingest_enabled: boolean;
+    ingest_source: string | null;
+    youtube_channel_id: string | null;
+    youtube_playlist_id: string | null;
+    rss_feed_url: string | null;
+    ingest_frequency: string | null;
+  } | undefined;
 
   if (!show) {
     notFound();

@@ -9,11 +9,13 @@ const sql = postgres(process.env.DATABASE_URL!, {
 export default async function AdminPage() {
   const user = await requireAdmin();
 
-  const [stats] = await sql`
+  const statsResult = await sql`
     SELECT 
       (SELECT COUNT(*) FROM episode_summary WHERE approval_status = 'pending') as pending_approvals,
       (SELECT COUNT(*) FROM episodes) as total_episodes
   `;
+  
+  const stats = statsResult[0] || { pending_approvals: 0, total_episodes: 0 };
 
   return (
     <div className="min-h-screen bg-gray-50">
