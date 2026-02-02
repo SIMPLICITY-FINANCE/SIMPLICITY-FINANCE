@@ -2,53 +2,55 @@
 
 This directory contains all project documentation organized by category.
 
-## Directory Structure
+## 📚 Core Documentation (Start Here)
 
-```
-docs/
-├── README.md                    # This file
-├── ONBOARDING.md               # New contributor setup guide
-├── RELEASE_RUNBOOK.md          # Production deployment guide
-├── API.md                      # API reference (server actions, routes, Inngest)
-├── PIPELINE.md                 # Episode processing workflow
-├── EXECUTION_PLAN_V1_1.md      # Current roadmap (v1.1+)
-├── archive/                    # Historical planning docs (completed milestones)
-│   ├── EXECUTE_V2.md           # v1.0 milestone roadmap (completed)
-│   ├── MILESTONE_4_TESTING.md  # Testing milestone (completed)
-│   └── SESSION_SUMMARY_2026-02-01.md
-├── planning/                   # Active planning and design docs
-│   ├── FIGMA_STYLE_SPEC.md     # Design system specification
-│   ├── VISUAL_PARITY_SUMMARY.md # UI implementation status
-│   ├── SIMPLICITY_FINANCE_BLUEPRINT.txt
-│   └── SIMPLICITY_FINANCE_EXECUTION_CHECKLIST.txt
-├── deployment/                 # Deployment and infrastructure docs
-│   ├── DEPLOYMENT.md           # Deployment overview
-│   └── AUTH_SETUP.md           # Google OAuth setup guide
-└── screenshots/                # Figma screenshots and UI references
-    └── ... (all Figma screenshots)
-```
+These are the **4 canonical documents** that cover everything you need:
 
-## Key Documents
+1. **[ONBOARDING.md](ONBOARDING.md)** - First-time contributor setup guide
+   - Prerequisites, local development, common issues
+   
+2. **[ARCHITECTURE.md](ARCHITECTURE.md)** - System architecture overview
+   - High-level design, component breakdown, data flow, tech stack
+   
+3. **[ROADMAP.md](ROADMAP.md)** - Product roadmap and priorities
+   - Current focus (v1.1), future plans, success metrics
+   
+4. **[API.md](API.md)** - Complete API reference
+   - Server actions, routes, Inngest functions
 
-### Getting Started
-- **ONBOARDING.md** - First-time contributor setup (start here!)
-- **RELEASE_RUNBOOK.md** - Production deployment procedures
-- **EXECUTION_PLAN_V1_1.md** - Current roadmap and next steps
+## 📂 Additional Resources
 
-### Development
-- **API.md** - Complete API reference
-- **PIPELINE.md** - Episode processing workflow
-- **planning/FIGMA_STYLE_SPEC.md** - Design tokens and UI specifications
+### Detailed Guides
+- **[PIPELINE.md](PIPELINE.md)** - Episode processing workflow details
+- **[EXECUTION_PLAN_V1_1.md](EXECUTION_PLAN_V1_1.md)** - Detailed v1.1 execution plan (26-30 PRs)
 
 ### Deployment
-- **deployment/DEPLOYMENT.md** - Deployment overview
-- **deployment/AUTH_SETUP.md** - Google OAuth configuration
+- **[deployment/DEPLOYMENT.md](deployment/DEPLOYMENT.md)** - Deployment overview
+- **[deployment/AUTH_SETUP.md](deployment/AUTH_SETUP.md)** - Google OAuth setup guide
 
-### Archive
-- **archive/** - Completed milestone documentation (historical reference)
+### Design & Planning
+- **[planning/FIGMA_STYLE_SPEC.md](planning/FIGMA_STYLE_SPEC.md)** - Design system specification
+- **[planning/VISUAL_PARITY_SUMMARY.md](planning/VISUAL_PARITY_SUMMARY.md)** - UI implementation status
+- **[planning/SIMPLICITY_FINANCE_BLUEPRINT.txt](planning/SIMPLICITY_FINANCE_BLUEPRINT.txt)** - Original product spec
+- **[planning/SIMPLICITY_FINANCE_EXECUTION_CHECKLIST.txt](planning/SIMPLICITY_FINANCE_EXECUTION_CHECKLIST.txt)** - Execution checklist
 
-## Current Status (v1.0.0)
+### Archive (Historical Reference)
+- **[archive/EXECUTE_V2.md](archive/EXECUTE_V2.md)** - v1.0 milestone roadmap (completed)
+- **[archive/MILESTONE_4_TESTING.md](archive/MILESTONE_4_TESTING.md)** - Testing milestone (completed)
+- **[archive/SESSION_SUMMARY_2026-02-01.md](archive/SESSION_SUMMARY_2026-02-01.md)** - Session summary
+
+### Screenshots
+- **[screenshots/](screenshots/)** - Figma design references (30+ screenshots)
+
+## 🎯 Quick Navigation
+
+**New to the project?** → Start with [ONBOARDING.md](ONBOARDING.md)  
+**Want to understand the system?** → Read [ARCHITECTURE.md](ARCHITECTURE.md)  
+**Looking for what's next?** → Check [ROADMAP.md](ROADMAP.md)  
+**Need API details?** → See [API.md](API.md)
+
+## 📊 Current Status (v1.0.0)
 
 ✅ **Production Deployed:** https://simplicity-finance.vercel.app  
 ✅ **All v1.0 milestones complete**  
-📋 **Next:** See `EXECUTION_PLAN_V1_1.md` for v1.1+ roadmap
+� **Next:** See [ROADMAP.md](ROADMAP.md) for v1.1+ priorities
