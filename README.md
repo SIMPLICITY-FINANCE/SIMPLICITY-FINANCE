@@ -198,29 +198,33 @@ INNGEST_SIGNING_KEY=...
 ### Deployment Steps
 
 1. **Configure Vercel environment variables**
-2. **Set up Google OAuth** (see [docs/deployment/AUTH_SETUP.md](docs/deployment/AUTH_SETUP.md))
+2. **Set up Google OAuth** (create OAuth credentials in Google Cloud Console)
 3. **Push to main** → Vercel auto-deploys
 4. **Run migrations** against production database
 5. **Verify deployment** with health check
 
-**Complete deployment guide:** [docs/RELEASE_RUNBOOK.md](docs/RELEASE_RUNBOOK.md)
+**For detailed deployment procedures, see the documentation below.**
 
 ---
 
 ## 📚 Documentation
 
-### Getting Started
-- **[ONBOARDING.md](docs/ONBOARDING.md)** - First-time contributor setup
-- **[PIPELINE.md](docs/PIPELINE.md)** - Episode processing workflow
-- **[API.md](docs/API.md)** - Server actions, routes, and Inngest functions
+**Start here if you're new:**
 
-### Deployment & Operations
-- **[RELEASE_RUNBOOK.md](docs/RELEASE_RUNBOOK.md)** - Production deployment guide
-- **[AUTH_SETUP.md](docs/deployment/AUTH_SETUP.md)** - Google OAuth configuration
-- **[DEPLOYMENT.md](docs/deployment/DEPLOYMENT.md)** - Deployment overview
+### Core Documentation (Read These First)
+1. **[docs/ONBOARDING.md](docs/ONBOARDING.md)** - First-time contributor setup guide
+   - Prerequisites, local development setup, common issues
+2. **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** - System architecture overview
+   - High-level design, component breakdown, data flow
+3. **[docs/ROADMAP.md](docs/ROADMAP.md)** - Product roadmap and priorities
+   - Current focus (v1.1), future plans, success metrics
+4. **[docs/API.md](docs/API.md)** - Complete API reference
+   - Server actions, routes, Inngest functions
 
-### Development
-- **[FIGMA_STYLE_SPEC.md](docs/planning/FIGMA_STYLE_SPEC.md)** - UI design system
+### Additional Resources
+- **[docs/PIPELINE.md](docs/PIPELINE.md)** - Episode processing workflow details
+- **[docs/EXECUTION_PLAN_V1_1.md](docs/EXECUTION_PLAN_V1_1.md)** - Detailed v1.1 execution plan
+- **[docs/deployment/](docs/deployment/)** - Deployment guides (AUTH_SETUP.md, DEPLOYMENT.md)
 - **[CONTRIBUTING.md](CONTRIBUTING.md)** - Development workflow and PR guidelines
 
 ---
