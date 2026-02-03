@@ -14,13 +14,15 @@ export async function GET() {
         url,
         source,
         status,
+        stage,
         created_at,
         started_at,
         completed_at,
         error_message,
         error_details,
         episode_id,
-        inngest_event_id
+        inngest_event_id,
+        updated_at
       FROM ingest_requests
       ORDER BY created_at DESC
       LIMIT 50

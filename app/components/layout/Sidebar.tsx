@@ -1,7 +1,9 @@
 "use client";
 
-import { Home, Bookmark, BookOpen, FileText, Upload, Compass, Lightbulb } from 'lucide-react';
+import Link from 'next/link';
+import { Home, Bookmark, Upload, Compass, BookOpen, FileText, Lightbulb } from 'lucide-react';
 import { usePathname } from 'next/navigation';
+import { Logo } from '../ui/Logo.js';
 
 interface NavItem {
   label: string;
@@ -14,8 +16,8 @@ const mainNavItems: NavItem[] = [
   { label: 'Home', href: '/dashboard', icon: <Home size={20} /> },
   { label: 'Saved', href: '/saved', icon: <Bookmark size={20} /> },
   { label: 'Notebook', href: '/notebook', icon: <BookOpen size={20} /> },
-  { label: 'Reports', href: '/reports', icon: <FileText size={20} />, badge: 2 },
   { label: 'Upload', href: '/upload', icon: <Upload size={20} /> },
+  { label: 'Reports', href: '/reports', icon: <FileText size={20} />, badge: 2 },
   { label: 'Discover', href: '/discover', icon: <Compass size={20} /> },
   { label: 'Suggest', href: '/suggest', icon: <Lightbulb size={20} /> },
 ];

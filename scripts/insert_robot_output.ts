@@ -114,6 +114,7 @@ async function insertRobotOutput(outputDir: string) {
           youtube_title, youtube_channel_title, youtube_channel_id,
           youtube_published_at, youtube_description, youtube_thumbnail_url,
           youtube_duration, youtube_view_count,
+          is_published, published_at, qc_status, qc_score,
           updated_at
         ) VALUES (
           ${episodeData.source},
@@ -129,6 +130,10 @@ async function insertRobotOutput(outputDir: string) {
           ${episodeData.youtube?.thumbnails?.high || null},
           ${episodeData.youtube?.durationISO || null},
           ${episodeData.youtube?.viewCount || null},
+          true,
+          NOW(),
+          ${qcData.qc_status},
+          ${qcData.qc_score},
           NOW()
         )
         ON CONFLICT (${sql(conflictColumn)}) WHERE ${sql(conflictColumn)} IS NOT NULL DO UPDATE SET
@@ -141,6 +146,10 @@ async function insertRobotOutput(outputDir: string) {
           youtube_thumbnail_url = EXCLUDED.youtube_thumbnail_url,
           youtube_duration = EXCLUDED.youtube_duration,
           youtube_view_count = EXCLUDED.youtube_view_count,
+          is_published = EXCLUDED.is_published,
+          published_at = EXCLUDED.published_at,
+          qc_status = EXCLUDED.qc_status,
+          qc_score = EXCLUDED.qc_score,
           updated_at = NOW()
         RETURNING id, (xmax = 0) as inserted
       `;
