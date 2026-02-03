@@ -63,11 +63,19 @@ export const episodes = pgTable("episodes", {
   youtubeDuration: text("youtube_duration"),
   youtubeViewCount: text("youtube_view_count"),
   
+  // Publishing and QC fields for feed eligibility
+  isPublished: boolean("is_published").notNull().default(true),
+  publishedAt: timestamp("published_at"), // Set when episode completes processing
+  qcStatus: text("qc_status"), // "pass" | "fail" | "warn" | null
+  qcScore: integer("qc_score"), // 0-100
+  
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 }, (table) => ({
   videoIdIdx: index("episodes_video_id_idx").on(table.videoId),
   sourceIdx: index("episodes_source_idx").on(table.source),
+  isPublishedIdx: index("episodes_is_published_idx").on(table.isPublished),
+  publishedAtIdx: index("episodes_published_at_idx").on(table.publishedAt),
 }));
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -251,6 +259,7 @@ export const ingestRequests = pgTable("ingest_requests", {
   
   // Status tracking
   status: text("status").notNull().default("queued"), // "queued" | "running" | "succeeded" | "failed"
+  stage: text("stage"), // "metadata" | "download" | "transcribe" | "summarize" | "qc" | "persist" | "cleanup" | "completed" | "failed"
   
   // Inngest event ID for tracking
   inngestEventId: text("inngest_event_id"),

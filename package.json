@@ -22,7 +22,9 @@
     "db:seed:demo": "tsx scripts/seed-demo-data.ts",
     "inngest:dev": "npx inngest-cli@latest dev",
     "test:smoke": "playwright test",
-    "verify:deploy": "tsx scripts/verify-deployment.ts"
+    "verify:deploy": "tsx scripts/verify-deployment.ts",
+    "setup:ytdlp": "tsx scripts/setup-ytdlp.ts",
+    "postinstall": "npm run setup:ytdlp"
   },
   "keywords": [],
   "author": "",

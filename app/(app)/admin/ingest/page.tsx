@@ -11,6 +11,7 @@ interface IngestRequest {
   url: string;
   source: string;
   status: string;
+  stage: string | null;
   created_at: Date;
   started_at: Date | null;
   completed_at: Date | null;
@@ -18,6 +19,7 @@ interface IngestRequest {
   error_details: any;
   episode_id: string | null;
   inngest_event_id: string | null;
+  updated_at: Date;
 }
 
 export default async function AdminIngestPage() {
@@ -29,13 +31,15 @@ export default async function AdminIngestPage() {
       url,
       source,
       status,
+      stage,
       created_at,
       started_at,
       completed_at,
       error_message,
       error_details,
       episode_id,
-      inngest_event_id
+      inngest_event_id,
+      updated_at
     FROM ingest_requests
     ORDER BY created_at DESC
     LIMIT 50
