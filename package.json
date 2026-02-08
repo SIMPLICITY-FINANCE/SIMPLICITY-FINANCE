@@ -21,6 +21,7 @@
     "db:seed": "tsx scripts/seed.ts",
     "db:seed:demo": "tsx scripts/seed-demo-data.ts",
     "db:seed:reports": "tsx scripts/seed-daily-reports.ts",
+    "db:seed:shows": "tsx scripts/seed-shows.ts",
     "inngest:dev": "npx inngest-cli@latest dev",
     "test:smoke": "playwright test",
     "verify:deploy": "tsx scripts/verify-deployment.ts",
