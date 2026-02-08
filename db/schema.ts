@@ -440,6 +440,39 @@ export const episodePeople = pgTable("episode_people", {
 }));
 
 // ─────────────────────────────────────────────────────────────────────────────
+// Notifications - Real-time notifications for episodes and reports
+// ─────────────────────────────────────────────────────────────────────────────
+
+export const notifications = pgTable("notifications", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: text("user_id").notNull(),
+
+  type: text("type").$type<
+    "episode_ready" |
+    "daily_report_ready" |
+    "weekly_report_ready" |
+    "monthly_report_ready" |
+    "quarterly_report_ready"
+  >().notNull(),
+
+  title: text("title").notNull(),
+  message: text("message"),
+
+  link: text("link").notNull(),
+
+  iconType: text("icon_type").$type<"episode" | "report">().notNull(),
+  metadata: jsonb("metadata"),
+
+  isRead: boolean("is_read").notNull().default(false),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  readAt: timestamp("read_at"),
+}, (table) => ({
+  userIdIdx: index("notifications_user_id_idx").on(table.userId),
+  isReadIdx: index("notifications_is_read_idx").on(table.isRead),
+  createdAtIdx: index("notifications_created_at_idx").on(table.createdAt),
+}));
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Report Items - Links reports to specific bullets from episodes (legacy)
 // ─────────────────────────────────────────────────────────────────────────────
 

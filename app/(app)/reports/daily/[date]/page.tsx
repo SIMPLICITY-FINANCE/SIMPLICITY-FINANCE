@@ -440,7 +440,9 @@ export default async function DailyReportPage({ params }: { params: Promise<{ da
                       {ep.published_at && (
                         <>
                           <span>•</span>
-                          <span>{new Date(ep.published_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+                          <span>{new Date(ep.published_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                          <span className="text-gray-400">•</span>
+                          <span>{new Date(ep.published_at).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })} UTC</span>
                         </>
                       )}
                     </div>

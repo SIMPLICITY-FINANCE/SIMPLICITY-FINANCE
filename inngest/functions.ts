@@ -2,6 +2,9 @@ import { inngest } from "./client";
 import { processEpisode, processEpisodeOnFailure } from "./functions/processEpisode";
 import { ingestShowsScheduled, ingestShowManual } from "./functions/ingestShows";
 import { generateDailyReportCron, generateDailyReportManual } from "./functions/generateDailyReport";
+import { generateWeeklyReportCron, generateWeeklyReportManualFn } from "./functions/generateWeeklyReport";
+import { generateMonthlyReportCron, generateMonthlyReportManualFn } from "./functions/generateMonthlyReport";
+import { generateQuarterlyReportCron, generateQuarterlyReportManualFn } from "./functions/generateQuarterlyReport";
 
 // Stub function to verify Inngest is working
 export const helloWorld = inngest.createFunction(
@@ -18,7 +21,7 @@ export const helloWorld = inngest.createFunction(
 );
 
 // Export all functions as an array
-export const functions = [
+export const functions: ReturnType<typeof inngest.createFunction>[] = [
   helloWorld,
   processEpisode,
   processEpisodeOnFailure,
@@ -26,4 +29,10 @@ export const functions = [
   ingestShowManual,
   generateDailyReportCron,
   generateDailyReportManual,
+  generateWeeklyReportCron,
+  generateWeeklyReportManualFn,
+  generateMonthlyReportCron,
+  generateMonthlyReportManualFn,
+  generateQuarterlyReportCron,
+  generateQuarterlyReportManualFn,
 ];

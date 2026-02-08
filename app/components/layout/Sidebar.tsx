@@ -17,7 +17,7 @@ const mainNavItems: NavItem[] = [
   { label: 'Saved', href: '/saved', icon: <Bookmark size={20} /> },
   { label: 'Notebook', href: '/notebook', icon: <BookOpen size={20} /> },
   { label: 'Upload', href: '/upload', icon: <Upload size={20} /> },
-  { label: 'Reports', href: '/reports', icon: <FileText size={20} />, badge: 2 },
+  { label: 'Reports', href: '/reports', icon: <FileText size={20} /> },
   { label: 'Discover', href: '/discover', icon: <Compass size={20} /> },
   { label: 'Suggest', href: '/suggest', icon: <Lightbulb size={20} /> },
 ];

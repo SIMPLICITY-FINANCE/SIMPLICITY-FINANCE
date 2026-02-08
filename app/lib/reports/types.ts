@@ -64,6 +64,118 @@ export interface DailyReportContent {
   lookingAhead: string; // 1 paragraph forward-looking
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Weekly Report Types
+// ─────────────────────────────────────────────────────────────────────────────
+
+export type ThemeTrajectory = "rising" | "falling" | "stable";
+
+export interface WeeklyTheme {
+  theme: string;
+  trajectory: ThemeTrajectory;
+  prominence: number; // 0.0 to 1.0
+  evolution: string;
+  keyInsights: string[];
+  daysActive: number[];
+}
+
+export interface NarrativeArc {
+  title: string;
+  timeline: string[];
+  resolution: string;
+}
+
+export interface WeeklySentiment {
+  overall: MarketSentiment;
+  evolution: string;
+  weekStart: string;
+  weekEnd: string;
+}
+
+export interface WeeklyTopInsight {
+  insight: string;
+  significance: string;
+  sources: string[];
+}
+
+export interface WeeklyReportContent {
+  executiveSummary: string;
+  emergingThemes: WeeklyTheme[];
+  narrativeArcs: NarrativeArc[];
+  sentiment: WeeklySentiment;
+  topInsights: WeeklyTopInsight[];
+  lookingAhead: string;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Monthly Report Types
+// ─────────────────────────────────────────────────────────────────────────────
+
+export interface MonthlyTrend {
+  name: string;
+  trajectory: ThemeTrajectory;
+  weekByWeek: string[];
+  significance: string;
+  durability: "durable" | "fading" | "emerging";
+}
+
+export interface MonthlyDebate {
+  topic: string;
+  sides: { position: string; advocates: string[] }[];
+  resolution: string;
+}
+
+export interface MonthlySentiment {
+  overall: MarketSentiment;
+  trajectory: string;
+  weeklyProgression: { week: string; sentiment: MarketSentiment }[];
+}
+
+export interface MonthlyReportContent {
+  executiveSummary: string;
+  durableTrends: MonthlyTrend[];
+  keyDebates: MonthlyDebate[];
+  sentiment: MonthlySentiment;
+  topInsights: WeeklyTopInsight[];
+  lookingAhead: string;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Quarterly Report Types
+// ─────────────────────────────────────────────────────────────────────────────
+
+export interface QuarterlyTheme {
+  name: string;
+  monthByMonth: string[];
+  overallTrajectory: ThemeTrajectory;
+  significance: string;
+}
+
+export interface QuarterlyPrediction {
+  prediction: string;
+  confidence: number;
+  basis: string;
+  timeframe: string;
+}
+
+export interface QuarterlySentiment {
+  overall: MarketSentiment;
+  quarterNarrative: string;
+  monthlyProgression: { month: string; sentiment: MarketSentiment }[];
+}
+
+export interface QuarterlyReportContent {
+  executiveSummary: string;
+  majorThemes: QuarterlyTheme[];
+  predictions: QuarterlyPrediction[];
+  sentiment: QuarterlySentiment;
+  topInsights: WeeklyTopInsight[];
+  lookingAhead: string;
+}
+
+/** Union type for all report content */
+export type ReportContent = DailyReportContent | WeeklyReportContent | MonthlyReportContent | QuarterlyReportContent;
+
 /** Episode data passed to the AI prompt */
 export interface EpisodeForReport {
   id: string;

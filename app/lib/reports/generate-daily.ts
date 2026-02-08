@@ -2,6 +2,7 @@ import OpenAI from "openai";
 import postgres from "postgres";
 import { DAILY_REPORT_SYSTEM_PROMPT, DAILY_REPORT_USER_PROMPT } from "../../../prompts/daily-report-v1.js";
 import type { DailyReportContent, EpisodeForReport } from "./types.js";
+import { createDailyReportNotification } from "../notifications/create.js";
 
 const sql = postgres(process.env.DATABASE_URL!, { max: 1 });
 
@@ -104,6 +105,7 @@ export async function generateDailyReport(
     RETURNING id
   `;
 
+  if (!report) throw new Error("Failed to create daily report row");
   const reportId = report.id;
   console.log(`[DailyReport] Created report ${reportId} with status=generating`);
 
@@ -185,6 +187,18 @@ export async function generateDailyReport(
     `;
 
     console.log(`[DailyReport] ✅ Report ${reportId} ready — ${content.insights.length} insights, ${content.themes.length} themes, sentiment: ${content.sentiment.overall}, ${content.notableMoments?.length || 0} notable moments`);
+
+    // Create notification
+    try {
+      await createDailyReportNotification({
+        id: reportId,
+        date,
+        episodes_included: episodes.length,
+      });
+    } catch (err) {
+      console.warn(`[DailyReport] ⚠️ Failed to create notification (non-fatal):`, err);
+    }
+
     return reportId;
 
   } catch (error) {

@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from 'react';
-import { Crown, MessageCircle, RefreshCw, Bell, User, Settings, HelpCircle, Shield } from 'lucide-react';
+import { Crown, MessageCircle, RefreshCw, User, Settings, HelpCircle, Shield } from 'lucide-react';
 import { useRouter } from 'next/navigation.js';
 import { IconButton } from '../ui/IconButton.js';
+import { NotificationDropdown } from '../NotificationDropdown.js';
 
 const upNextItems = [
   {
@@ -59,7 +60,6 @@ interface RightRailClientProps {
 export function RightRailClient({ user }: RightRailClientProps) {
   const router = useRouter();
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [showNotifications, setShowNotifications] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
 
   const handleRefresh = async () => {
@@ -94,27 +94,7 @@ export function RightRailClient({ user }: RightRailClientProps) {
           </IconButton>
         </div>
         <div className="flex items-center gap-1 relative">
-          <div className="relative">
-            <IconButton 
-              className="relative w-10 h-10"
-              onClick={() => setShowNotifications(!showNotifications)}
-            >
-              <Bell size={20} className="text-gray-600" />
-              <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-            </IconButton>
-            
-            {/* Notifications Dropdown */}
-            {showNotifications && (
-              <div className="absolute right-0 top-12 w-64 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
-                <div className="p-3 border-b border-gray-100">
-                  <h3 className="font-semibold text-sm text-gray-900">Notifications</h3>
-                </div>
-                <div className="p-4 text-center text-sm text-gray-500">
-                  No notifications yet
-                </div>
-              </div>
-            )}
-          </div>
+          <NotificationDropdown />
 
           {/* Auth Controls */}
           {!user ? (

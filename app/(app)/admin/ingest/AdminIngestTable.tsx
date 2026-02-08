@@ -193,12 +193,15 @@ export function AdminIngestTable({ initialRequests }: AdminIngestTableProps) {
 
   const formatDate = (date: Date | null) => {
     if (!date) return "—";
-    return new Date(date).toLocaleString("en-US", {
-      month: "short",
-      day: "numeric",
-      hour: "numeric",
-      minute: "2-digit",
-    });
+    const d = new Date(date);
+    const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    const month = months[d.getUTCMonth()];
+    const day = d.getUTCDate();
+    let hours = d.getUTCHours();
+    const mins = String(d.getUTCMinutes()).padStart(2, "0");
+    const ampm = hours >= 12 ? "PM" : "AM";
+    hours = hours % 12 || 12;
+    return `${month} ${day} at ${hours}:${mins} ${ampm}`;
   };
 
   const formatDuration = (start: Date | null, end: Date | null) => {
@@ -250,7 +253,7 @@ export function AdminIngestTable({ initialRequests }: AdminIngestTableProps) {
 
         {/* Inngest Health Status */}
         {inngestHealth && (
-          <div className="mb-4 p-3 bg-white dark:bg-slate-800 rounded border border-blue-100 dark:border-blue-900">
+          <div className="mb-4 p-3 bg-white rounded border border-blue-100">
             <div className="flex items-center justify-between mb-2">
               <div className="text-xs font-semibold text-foreground">Inngest Configuration</div>
               <div className="flex items-center gap-2">
@@ -330,25 +333,25 @@ export function AdminIngestTable({ initialRequests }: AdminIngestTableProps) {
             </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3">
-            <div className="bg-white dark:bg-slate-800 rounded p-2 border border-blue-100 dark:border-blue-900">
-              <div className="text-xs text-muted-foreground mb-1">Status</div>
-              <div className="font-semibold text-sm capitalize">{mostRecentRequest.status}</div>
+            <div className="bg-white rounded p-2 border border-blue-100">
+              <div className="text-xs text-gray-500 mb-1">Status</div>
+              <div className="font-semibold text-sm text-gray-900 capitalize">{mostRecentRequest.status}</div>
             </div>
-            <div className="bg-white dark:bg-slate-800 rounded p-2 border border-blue-100 dark:border-blue-900">
-              <div className="text-xs text-muted-foreground mb-1">Stage</div>
-              <div className="font-semibold text-sm">
+            <div className="bg-white rounded p-2 border border-blue-100">
+              <div className="text-xs text-gray-500 mb-1">Stage</div>
+              <div className="font-semibold text-sm text-gray-900">
                 {mostRecentRequest.stage || '—'}
               </div>
             </div>
-            <div className="bg-white dark:bg-slate-800 rounded p-2 border border-blue-100 dark:border-blue-900">
-              <div className="text-xs text-muted-foreground mb-1">Updated</div>
-              <div className="font-semibold text-sm text-xs">
+            <div className="bg-white rounded p-2 border border-blue-100">
+              <div className="text-xs text-gray-500 mb-1">Updated</div>
+              <div className="font-semibold text-xs text-gray-900">
                 {formatDate(mostRecentRequest.updated_at)}
               </div>
             </div>
-            <div className="bg-white dark:bg-slate-800 rounded p-2 border border-blue-100 dark:border-blue-900">
-              <div className="text-xs text-muted-foreground mb-1">Request ID</div>
-              <div className="font-mono text-xs truncate">
+            <div className="bg-white rounded p-2 border border-blue-100">
+              <div className="text-xs text-gray-500 mb-1">Request ID</div>
+              <div className="font-mono text-xs text-gray-900 truncate">
                 {mostRecentRequest.id.substring(0, 8)}...
               </div>
             </div>

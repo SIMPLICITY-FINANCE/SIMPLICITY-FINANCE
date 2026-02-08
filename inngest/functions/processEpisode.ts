@@ -20,6 +20,7 @@ import {
   YOUTUBE_CLIENT_STRATEGIES,
   type DownloadStrategy,
 } from "../lib/ytdlp";
+import { createEpisodeNotification } from "../../app/lib/notifications/create";
 
 const execAsync = promisify(exec);
 
@@ -577,7 +578,7 @@ export const processEpisode = inngest.createFunction(
   },
   { event: "episode/submitted" },
   async ({ event, step }) => {
-    const { url, requestId, autoApprove } = event.data;
+    const { url, requestId } = event.data;
 
     // BREADCRUMB: Impossible to miss function entry
     console.log("═══════════════════════════════════════════════════════════════");
@@ -911,136 +912,6 @@ export const processEpisode = inngest.createFunction(
       console.log(`[Step 6] ✓ Data persisted to database`);
     });
 
-    // Step 6.5: Extract People (hosts/guests) from episode
-    await step.run("extract-people", async () => {
-      console.log(`[Step 6.5] Extracting people from episode`);
-
-      const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
-      if (!OPENAI_API_KEY) {
-        console.warn(`[Step 6.5] ⚠️ No OPENAI_API_KEY, skipping people extraction`);
-        return;
-      }
-
-      // Find the episode in DB
-      const [episode] = await sql<Array<{ id: string }>>`
-        SELECT id FROM episodes
-        WHERE video_id = ${metadata.videoId ?? null}
-           OR audio_id = ${metadata.audioId ?? null}
-        LIMIT 1
-      `;
-
-      if (!episode) {
-        console.warn(`[Step 6.5] ⚠️ Episode not found in DB, skipping`);
-        return;
-      }
-
-      // Build transcript excerpt (~2000 words from first 200 segments)
-      const segments = await sql<Array<{ text: string }>>`
-        SELECT text FROM transcript_segments_raw
-        WHERE episode_id = ${episode.id}
-        ORDER BY start_ms ASC
-        LIMIT 200
-      `;
-      let transcriptExcerpt = segments.map((s) => s.text).join(" ");
-      const words = transcriptExcerpt.split(/\s+/);
-      if (words.length > 2000) {
-        transcriptExcerpt = words.slice(0, 2000).join(" ");
-      }
-
-      const title = metadata.youtube?.title ?? "Audio Episode";
-      const channelTitle = metadata.youtube?.channelTitle ?? "";
-      const description = metadata.youtube?.description ?? "";
-
-      const extractionOpenai = new OpenAI({ apiKey: OPENAI_API_KEY });
-      const prompt = `You are analyzing a podcast/YouTube episode to extract the names of real people who appear as hosts or guests.
-
-Episode title: ${title}
-Channel/Show: ${channelTitle}
-Description: ${description.substring(0, 1000)}
-
-Transcript excerpt (first ~2000 words):
-${transcriptExcerpt}
-
-Instructions:
-- Extract REAL people who are hosts or guests on this episode
-- The channel owner is typically the host
-- Look for introductions like "I'm joined by...", "my guest today is...", "welcome back..."
-- Look for names mentioned in the title or description
-- Do NOT include fictional characters, company names, or politicians just being discussed (unless they are actually on the show)
-- Only include people who are ACTUALLY PARTICIPATING in the conversation or are the channel host
-- For the channel host, use their real name (not channel name) if you can determine it
-- If you cannot determine any specific person names, return an empty array
-
-Return JSON only:
-{
-  "people": [
-    { "name": "Full Name", "role": "host|guest", "title": "Brief title/role if known" }
-  ]
-}`;
-
-      try {
-        const response = await extractionOpenai.chat.completions.create({
-          model: "gpt-4o-mini",
-          messages: [{ role: "user", content: prompt }],
-          response_format: { type: "json_object" },
-          temperature: 0.1,
-        });
-
-        const content = response.choices[0]?.message?.content ?? "{}";
-        const parsed = JSON.parse(content);
-        const extractedPeople: Array<{ name: string; role: string; title?: string }> = parsed.people || [];
-
-        if (extractedPeople.length === 0) {
-          console.log(`[Step 6.5] ⚠️ No people extracted`);
-          return;
-        }
-
-        for (const person of extractedPeople) {
-          const slug = person.name
-            .toLowerCase()
-            .trim()
-            .replace(/[^a-z0-9]+/g, "-")
-            .replace(/^-|-$/g, "");
-
-          // Deterministic emoji
-          const emojiList: string[] = ["👨‍💼", "👩‍💼", "👨", "👩", "🧑‍💻", "👨‍🦱", "👩‍🦰", "🧔", "👨‍💻", "👩‍🦳"];
-          const hash = person.name.split("").reduce((acc: number, ch: string) => acc + ch.charCodeAt(0), 0);
-          const emoji: string = emojiList[hash % emojiList.length] ?? "👤";
-          const personTitle: string | null = person.title || null;
-          const personName: string = person.name;
-
-          // Upsert person
-          const upsertResult = await sql`
-            INSERT INTO people (name, slug, emoji, title)
-            VALUES (${personName}, ${slug}, ${emoji}, ${personTitle})
-            ON CONFLICT (slug) DO UPDATE SET
-              title = COALESCE(EXCLUDED.title, people.title),
-              updated_at = NOW()
-            RETURNING id
-          `;
-          const personRow = upsertResult[0] as { id: string };
-
-          // Insert junction
-          const role = (person.role === "host" || person.role === "guest" || person.role === "mentioned")
-            ? person.role
-            : "guest";
-
-          await sql`
-            INSERT INTO episode_people (episode_id, person_id, role)
-            VALUES (${episode.id}, ${personRow.id}, ${role})
-            ON CONFLICT DO NOTHING
-          `;
-
-          console.log(`[Step 6.5] ✅ ${person.name} (${role})`);
-        }
-
-        console.log(`[Step 6.5] ✓ Extracted ${extractedPeople.length} people`);
-      } catch (err) {
-        console.error(`[Step 6.5] ⚠️ People extraction failed (non-fatal):`, err);
-        // Non-fatal — don't throw, just log
-      }
-    });
-
     // Step 7: Cleanup
     await step.run("cleanup", async () => {
       console.log(`[Step 7] Running cleanup`);
@@ -1061,45 +932,7 @@ Return JSON only:
       console.log(`[Step 7] ✓ Cleanup complete`);
     });
 
-    // Step 8: Auto-approve if triggered by show ingestion
-    if (autoApprove) {
-      await step.run("auto-approve", async () => {
-        console.log(`[Step 8] Auto-approving episode (from show ingestion)`);
-
-        // Find the episode
-        const [episode] = await sql<Array<{ id: string }>>`
-          SELECT id FROM episodes
-          WHERE video_id = ${metadata.videoId ?? null}
-             OR audio_id = ${metadata.audioId ?? null}
-          LIMIT 1
-        `;
-
-        if (episode) {
-          // Auto-approve the episode summary
-          await sql`
-            UPDATE episode_summary
-            SET approval_status = 'approved',
-                approved_at = NOW()
-            WHERE episode_id = ${episode.id}
-          `;
-
-          // Set published_at on the episode
-          await sql`
-            UPDATE episodes
-            SET published_at = NOW(),
-                is_published = true,
-                updated_at = NOW()
-            WHERE id = ${episode.id}
-          `;
-
-          console.log(`[Step 8] ✅ Episode ${episode.id} auto-approved and published`);
-        } else {
-          console.warn(`[Step 8] ⚠️ Could not find episode to auto-approve`);
-        }
-      });
-    }
-
-    // Step 9: Mark as succeeded
+    // Step 8: Mark as succeeded
     if (requestId) {
       await step.run("mark-succeeded", async () => {
         console.log(`[Step 8] Marking request ${requestId} as succeeded`);
@@ -1133,6 +966,31 @@ Return JSON only:
         console.log(`[Step 8] ✓ Request marked as succeeded`);
       });
     }
+
+    // Step 10: Create notification
+    await step.run("create-notification", async () => {
+      try {
+        const [episode] = await sql<Array<{ id: string; youtube_title: string; youtube_channel_title: string; published_at: string | null; youtube_thumbnail_url: string | null }>>`
+          SELECT id, youtube_title, youtube_channel_title, published_at::text, youtube_thumbnail_url
+          FROM episodes
+          WHERE video_id = ${metadata.videoId ?? null}
+             OR audio_id = ${metadata.audioId ?? null}
+          LIMIT 1
+        `;
+
+        if (episode) {
+          await createEpisodeNotification({
+            id: episode.id,
+            title: episode.youtube_title || metadata.youtube?.title || "New Episode",
+            show_name: episode.youtube_channel_title || metadata.youtube?.channelTitle || "Unknown",
+            published_at: episode.published_at,
+            thumbnail_url: episode.youtube_thumbnail_url,
+          });
+        }
+      } catch (err) {
+        console.warn(`[Step 10] ⚠️ Failed to create notification (non-fatal):`, err);
+      }
+    });
 
     console.log("═══════════════════════════════════════════════════════════════");
     console.log("✅ PROCESS_EPISODE_COMPLETE", {

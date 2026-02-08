@@ -54,7 +54,7 @@ export default async function AdminReportsPage() {
           <div className="flex space-x-8">
             <a href="/admin" className="px-3 py-4 text-sm font-medium text-gray-500 hover:text-gray-700">Dashboard</a>
             <a href="/admin/approvals" className="px-3 py-4 text-sm font-medium text-gray-500 hover:text-gray-700">Approvals</a>
-            <a href="/admin/reports" className="px-3 py-4 text-sm font-medium text-blue-600 border-b-2 border-blue-600">Reports</a>
+            <a href="/admin/reports/generate" className="px-3 py-4 text-sm font-medium text-blue-600 border-b-2 border-blue-600">Reports</a>
             <a href="/admin/shows" className="px-3 py-4 text-sm font-medium text-gray-500 hover:text-gray-700">Shows</a>
             <a href="/admin/ops" className="px-3 py-4 text-sm font-medium text-gray-500 hover:text-gray-700">Ops</a>
           </div>
@@ -69,6 +69,15 @@ export default async function AdminReportsPage() {
             Select a date to manually generate a daily report. The system will analyze all published episodes from that date.
           </p>
           <GenerateReportForm />
+
+          <div className="mt-4">
+            <a
+              href="/admin/reports/generate"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-green-50 text-green-700 text-sm font-medium rounded-lg border border-green-200 hover:bg-green-100 transition-colors"
+            >
+              Advanced: Generate Weekly / Monthly / Quarterly →
+            </a>
+          </div>
           
           {episodeDates.length > 0 && (
             <div className="mt-4 text-xs text-gray-400">
@@ -76,7 +85,7 @@ export default async function AdminReportsPage() {
               {episodeDates.slice(0, 10).map((d, i) => (
                 <span key={i}>
                   {i > 0 && ", "}
-                  {d.date} ({d.count})
+                  {String(d.date)} ({d.count})
                 </span>
               ))}
             </div>

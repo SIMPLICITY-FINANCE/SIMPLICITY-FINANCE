@@ -46,7 +46,7 @@ export default async function AdminPage() {
             <a href="/admin/approvals" className="px-3 py-4 text-sm font-medium text-gray-500 hover:text-gray-700">
               Approvals
             </a>
-            <a href="/admin/reports" className="px-3 py-4 text-sm font-medium text-gray-500 hover:text-gray-700">
+            <a href="/admin/reports/generate" className="px-3 py-4 text-sm font-medium text-gray-500 hover:text-gray-700">
               Reports
             </a>
             <a href="/admin/shows" className="px-3 py-4 text-sm font-medium text-gray-500 hover:text-gray-700">
@@ -98,6 +98,13 @@ export default async function AdminPage() {
             >
               <div className="font-semibold">Approvals</div>
               <div className="text-sm">Review pending summaries</div>
+            </a>
+            <a
+              href="/admin/reports/generate"
+              className="block px-4 py-3 bg-green-50 text-green-700 rounded-lg hover:bg-green-100 transition-colors"
+            >
+              <div className="font-semibold">Generate Reports</div>
+              <div className="text-sm">Manually generate reports for any date range</div>
             </a>
             <a
               href="/admin/ops"
