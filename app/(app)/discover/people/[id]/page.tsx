@@ -4,216 +4,70 @@ import { notFound } from "next/navigation";
 
 const sql = postgres(process.env.DATABASE_URL!, { max: 1 });
 
-interface Person {
+interface PersonRow {
   id: string;
   name: string;
-  avatar: string;
-  title: string;
-  bio: string;
-  youtubeUrl?: string;
-  twitterUrl?: string;
-  websiteUrl?: string;
-  shows: string[];
-  episodeCount: number;
+  slug: string;
+  emoji: string | null;
+  title: string | null;
+  bio: string | null;
+  youtube_url: string | null;
+  twitter_url: string | null;
+  website_url: string | null;
 }
 
-interface Appearance {
-  id: string;
-  title: string;
+interface AppearanceRow {
+  episode_id: string;
+  episode_title: string;
   show_name: string;
   published_at: string;
-  description: string;
   thumbnail: string | null;
-  tags: string[];
+  role: string;
+  section_names: string | null;
 }
-
-// Demo people data — will be replaced with DB table
-const demoPeople: Record<string, Person> = {
-  "1": {
-    id: "1",
-    name: "Ray Dalio",
-    avatar: "👨‍💼",
-    title: "Founder of Bridgewater Associates",
-    bio: "Founder of Bridgewater Associates, one of the world's largest hedge funds. Author of Principles. Known for pioneering radical transparency and systematic decision-making approaches in investment management.",
-    youtubeUrl: "https://youtube.com/@RayDalio",
-    twitterUrl: "https://twitter.com/RayDalio",
-    websiteUrl: "https://www.principles.com",
-    shows: ["The Compound and Friends", "All-In Podcast"],
-    episodeCount: 3,
-  },
-  "2": {
-    id: "2",
-    name: "Cathie Wood",
-    avatar: "👩‍💼",
-    title: "CEO of ARK Invest",
-    bio: "Founder, CEO, and CIO of ARK Invest, an investment management firm focused on disruptive innovation. Known for her bold predictions on technology stocks and thematic investing strategies.",
-    youtubeUrl: "https://youtube.com/@ARKInvest",
-    twitterUrl: "https://twitter.com/CathieDWood",
-    websiteUrl: "https://ark-invest.com",
-    shows: ["Coin Bureau", "All-In Podcast"],
-    episodeCount: 2,
-  },
-  "3": {
-    id: "3",
-    name: "Michael Burry",
-    avatar: "👨",
-    title: "Founder of Scion Asset Management",
-    bio: "Physician turned hedge fund manager, famous for predicting the 2008 financial crisis. Founder of Scion Asset Management. Known for deep value investing and contrarian market analysis.",
-    twitterUrl: "https://twitter.com/michaeljburry",
-    shows: ["Eurodollar University"],
-    episodeCount: 1,
-  },
-  "4": {
-    id: "4",
-    name: "Janet Yellen",
-    avatar: "👩‍🦳",
-    title: "U.S. Secretary of the Treasury",
-    bio: "78th United States Secretary of the Treasury and former Chair of the Federal Reserve. An influential voice on monetary policy, economic stability, and fiscal responsibility.",
-    websiteUrl: "https://home.treasury.gov",
-    shows: ["All-In Podcast", "Eurodollar University"],
-    episodeCount: 2,
-  },
-  "5": {
-    id: "5",
-    name: "Josh Brown",
-    avatar: "👨‍💻",
-    title: "CEO of Ritholtz Wealth Management",
-    bio: "CEO of Ritholtz Wealth Management and co-host of The Compound. Known for his insights on markets, investing, and financial planning. Author of multiple bestselling books on investing.",
-    youtubeUrl: "https://youtube.com/@TheCompoundNews",
-    twitterUrl: "https://twitter.com/ReformedBroker",
-    websiteUrl: "https://thereformedbroker.com",
-    shows: ["The Compound and Friends"],
-    episodeCount: 4,
-  },
-  "6": {
-    id: "6",
-    name: "Chamath Palihapitiya",
-    avatar: "👨",
-    title: "CEO of Social Capital",
-    bio: "Founder and CEO of Social Capital. Former Facebook executive and venture capitalist focused on technology, healthcare, and climate. Co-host of the All-In Podcast.",
-    twitterUrl: "https://twitter.com/chaaborz",
-    websiteUrl: "https://www.socialcapital.com",
-    shows: ["All-In Podcast"],
-    episodeCount: 3,
-  },
-  "7": {
-    id: "7",
-    name: "Tracy Alloway",
-    avatar: "�‍💼",
-    title: "Bloomberg Reporter",
-    bio: "Bloomberg reporter and co-host of Odd Lots. Covers markets, economics, and finance with deep dives into complex topics from plumbing of financial markets to global macro.",
-    twitterUrl: "https://twitter.com/tracyalloway",
-    shows: ["Odd Lots"],
-    episodeCount: 5,
-  },
-  "8": {
-    id: "8",
-    name: "Patrick O'Shaughnessy",
-    avatar: "👨‍💻",
-    title: "CEO of Positive Sum",
-    bio: "CEO of Positive Sum and host of Invest Like the Best. Explores investing, business, and decision-making with top investors and entrepreneurs.",
-    twitterUrl: "https://twitter.com/patrick_oshag",
-    websiteUrl: "https://www.joincolossus.com",
-    shows: ["Invest Like the Best"],
-    episodeCount: 2,
-  },
-};
-
-// Demo appearances for each person
-const demoAppearances: Record<string, Appearance[]> = {
-  "1": [
-    {
-      id: "demo-1a",
-      title: "Understanding the Changing World Order",
-      show_name: "The Compound and Friends",
-      published_at: "2026-02-05T00:00:00Z",
-      description: "Ray discusses his perspectives on the changing global economic order, analyzing historical patterns of rising and declining empires. He explores how these cycles affect modern investing and provides insights on navigating the current geopolitical landscape.",
-      thumbnail: null,
-      tags: ["Economics", "Geopolitics", "Investing", "History", "Strategy"],
-    },
-    {
-      id: "demo-1b",
-      title: "Principles for Navigating Big Debt Crises",
-      show_name: "Planet Money",
-      published_at: "2026-01-29T00:00:00Z",
-      description: "An in-depth conversation about debt cycles and how to prepare for economic downturns. Ray shares principles from his extensive research on historical debt crises and provides actionable frameworks for investors and policymakers.",
-      thumbnail: null,
-      tags: ["Debt", "Economics", "Crisis Management", "Policy", "Markets"],
-    },
-    {
-      id: "demo-1c",
-      title: "The Future of Capitalism",
-      show_name: "All-In Podcast",
-      published_at: "2026-01-22T00:00:00Z",
-      description: "Ray examines the current state of capitalism and proposes reforms needed for a more sustainable economic system. He discusses wealth inequality, productivity, and the role of policy in shaping our economic future.",
-      thumbnail: null,
-      tags: ["Capitalism", "Reform", "Policy", "Inequality", "Economics"],
-    },
-  ],
-};
 
 export default async function PersonDetailPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const { id } = await params;
-  const person = demoPeople[id];
+  const { id: slug } = await params;
 
+  // Look up person by slug
+  const personResults = await sql<PersonRow[]>`
+    SELECT id, name, slug, emoji, title, bio, youtube_url, twitter_url, website_url
+    FROM people
+    WHERE slug = ${slug}
+    LIMIT 1
+  `;
+
+  const person = personResults[0];
   if (!person) {
     notFound();
   }
 
-  // Try to get real episode appearances from DB, fall back to demo data
-  let appearances: Appearance[] = demoAppearances[id] || [];
-
-  // Attempt to fetch real episodes that mention this person's name in title
-  try {
-    const realEpisodes = await sql<Array<{
-      id: string;
-      title: string;
-      show_name: string;
-      published_at: string;
-      thumbnail: string | null;
-      section_names: string | null;
-    }>>`
-      SELECT
-        e.id,
-        s.title,
-        COALESCE(e.youtube_channel_title, 'Unknown Show') as show_name,
-        COALESCE(s.published_at, e.published_at::text, e.created_at::text) as published_at,
-        e.youtube_thumbnail_url as thumbnail,
-        (
-          SELECT string_agg(DISTINCT sb.section_name, '||')
-          FROM summary_bullets sb
-          WHERE sb.summary_id = s.id
-        ) as section_names
-      FROM episodes e
-      JOIN episode_summary s ON e.id = s.episode_id
-      WHERE e.is_published = true
-        AND s.approval_status = 'approved'
-      ORDER BY s.published_at DESC
-      LIMIT 10
-    `;
-
-    if (realEpisodes.length > 0) {
-      appearances = realEpisodes.map((ep) => ({
-        id: ep.id,
-        title: ep.title,
-        show_name: ep.show_name,
-        published_at: ep.published_at,
-        description: "",
-        thumbnail: ep.thumbnail,
-        tags: ep.section_names
-          ? ep.section_names.split("||").slice(0, 5)
-          : [],
-      }));
-    }
-  } catch {
-    // Fall back to demo data
-  }
-
-  const displayCount = appearances.length || person.episodeCount;
+  // Get real episode appearances via episode_people junction
+  const appearances = await sql<AppearanceRow[]>`
+    SELECT
+      e.id as episode_id,
+      COALESCE(s.title, e.youtube_title, 'Untitled') as episode_title,
+      COALESCE(e.youtube_channel_title, 'Unknown Show') as show_name,
+      COALESCE(s.published_at, e.published_at::text, e.created_at::text) as published_at,
+      e.youtube_thumbnail_url as thumbnail,
+      ep.role,
+      (
+        SELECT string_agg(DISTINCT sb.section_name, '||')
+        FROM summary_bullets sb
+        JOIN episode_summary es ON es.id = sb.summary_id
+        WHERE es.episode_id = e.id
+      ) as section_names
+    FROM episode_people ep
+    JOIN episodes e ON e.id = ep.episode_id
+    LEFT JOIN episode_summary s ON s.episode_id = e.id
+    WHERE ep.person_id = ${person.id}
+    ORDER BY COALESCE(s.published_at, e.published_at::text, e.created_at::text) DESC
+    LIMIT 20
+  `;
 
   return (
     <>
@@ -233,7 +87,7 @@ export default async function PersonDetailPage({
         <div className="flex items-start gap-5">
           {/* Avatar */}
           <div className="w-20 h-20 rounded-full bg-gradient-to-br from-amber-100 to-orange-100 flex items-center justify-center text-4xl flex-shrink-0">
-            {person.avatar}
+            {person.emoji || "👤"}
           </div>
 
           <div className="flex-1 min-w-0">
@@ -249,15 +103,17 @@ export default async function PersonDetailPage({
             </div>
 
             {/* Bio */}
-            <p className="text-sm text-muted-foreground leading-relaxed mb-4">
-              {person.bio}
-            </p>
+            {person.bio && (
+              <p className="text-sm text-muted-foreground leading-relaxed mb-4">
+                {person.bio}
+              </p>
+            )}
 
             {/* Social icons */}
             <div className="flex items-center gap-1">
-              {person.youtubeUrl && (
+              {person.youtube_url && (
                 <a
-                  href={person.youtubeUrl}
+                  href={person.youtube_url}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="p-2 rounded-lg hover:bg-gray-100 transition-colors text-gray-400 hover:text-gray-700"
@@ -266,9 +122,9 @@ export default async function PersonDetailPage({
                   <Youtube size={18} />
                 </a>
               )}
-              {person.twitterUrl && (
+              {person.twitter_url && (
                 <a
-                  href={person.twitterUrl}
+                  href={person.twitter_url}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="p-2 rounded-lg hover:bg-gray-100 transition-colors text-gray-400 hover:text-gray-700"
@@ -277,15 +133,15 @@ export default async function PersonDetailPage({
                   <XIcon size={18} />
                 </a>
               )}
-              <button
-                className="p-2 rounded-lg hover:bg-gray-100 transition-colors text-gray-400 hover:text-gray-700"
+              <span
+                className="p-2 rounded-lg hover:bg-gray-100 transition-colors text-gray-400 hover:text-gray-700 cursor-pointer"
                 title="Save"
               >
                 <Bookmark size={18} />
-              </button>
-              {person.websiteUrl && (
+              </span>
+              {person.website_url && (
                 <a
-                  href={person.websiteUrl}
+                  href={person.website_url}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="p-2 rounded-lg hover:bg-gray-100 transition-colors text-gray-400 hover:text-gray-700"
@@ -308,93 +164,95 @@ export default async function PersonDetailPage({
           </div>
           <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-            <span>{displayCount} Appearances</span>
+            <span>{appearances.length} Appearance{appearances.length !== 1 ? "s" : ""}</span>
           </div>
         </div>
 
         <div className="space-y-4">
-          {appearances.map((episode) => (
-            <a
-              key={episode.id}
-              href={`/episode/${episode.id}`}
-              className="group block"
-            >
-              <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-lg transition-all duration-200">
-                <div className="flex gap-4 p-4">
-                  {/* Episode thumbnail */}
-                  <div className="w-20 h-20 rounded-xl overflow-hidden bg-gray-100 flex-shrink-0">
-                    {episode.thumbnail ? (
-                      <img
-                        src={episode.thumbnail}
-                        alt={episode.title}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center">
-                        <Podcast size={24} className="text-gray-300" />
-                      </div>
-                    )}
-                  </div>
+          {appearances.map((ep) => {
+            const tags = ep.section_names
+              ? ep.section_names.split("||").slice(0, 5)
+              : [];
 
-                  <div className="flex-1 min-w-0">
-                    {/* Title row */}
-                    <div className="flex items-start justify-between gap-2 mb-1">
-                      <div className="flex items-center gap-1.5 min-w-0">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400 flex-shrink-0"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                        <h3 className="text-sm font-semibold text-foreground group-hover:text-blue-600 transition-colors line-clamp-1">
-                          {episode.title}
-                        </h3>
-                      </div>
-                      <div className="flex items-center gap-1 flex-shrink-0">
-                        <span className="p-1 rounded text-gray-300 hover:text-gray-500 hover:bg-gray-100 cursor-pointer">
-                          <Bookmark size={14} />
-                        </span>
-                        <span className="p-1 rounded text-gray-300 hover:text-gray-500 hover:bg-gray-100 cursor-pointer">
-                          <Share2 size={14} />
-                        </span>
-                        <span className="p-1 rounded text-gray-300 hover:text-gray-500 hover:bg-gray-100 cursor-pointer">
-                          <Download size={14} />
-                        </span>
-                      </div>
+            return (
+              <a
+                key={ep.episode_id}
+                href={`/episode/${ep.episode_id}`}
+                className="group block"
+              >
+                <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-lg transition-all duration-200">
+                  <div className="flex gap-4 p-4">
+                    {/* Episode thumbnail */}
+                    <div className="w-20 h-20 rounded-xl overflow-hidden bg-gray-100 flex-shrink-0">
+                      {ep.thumbnail ? (
+                        <img
+                          src={ep.thumbnail}
+                          alt={ep.episode_title}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <Podcast size={24} className="text-gray-300" />
+                        </div>
+                      )}
                     </div>
 
-                    {/* Show + date */}
-                    <div className="flex items-center gap-3 text-xs text-muted-foreground mb-2">
-                      <span className="flex items-center gap-1">
-                        <Podcast size={12} />
-                        {episode.show_name}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <Calendar size={12} />
-                        {formatTimeAgo(episode.published_at)}
-                      </span>
-                    </div>
-
-                    {/* Description */}
-                    {episode.description && (
-                      <p className="text-xs text-muted-foreground leading-relaxed mb-2.5 line-clamp-2">
-                        {episode.description}
-                      </p>
-                    )}
-
-                    {/* Tags */}
-                    {episode.tags.length > 0 && (
-                      <div className="flex flex-wrap gap-1.5">
-                        {episode.tags.map((tag) => (
-                          <span
-                            key={tag}
-                            className="inline-flex items-center px-2.5 py-0.5 rounded-md bg-gray-50 border border-gray-100 text-[11px] text-gray-600"
-                          >
-                            {tag}
+                    <div className="flex-1 min-w-0">
+                      {/* Title row */}
+                      <div className="flex items-start justify-between gap-2 mb-1">
+                        <div className="flex items-center gap-1.5 min-w-0">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400 flex-shrink-0"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                          <h3 className="text-sm font-semibold text-foreground group-hover:text-blue-600 transition-colors line-clamp-1">
+                            {ep.episode_title}
+                          </h3>
+                        </div>
+                        <div className="flex items-center gap-1 flex-shrink-0">
+                          <span className="p-1 rounded text-gray-300 hover:text-gray-500 hover:bg-gray-100 cursor-pointer">
+                            <Bookmark size={14} />
                           </span>
-                        ))}
+                          <span className="p-1 rounded text-gray-300 hover:text-gray-500 hover:bg-gray-100 cursor-pointer">
+                            <Share2 size={14} />
+                          </span>
+                          <span className="p-1 rounded text-gray-300 hover:text-gray-500 hover:bg-gray-100 cursor-pointer">
+                            <Download size={14} />
+                          </span>
+                        </div>
                       </div>
-                    )}
+
+                      {/* Show + date + role */}
+                      <div className="flex items-center gap-3 text-xs text-muted-foreground mb-2">
+                        <span className="flex items-center gap-1">
+                          <Podcast size={12} />
+                          {ep.show_name}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <Calendar size={12} />
+                          {formatTimeAgo(ep.published_at)}
+                        </span>
+                        <span className="inline-flex items-center px-1.5 py-0.5 rounded bg-gray-50 text-[10px] font-medium text-gray-500 capitalize">
+                          {ep.role}
+                        </span>
+                      </div>
+
+                      {/* Tags */}
+                      {tags.length > 0 && (
+                        <div className="flex flex-wrap gap-1.5">
+                          {tags.map((tag) => (
+                            <span
+                              key={tag}
+                              className="inline-flex items-center px-2.5 py-0.5 rounded-md bg-gray-50 border border-gray-100 text-[11px] text-gray-600"
+                            >
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
-            </a>
-          ))}
+              </a>
+            );
+          })}
 
           {appearances.length === 0 && (
             <div className="bg-white rounded-2xl border border-gray-100 p-12 text-center">

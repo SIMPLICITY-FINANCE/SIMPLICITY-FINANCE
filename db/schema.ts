@@ -397,6 +397,48 @@ export const reportThemes = pgTable("report_themes", {
 }));
 
 // ─────────────────────────────────────────────────────────────────────────────
+// People - Hosts, guests, and notable figures extracted from episodes
+// ─────────────────────────────────────────────────────────────────────────────
+
+export const people = pgTable("people", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  name: text("name").notNull(),
+  slug: text("slug").notNull().unique(),
+  emoji: text("emoji"),
+  title: text("title"), // e.g. "CEO of Bridgewater Associates"
+  bio: text("bio"),
+  
+  // Optional social/web links
+  youtubeUrl: text("youtube_url"),
+  twitterUrl: text("twitter_url"),
+  websiteUrl: text("website_url"),
+  
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+}, (table) => ({
+  slugIdx: index("people_slug_idx").on(table.slug),
+  nameIdx: index("people_name_idx").on(table.name),
+}));
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Episode People - Junction table linking episodes to people
+// ─────────────────────────────────────────────────────────────────────────────
+
+export const episodePeople = pgTable("episode_people", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  episodeId: uuid("episode_id").notNull().references(() => episodes.id, { onDelete: "cascade" }),
+  personId: uuid("person_id").notNull().references(() => people.id, { onDelete: "cascade" }),
+  
+  role: text("role").$type<"host" | "guest" | "mentioned">().notNull().default("guest"),
+  
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+}, (table) => ({
+  episodeIdIdx: index("episode_people_episode_id_idx").on(table.episodeId),
+  personIdIdx: index("episode_people_person_id_idx").on(table.personId),
+  uniqueEpisodePerson: index("episode_people_unique").on(table.episodeId, table.personId),
+}));
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Report Items - Links reports to specific bullets from episodes (legacy)
 // ─────────────────────────────────────────────────────────────────────────────
 
