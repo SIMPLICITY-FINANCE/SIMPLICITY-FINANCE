@@ -21,11 +21,10 @@ export const YOUTUBE_CLIENT_STRATEGIES = [
 ] as const;
 
 /**
- * Get the yt-dlp binary path with fallback chain:
- * 1. YT_DLP_BIN env var (explicit override)
- * 2. Vendored binary for current platform (from project root)
- * 3. "yt-dlp" in PATH (fallback - will validate not Python-based)
+ * Whether we resolved to python3 -m yt_dlp mode (fallback when binary is blocked)
  */
+let USE_PYTHON_MODULE = false;
+
 function getYtDlpBinary(): string {
   // Explicit override
   if (process.env.YT_DLP_BIN) {
@@ -33,28 +32,55 @@ function getYtDlpBinary(): string {
   }
 
   // Check for vendored binary from project root
-  // Try multiple resolution strategies for robustness
   const platform = process.platform === "darwin" ? "darwin" : process.platform === "linux" ? "linux" : null;
   if (platform) {
-    // Strategy 1: Use __dirname (works in compiled code)
-    let vendorPath = path.resolve(__dirname, "..", "..", "vendor", "yt-dlp", platform, "yt-dlp");
-    if (fs.existsSync(vendorPath)) {
-      return vendorPath;
-    }
-    
-    // Strategy 2: Use process.cwd() (works in dev/runtime)
-    vendorPath = path.join(process.cwd(), "vendor", "yt-dlp", platform, "yt-dlp");
-    if (fs.existsSync(vendorPath)) {
-      return vendorPath;
+    const candidates = [
+      path.resolve(__dirname, "..", "..", "vendor", "yt-dlp", platform, "yt-dlp"),
+      path.join(process.cwd(), "vendor", "yt-dlp", platform, "yt-dlp"),
+    ];
+    for (const vendorPath of candidates) {
+      if (fs.existsSync(vendorPath)) {
+        const r = spawnSync(vendorPath, ["--version"], { timeout: 5000 });
+        if (r.status === 0) {
+          console.log(`[yt-dlp] Using vendored binary: ${vendorPath} (${r.stdout?.toString().trim()})`);
+          return vendorPath;
+        }
+        console.warn(`[yt-dlp] Vendored binary blocked (status=${r.status}, signal=${r.signal}): ${vendorPath}`);
+      }
     }
   }
 
-  // Fallback to PATH (will be validated on first use)
+  // Try yt-dlp in PATH
+  const pathResult = spawnSync("yt-dlp", ["--version"], { timeout: 5000 });
+  if (pathResult.status === 0) {
+    console.log(`[yt-dlp] Using PATH binary (${pathResult.stdout?.toString().trim()})`);
+    return "yt-dlp";
+  }
+
+  // Last resort: python3 -m yt_dlp
+  const pyResult = spawnSync("python3", ["-m", "yt_dlp", "--version"], { timeout: 5000 });
+  if (pyResult.status === 0) {
+    USE_PYTHON_MODULE = true;
+    console.log(`[yt-dlp] Using python3 -m yt_dlp (${pyResult.stdout?.toString().trim()})`);
+    return "python3";
+  }
+
+  console.error("[yt-dlp] No working yt-dlp found");
   return "yt-dlp";
 }
 
 const YT_DLP_BIN = getYtDlpBinary();
 let BINARY_VALIDATED = false;
+
+/**
+ * Run yt-dlp, transparently handling python3 module mode
+ */
+function runYtDlp(args: string[], options: { timeout?: number; maxBuffer?: number } = {}) {
+  if (USE_PYTHON_MODULE) {
+    return execFileAsync("python3", ["-m", "yt_dlp", ...args], options);
+  }
+  return execFileAsync(YT_DLP_BIN, args, options);
+}
 
 /**
  * Validate that the yt-dlp binary is not Python-based
@@ -210,7 +236,7 @@ export async function discoverFormats(
       args.splice(1, 0, "-vU");
     }
 
-    const { stdout, stderr } = await execFileAsync(YT_DLP_BIN, args, {
+    const { stdout, stderr } = await runYtDlp(args, {
       timeout: timeoutMs,
       maxBuffer: 10 * 1024 * 1024, // 10MB
     });
@@ -333,7 +359,7 @@ export async function downloadFormat(
       args.splice(0, 0, "-vU");
     }
 
-    const { stdout, stderr } = await execFileAsync(YT_DLP_BIN, args, {
+    const { stdout, stderr } = await runYtDlp(args, {
       timeout: timeoutMs,
       maxBuffer: 10 * 1024 * 1024,
     });
