@@ -405,6 +405,7 @@ export const people = pgTable("people", {
   name: text("name").notNull(),
   slug: text("slug").notNull().unique(),
   emoji: text("emoji"),
+  avatarUrl: text("avatar_url"), // AI-generated headshot URL
   title: text("title"), // e.g. "CEO of Bridgewater Associates"
   bio: text("bio"),
   

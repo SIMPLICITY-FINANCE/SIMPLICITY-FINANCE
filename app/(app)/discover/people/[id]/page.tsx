@@ -9,6 +9,7 @@ interface PersonRow {
   name: string;
   slug: string;
   emoji: string | null;
+  avatar_url: string | null;
   title: string | null;
   bio: string | null;
   youtube_url: string | null;
@@ -35,7 +36,7 @@ export default async function PersonDetailPage({
 
   // Look up person by slug
   const personResults = await sql<PersonRow[]>`
-    SELECT id, name, slug, emoji, title, bio, youtube_url, twitter_url, website_url
+    SELECT id, name, slug, emoji, avatar_url, title, bio, youtube_url, twitter_url, website_url
     FROM people
     WHERE slug = ${slug}
     LIMIT 1
@@ -86,9 +87,17 @@ export default async function PersonDetailPage({
       <div className="bg-white rounded-2xl border border-gray-100 p-6 mb-8">
         <div className="flex items-start gap-5">
           {/* Avatar */}
-          <div className="w-20 h-20 rounded-full bg-gradient-to-br from-amber-100 to-orange-100 flex items-center justify-center text-4xl flex-shrink-0">
-            {person.emoji || "👤"}
-          </div>
+          {person.avatar_url ? (
+            <img
+              src={person.avatar_url}
+              alt={person.name}
+              className="w-20 h-20 rounded-full object-cover flex-shrink-0"
+            />
+          ) : (
+            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-amber-100 to-orange-100 flex items-center justify-center text-4xl flex-shrink-0">
+              {person.emoji || "👤"}
+            </div>
+          )}
 
           <div className="flex-1 min-w-0">
             {/* Name + title */}

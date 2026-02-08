@@ -8,6 +8,7 @@ interface PersonRow {
   name: string;
   slug: string;
   emoji: string | null;
+  avatar_url: string | null;
   title: string | null;
   episode_count: number;
   shows: string | null;
@@ -20,6 +21,7 @@ export default async function DiscoverPeoplePage() {
       p.name,
       p.slug,
       p.emoji,
+      p.avatar_url,
       p.title,
       COUNT(DISTINCT ep.episode_id)::int as episode_count,
       (
@@ -77,9 +79,17 @@ export default async function DiscoverPeoplePage() {
               <div className="bg-white rounded-2xl border border-gray-100 p-5 hover:shadow-lg transition-all duration-200">
                 {/* Person header */}
                 <div className="flex items-center gap-3.5 mb-3">
-                  <div className="w-11 h-11 rounded-full bg-gradient-to-br from-amber-100 to-orange-100 flex items-center justify-center text-xl flex-shrink-0">
-                    {person.emoji || "👤"}
-                  </div>
+                  {person.avatar_url ? (
+                    <img
+                      src={person.avatar_url}
+                      alt={person.name}
+                      className="w-11 h-11 rounded-full object-cover flex-shrink-0"
+                    />
+                  ) : (
+                    <div className="w-11 h-11 rounded-full bg-gradient-to-br from-amber-100 to-orange-100 flex items-center justify-center text-xl flex-shrink-0">
+                      {person.emoji || "👤"}
+                    </div>
+                  )}
                   <div className="flex-1 min-w-0">
                     <h3 className="text-sm font-semibold text-foreground group-hover:text-blue-600 transition-colors truncate">
                       {person.name}
