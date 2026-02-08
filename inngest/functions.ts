@@ -1,6 +1,6 @@
 import { inngest } from "./client";
 import { processEpisode, processEpisodeOnFailure } from "./functions/processEpisode";
-import { scheduledIngest } from "./functions/scheduledIngest";
+import { ingestShowsScheduled, ingestShowManual } from "./functions/ingestShows";
 import { generateDailyReportCron, generateDailyReportManual } from "./functions/generateDailyReport";
 
 // Stub function to verify Inngest is working
@@ -22,7 +22,8 @@ export const functions = [
   helloWorld,
   processEpisode,
   processEpisodeOnFailure,
-  scheduledIngest,
+  ingestShowsScheduled,
+  ingestShowManual,
   generateDailyReportCron,
   generateDailyReportManual,
 ];

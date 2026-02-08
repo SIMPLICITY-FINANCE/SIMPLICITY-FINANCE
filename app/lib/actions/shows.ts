@@ -349,52 +349,74 @@ export async function getShowStats(showId: string): Promise<ShowStats | null> {
   }
 }
 
-// ─── TEST SHOW INGESTION ─────────────────────────────────────────────────────────
+// ─── TRIGGER SHOW INGESTION ─────────────────────────────────────────────────────
 
 /**
- * Test ingestion for a show - fetch latest videos and simulate ingestion
+ * Trigger manual ingestion for a show via Inngest
+ * This sends an event that the ingestShowManual function picks up
  */
-export async function testShowIngestion(showId: string): Promise<{ success: boolean; videos?: any[]; error?: string }> {
+export async function triggerShowIngestion(showId: string): Promise<{ success: boolean; message?: string; error?: string }> {
   try {
-    // Get show info
+    // Verify show exists
     const [show] = await sql`
-      SELECT channel_id, name, last_videos_to_ingest FROM shows WHERE id = ${showId}
+      SELECT id, name FROM shows WHERE id = ${showId}
     `;
 
     if (!show) {
-      return {
-        success: false,
-        error: 'Show not found',
-      };
+      return { success: false, error: 'Show not found' };
     }
 
-    // Fetch latest videos from channel
-    const videos = await getChannelVideos(show.channel_id, show.last_videos_to_ingest || 2);
+    // Send Inngest event to trigger manual ingestion
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/inngest`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: 'show/ingest.manual',
+          data: { showId },
+        }),
+      }
+    );
 
-    // Update last_checked_at
-    await sql`
-      UPDATE shows SET last_checked_at = NOW() WHERE id = ${showId}
-    `;
+    // Alternative: use the inngest client directly if available
+    // For server actions, we use the HTTP API to send events
+    if (!response.ok) {
+      // Fallback: trigger via direct inngest send
+      const { inngest } = await import('../../../inngest/client.js');
+      await inngest.send({
+        name: 'show/ingest.manual',
+        data: { showId },
+      });
+    }
 
-    // Revalidate admin pages
     revalidatePath('/admin/shows');
 
     return {
       success: true,
-      videos: videos.map(v => ({
-        id: v.id,
-        title: v.title,
-        publishedAt: v.publishedAt,
-        url: v.url,
-        thumbnail: v.thumbnail,
-      })),
+      message: `Ingestion triggered for "${show.name}". Check Inngest dashboard for progress.`,
     };
   } catch (error) {
-    console.error('Error testing show ingestion:', error);
-    return {
-      success: false,
-      error: 'Failed to test ingestion',
-    };
+    console.error('Error triggering show ingestion:', error);
+
+    // Last resort: try direct inngest send
+    try {
+      const { inngest } = await import('../../../inngest/client.js');
+      await inngest.send({
+        name: 'show/ingest.manual',
+        data: { showId },
+      });
+      revalidatePath('/admin/shows');
+      return {
+        success: true,
+        message: 'Ingestion triggered via direct send.',
+      };
+    } catch (innerError) {
+      return {
+        success: false,
+        error: 'Failed to trigger ingestion. Is the Inngest dev server running?',
+      };
+    }
   }
 }
 

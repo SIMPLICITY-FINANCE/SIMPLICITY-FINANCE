@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { toggleShowStatus, deleteShow } from "../../../lib/actions/shows.js";
+import { toggleShowStatus, deleteShow, triggerShowIngestion } from "../../../lib/actions/shows.js";
 import { formatSubscriberCount } from "../../../lib/youtube/parser.js";
-import { Trash2, ExternalLink, Loader2 } from "lucide-react";
+import { Trash2, ExternalLink, Loader2, Play } from "lucide-react";
 
 interface ShowData {
   id: string;
@@ -42,6 +42,8 @@ export function ShowRow({ show }: { show: ShowData }) {
   const [toggling, setToggling] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [testing, setTesting] = useState(false);
+  const [testMessage, setTestMessage] = useState<string | null>(null);
   const [status, setStatus] = useState(show.status);
 
   async function handleToggle() {
@@ -71,6 +73,26 @@ export function ShowRow({ show }: { show: ShowData }) {
     } finally {
       setDeleting(false);
       setConfirmDelete(false);
+    }
+  }
+
+  async function handleTestIngestion() {
+    setTesting(true);
+    setTestMessage(null);
+    try {
+      const result = await triggerShowIngestion(show.id);
+      if (result.success) {
+        setTestMessage(result.message || "Ingestion triggered!");
+        setTimeout(() => setTestMessage(null), 5000);
+      } else {
+        setTestMessage(result.error || "Failed");
+        setTimeout(() => setTestMessage(null), 5000);
+      }
+    } catch {
+      setTestMessage("Failed to trigger ingestion");
+      setTimeout(() => setTestMessage(null), 5000);
+    } finally {
+      setTesting(false);
     }
   }
 
@@ -135,7 +157,16 @@ export function ShowRow({ show }: { show: ShowData }) {
       </div>
 
       {/* Actions */}
-      <div className="flex items-center justify-end gap-2">
+      <div className="flex items-center justify-end gap-1.5">
+        <button
+          onClick={handleTestIngestion}
+          disabled={testing}
+          className="p-1.5 rounded-lg hover:bg-blue-50 transition-colors text-gray-400 hover:text-blue-600 disabled:opacity-50"
+          title="Test ingestion"
+        >
+          {testing ? <Loader2 size={14} className="animate-spin" /> : <Play size={14} />}
+        </button>
+
         <a
           href={show.channel_url}
           target="_blank"
@@ -172,6 +203,13 @@ export function ShowRow({ show }: { show: ShowData }) {
           </button>
         )}
       </div>
+
+      {/* Test message - spans full row */}
+      {testMessage && (
+        <div className="col-span-5 -mt-2 mb-1 px-2">
+          <p className="text-xs text-blue-600 bg-blue-50 rounded px-2 py-1">{testMessage}</p>
+        </div>
+      )}
     </div>
   );
 }

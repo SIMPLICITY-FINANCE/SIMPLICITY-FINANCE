@@ -577,7 +577,7 @@ export const processEpisode = inngest.createFunction(
   },
   { event: "episode/submitted" },
   async ({ event, step }) => {
-    const { url, requestId } = event.data;
+    const { url, requestId, autoApprove } = event.data;
 
     // BREADCRUMB: Impossible to miss function entry
     console.log("═══════════════════════════════════════════════════════════════");
@@ -931,7 +931,45 @@ export const processEpisode = inngest.createFunction(
       console.log(`[Step 7] ✓ Cleanup complete`);
     });
 
-    // Step 8: Mark as succeeded
+    // Step 8: Auto-approve if triggered by show ingestion
+    if (autoApprove) {
+      await step.run("auto-approve", async () => {
+        console.log(`[Step 8] Auto-approving episode (from show ingestion)`);
+
+        // Find the episode
+        const [episode] = await sql<Array<{ id: string }>>`
+          SELECT id FROM episodes
+          WHERE video_id = ${metadata.videoId ?? null}
+             OR audio_id = ${metadata.audioId ?? null}
+          LIMIT 1
+        `;
+
+        if (episode) {
+          // Auto-approve the episode summary
+          await sql`
+            UPDATE episode_summary
+            SET approval_status = 'approved',
+                approved_at = NOW()
+            WHERE episode_id = ${episode.id}
+          `;
+
+          // Set published_at on the episode
+          await sql`
+            UPDATE episodes
+            SET published_at = NOW(),
+                is_published = true,
+                updated_at = NOW()
+            WHERE id = ${episode.id}
+          `;
+
+          console.log(`[Step 8] ✅ Episode ${episode.id} auto-approved and published`);
+        } else {
+          console.warn(`[Step 8] ⚠️ Could not find episode to auto-approve`);
+        }
+      });
+    }
+
+    // Step 9: Mark as succeeded
     if (requestId) {
       await step.run("mark-succeeded", async () => {
         console.log(`[Step 8] Marking request ${requestId} as succeeded`);
