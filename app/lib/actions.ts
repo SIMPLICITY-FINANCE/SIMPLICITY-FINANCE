@@ -102,3 +102,20 @@ export async function removeBulletFromNotebook(bulletId: string) {
     return { success: false, message: "Failed to remove bullet" };
   }
 }
+
+export async function getSavedEpisodeIds(): Promise<string[]> {
+  try {
+    const results = await sql<{ episode_id: string }[]>`
+      SELECT episode_id 
+      FROM saved_items 
+      WHERE user_id = ${DEMO_USER_ID} 
+        AND item_type = 'episode'
+        AND episode_id IS NOT NULL
+    `;
+    
+    return results.map(r => r.episode_id);
+  } catch (error) {
+    console.error("Error fetching saved episode IDs:", error);
+    return [];
+  }
+}

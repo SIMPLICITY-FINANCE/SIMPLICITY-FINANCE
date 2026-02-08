@@ -1,6 +1,8 @@
-import { Bookmark, Share2, Download, FileText, Mic, User, Calendar, AlertTriangle, CheckCircle, XCircle } from "lucide-react";
+import { Share2, Download, FileText, Mic, User, Calendar, AlertTriangle, CheckCircle, XCircle } from "lucide-react";
 import { IconButton } from "../ui/IconButton.js";
 import { Chip } from "../ui/Chip.js";
+import { SaveButton } from "../ui/SaveButton.js";
+import { useSavedEpisodes } from "../../contexts/SavedEpisodesContext.js";
 
 interface FeedEpisodeCardProps {
   title: string;
@@ -35,9 +37,12 @@ export function FeedEpisodeCard({
   quoteCount,
   onClick,
 }: FeedEpisodeCardProps) {
+  const { isSaved, addSavedEpisode, removeSavedEpisode } = useSavedEpisodes();
+  
   // Determine badge display
   const showQCBadge = qcStatus && qcStatus !== 'pass';
   const showPendingBadge = approvalStatus === 'pending';
+  
   return (
     <div 
       className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer"
@@ -52,9 +57,11 @@ export function FeedEpisodeCard({
           </h3>
         </div>
         <div className="flex items-center gap-1 flex-shrink-0" onClick={(e) => e.stopPropagation()}>
-          <IconButton>
-            <Bookmark size={16} className="text-foreground/60" />
-          </IconButton>
+          <SaveButton 
+            episodeId={episodeId} 
+            initialSaved={isSaved(episodeId)}
+            onToggle={(saved) => saved ? addSavedEpisode(episodeId) : removeSavedEpisode(episodeId)}
+          />
           <IconButton>
             <Share2 size={16} className="text-foreground/60" />
           </IconButton>

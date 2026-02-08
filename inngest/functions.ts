@@ -1,6 +1,7 @@
 import { inngest } from "./client";
 import { processEpisode, processEpisodeOnFailure } from "./functions/processEpisode";
 import { scheduledIngest } from "./functions/scheduledIngest";
+import { generateDailyReportCron, generateDailyReportManual } from "./functions/generateDailyReport";
 
 // Stub function to verify Inngest is working
 export const helloWorld = inngest.createFunction(
@@ -17,4 +18,11 @@ export const helloWorld = inngest.createFunction(
 );
 
 // Export all functions as an array
-export const functions = [helloWorld, processEpisode, processEpisodeOnFailure, scheduledIngest];
+export const functions = [
+  helloWorld,
+  processEpisode,
+  processEpisodeOnFailure,
+  scheduledIngest,
+  generateDailyReportCron,
+  generateDailyReportManual,
+];

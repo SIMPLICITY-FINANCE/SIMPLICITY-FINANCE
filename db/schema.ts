@@ -24,21 +24,33 @@ export const shows = pgTable("shows", {
   id: uuid("id").primaryKey().defaultRandom(),
   name: text("name").notNull(),
   description: text("description"),
-  youtubeChannelId: text("youtube_channel_id").unique(),
   
-  // Automatic ingestion configuration
-  ingestEnabled: boolean("ingest_enabled").notNull().default(false),
-  ingestSource: text("ingest_source"), // "youtube_channel" | "youtube_playlist" | "rss"
-  youtubePlaylistId: text("youtube_playlist_id"),
-  rssFeedUrl: text("rss_feed_url"),
+  // YouTube metadata
+  channelId: text("channel_id").notNull().unique(), // UC... format (source of truth)
+  channelHandle: text("channel_handle"), // @username format
+  channelUrl: text("channel_url").notNull(),
+  channelDescription: text("channel_description"),
+  channelThumbnail: text("channel_thumbnail"),
+  subscriberCount: integer("subscriber_count"),
+  
+  // Ingestion settings
+  sourceType: text("source_type").notNull().default("youtube"), // 'youtube', 'rss', etc.
+  status: text("status").$type<"enabled" | "disabled">().notNull().default("disabled"),
+  ingestionFrequency: text("ingestion_frequency").default("every_6_hours"), // for future
+  lastVideosToIngest: integer("last_videos_to_ingest").default(2), // configurable
+  
+  // Timestamps
   lastIngestedAt: timestamp("last_ingested_at"),
-  ingestFrequency: text("ingest_frequency").default("daily"), // "hourly" | "daily" | "weekly"
-  
+  lastCheckedAt: timestamp("last_checked_at"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  
+  // Stats
+  totalEpisodesIngested: integer("total_episodes_ingested").default(0),
 }, (table) => ({
-  youtubeChannelIdIdx: index("shows_youtube_channel_id_idx").on(table.youtubeChannelId),
-  ingestEnabledIdx: index("shows_ingest_enabled_idx").on(table.ingestEnabled),
+  channelIdIdx: index("shows_channel_id_idx").on(table.channelId),
+  statusIdx: index("shows_status_idx").on(table.status),
+  sourceTypeIdx: index("shows_source_type_idx").on(table.sourceType),
 }));
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -311,27 +323,81 @@ export const reports = pgTable("reports", {
   id: uuid("id").primaryKey().defaultRandom(),
   
   title: text("title").notNull(),
-  reportType: text("report_type").notNull(), // "daily" | "weekly" | "monthly"
-  periodStart: text("period_start").notNull(), // ISO date
-  periodEnd: text("period_end").notNull(), // ISO date
+  reportType: text("report_type").notNull(), // "daily" | "weekly" | "monthly" | "quarterly"
+  generationType: text("generation_type").notNull().default("auto"), // "auto" | "manual"
   
-  summary: text("summary").notNull(), // Overall summary text
+  // Period this report covers
+  date: text("date").notNull(), // YYYY-MM-DD canonical date for this report
+  periodStart: text("period_start").notNull(), // ISO datetime
+  periodEnd: text("period_end").notNull(), // ISO datetime
   
-  // Approval workflow (same as episode_summary)
+  // Generation status
+  status: text("status").notNull().default("generating"), // "generating" | "ready" | "failed"
+  
+  // AI-generated content stored as JSONB
+  contentJson: jsonb("content_json"), // { executiveSummary, insights[], themes[], sentiment, sentimentReasoning }
+  
+  // Legacy plain-text summary (kept for backward compat)
+  summary: text("summary").notNull().default(""),
+  
+  // Metadata
+  episodesIncluded: integer("episodes_included").notNull().default(0),
+  generatedBy: text("generated_by").notNull().default("system"), // "system" | user_id
+  
+  // Approval workflow
   approvalStatus: text("approval_status").notNull().default("pending"), // "pending" | "approved" | "rejected"
   approvedBy: uuid("approved_by").references(() => users.id),
   approvedAt: timestamp("approved_at"),
   rejectionReason: text("rejection_reason"),
   
+  generatedAt: timestamp("generated_at"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 }, (table) => ({
   reportTypeIdx: index("reports_report_type_idx").on(table.reportType),
+  dateIdx: index("reports_date_idx").on(table.date),
   periodIdx: index("reports_period_idx").on(table.periodStart, table.periodEnd),
+  statusIdx: index("reports_status_idx").on(table.status),
   approvalStatusIdx: index("reports_approval_status_idx").on(table.approvalStatus),
+  uniqueTypeDate: index("reports_type_date_unique").on(table.reportType, table.date),
 }));
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Report Items - Links reports to specific bullets from episodes
+// Report Episodes - Junction table linking reports to their source episodes
+// ─────────────────────────────────────────────────────────────────────────────
+
+export const reportEpisodes = pgTable("report_episodes", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  reportId: uuid("report_id").notNull().references(() => reports.id, { onDelete: "cascade" }),
+  episodeId: uuid("episode_id").notNull().references(() => episodes.id, { onDelete: "cascade" }),
+  
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+}, (table) => ({
+  reportIdIdx: index("report_episodes_report_id_idx").on(table.reportId),
+  episodeIdIdx: index("report_episodes_episode_id_idx").on(table.episodeId),
+  uniqueReportEpisode: index("report_episodes_unique").on(table.reportId, table.episodeId),
+}));
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Report Themes - Tracks recurring themes across reports
+// ─────────────────────────────────────────────────────────────────────────────
+
+export const reportThemes = pgTable("report_themes", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  reportId: uuid("report_id").notNull().references(() => reports.id, { onDelete: "cascade" }),
+  
+  name: text("name").notNull(),
+  description: text("description"),
+  prominence: real("prominence").notNull().default(0.5), // 0.0 to 1.0
+  episodeCount: integer("episode_count").notNull().default(1),
+  
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+}, (table) => ({
+  reportIdIdx: index("report_themes_report_id_idx").on(table.reportId),
+  nameIdx: index("report_themes_name_idx").on(table.name),
+}));
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Report Items - Links reports to specific bullets from episodes (legacy)
 // ─────────────────────────────────────────────────────────────────────────────
 
 export const reportItems = pgTable("report_items", {

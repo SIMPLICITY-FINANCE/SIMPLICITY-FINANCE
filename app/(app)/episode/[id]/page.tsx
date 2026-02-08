@@ -168,6 +168,7 @@ export default async function EpisodePage({ params }: PageProps) {
           intro={episode.youtube_description?.slice(0, 300) || "In this episode, the hosts discuss key market insights and investment strategies."}
           tags={tags}
           heroImageUrl={episode.youtube_thumbnail_url || undefined}
+          episodeId={id}
         />
 
         {keyQuotes.length > 0 && (

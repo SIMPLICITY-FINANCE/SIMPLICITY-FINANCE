@@ -1,6 +1,8 @@
 "use client";
 
-import { Bookmark, Share2, Download, Mic, User, Calendar } from "lucide-react";
+import { Share2, Download, Mic, User, Calendar } from "lucide-react";
+import { SaveButton } from "../ui/SaveButton.js";
+import { useSavedEpisodes } from "../../contexts/SavedEpisodesContext.js";
 
 interface ReportHeaderProps {
   title: string;
@@ -10,6 +12,7 @@ interface ReportHeaderProps {
   intro: string;
   tags: string[];
   heroImageUrl?: string;
+  episodeId: string;
 }
 
 export function ReportHeader({
@@ -20,7 +23,10 @@ export function ReportHeader({
   intro,
   tags,
   heroImageUrl,
+  episodeId,
 }: ReportHeaderProps) {
+  const { isSaved, addSavedEpisode, removeSavedEpisode } = useSavedEpisodes();
+  
   const handleAction = (action: string) => {
     alert(`${action} - Coming soon!`);
   };
@@ -36,13 +42,12 @@ export function ReportHeader({
           </h1>
         </div>
         <div className="flex items-center gap-2 flex-shrink-0">
-          <button
-            onClick={() => handleAction("Bookmark")}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-            aria-label="Bookmark"
-          >
-            <Bookmark size={20} className="text-gray-600" />
-          </button>
+          <SaveButton 
+            episodeId={episodeId}
+            initialSaved={isSaved(episodeId)}
+            size={20}
+            onToggle={(saved) => saved ? addSavedEpisode(episodeId) : removeSavedEpisode(episodeId)}
+          />
           <button
             onClick={() => handleAction("Share")}
             className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
