@@ -1,4 +1,4 @@
-import { execFile, spawnSync } from "node:child_process";
+import { execFile, spawnSync, execSync } from "node:child_process";
 import { promisify } from "node:util";
 import * as fs from "node:fs";
 import * as path from "node:path";
@@ -21,17 +21,45 @@ export const YOUTUBE_CLIENT_STRATEGIES = [
 ] as const;
 
 /**
- * Whether we resolved to python3 -m yt_dlp mode (fallback when binary is blocked)
+ * Execution mode: 'docker' | 'binary' | 'python_module'
  */
-let USE_PYTHON_MODULE = false;
+let EXEC_MODE: "docker" | "binary" | "python_module" = "binary";
+let DOCKER_IMAGE = "jauderho/yt-dlp:latest";
 
 function getYtDlpBinary(): string {
-  // Explicit override
+  console.log("[yt-dlp] Binary resolution starting...");
+
+  // Priority 1: Docker (most reliable, always up-to-date)
+  try {
+    console.log("[yt-dlp] Checking Docker availability...");
+    execSync("docker ps", { stdio: "ignore", timeout: 5000 });
+    console.log("[yt-dlp] ✅ Docker is available");
+
+    // Get Docker yt-dlp version
+    try {
+      const version = execSync(
+        `docker run --rm ${DOCKER_IMAGE} --version`,
+        { encoding: "utf-8", timeout: 15000 }
+      ).trim();
+      console.log(`[yt-dlp] Using Docker yt-dlp version: ${version}`);
+    } catch {
+      console.log("[yt-dlp] Could not get Docker version (not critical)");
+    }
+
+    EXEC_MODE = "docker";
+    return "docker";
+  } catch {
+    console.log("[yt-dlp] ❌ Docker not available, falling back to local binary");
+  }
+
+  // Priority 2: Explicit override
   if (process.env.YT_DLP_BIN) {
+    console.log(`[yt-dlp] Using explicit YT_DLP_BIN: ${process.env.YT_DLP_BIN}`);
+    EXEC_MODE = "binary";
     return process.env.YT_DLP_BIN;
   }
 
-  // Check for vendored binary from project root
+  // Priority 3: Vendored binary
   const platform = process.platform === "darwin" ? "darwin" : process.platform === "linux" ? "linux" : null;
   if (platform) {
     const candidates = [
@@ -43,6 +71,7 @@ function getYtDlpBinary(): string {
         const r = spawnSync(vendorPath, ["--version"], { timeout: 5000 });
         if (r.status === 0) {
           console.log(`[yt-dlp] Using vendored binary: ${vendorPath} (${r.stdout?.toString().trim()})`);
+          EXEC_MODE = "binary";
           return vendorPath;
         }
         console.warn(`[yt-dlp] Vendored binary blocked (status=${r.status}, signal=${r.signal}): ${vendorPath}`);
@@ -50,22 +79,28 @@ function getYtDlpBinary(): string {
     }
   }
 
-  // Try yt-dlp in PATH
+  // Priority 4: yt-dlp in PATH
   const pathResult = spawnSync("yt-dlp", ["--version"], { timeout: 5000 });
   if (pathResult.status === 0) {
     console.log(`[yt-dlp] Using PATH binary (${pathResult.stdout?.toString().trim()})`);
+    EXEC_MODE = "binary";
     return "yt-dlp";
   }
 
-  // Last resort: python3 -m yt_dlp
+  // Priority 5: python3 -m yt_dlp
   const pyResult = spawnSync("python3", ["-m", "yt_dlp", "--version"], { timeout: 5000 });
   if (pyResult.status === 0) {
-    USE_PYTHON_MODULE = true;
+    EXEC_MODE = "python_module";
     console.log(`[yt-dlp] Using python3 -m yt_dlp (${pyResult.stdout?.toString().trim()})`);
     return "python3";
   }
 
-  console.error("[yt-dlp] No working yt-dlp found");
+  console.error(
+    "[yt-dlp] No working yt-dlp found. Please:\n" +
+    "  1. Start Docker Desktop (recommended), OR\n" +
+    "  2. Install yt-dlp: brew install yt-dlp, OR\n" +
+    "  3. Set YT_DLP_BIN env var to point to a working binary"
+  );
   return "yt-dlp";
 }
 
@@ -73,10 +108,22 @@ const YT_DLP_BIN = getYtDlpBinary();
 let BINARY_VALIDATED = false;
 
 /**
- * Run yt-dlp, transparently handling python3 module mode
+ * Run yt-dlp, transparently handling Docker and python3 module modes.
+ * For Docker: maps any local paths in args to /tmp volume mounts.
  */
 function runYtDlp(args: string[], options: { timeout?: number; maxBuffer?: number } = {}) {
-  if (USE_PYTHON_MODULE) {
+  if (EXEC_MODE === "docker") {
+    // Build Docker command with volume mounts for any /tmp paths in args
+    const volumeMounts: string[] = ["-v", "/tmp:/tmp"];
+    const dockerArgs = [
+      "run", "--rm",
+      ...volumeMounts,
+      DOCKER_IMAGE,
+      ...args,
+    ];
+    return execFileAsync("docker", dockerArgs, options);
+  }
+  if (EXEC_MODE === "python_module") {
     return execFileAsync("python3", ["-m", "yt_dlp", ...args], options);
   }
   return execFileAsync(YT_DLP_BIN, args, options);
@@ -85,9 +132,10 @@ function runYtDlp(args: string[], options: { timeout?: number; maxBuffer?: numbe
 /**
  * Validate that the yt-dlp binary is not Python-based
  * Throws error if Python 3.9 deprecation warning is detected
+ * Skipped for Docker mode.
  */
 async function validateYtDlpBinary(): Promise<void> {
-  if (BINARY_VALIDATED) {
+  if (BINARY_VALIDATED || EXEC_MODE === "docker") {
     return;
   }
 
@@ -124,17 +172,27 @@ export function getYtDlpBinaryPath(): string {
 
 /**
  * Get yt-dlp version and path for diagnostic logging
- * Note: Version check may fail due to macOS Gatekeeper, but path is still correct
  */
 export async function getYtDlpVersion(): Promise<{ version: string; path: string }> {
+  if (EXEC_MODE === "docker") {
+    try {
+      const version = execSync(
+        `docker run --rm ${DOCKER_IMAGE} --version`,
+        { encoding: "utf-8", timeout: 15000 }
+      ).trim();
+      return { version: `${version} (Docker: ${DOCKER_IMAGE})`, path: "docker" };
+    } catch {
+      return { version: `unknown (Docker: ${DOCKER_IMAGE})`, path: "docker" };
+    }
+  }
+
   const absolutePath = path.isAbsolute(YT_DLP_BIN) ? YT_DLP_BIN : path.resolve(process.cwd(), YT_DLP_BIN);
-  
-  // Return path immediately - version check can hang on macOS due to Gatekeeper
-  // The actual download commands work fine, only --version has issues
-  return {
-    version: "2026.01.31 (standalone binary)",
-    path: absolutePath,
-  };
+  try {
+    const { stdout } = await runYtDlp(["--version"], { timeout: 5000 });
+    return { version: stdout.trim(), path: absolutePath };
+  } catch {
+    return { version: "unknown", path: absolutePath };
+  }
 }
 
 export interface YtDlpFormat {

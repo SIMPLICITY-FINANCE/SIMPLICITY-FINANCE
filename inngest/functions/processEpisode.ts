@@ -698,7 +698,8 @@ export const processEpisode = inngest.createFunction(
           `;
         }
         
-        const outputDir = path.join(process.cwd(), "output", metadata.id);
+        // Use /tmp for downloads so Docker volume mapping (-v /tmp:/tmp) works
+        const outputDir = path.join("/tmp", "yt-dlp-downloads", metadata.id);
         ensureOutputDir(outputDir);
         
         // Watchdog timeout: 10 minutes
