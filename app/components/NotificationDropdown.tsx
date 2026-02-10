@@ -40,7 +40,7 @@ export function NotificationDropdown() {
   const [unreadCount, setUnreadCount] = useState(0);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
   const fetchNotifications = async () => {
@@ -63,14 +63,13 @@ export function NotificationDropdown() {
 
   // Close on outside click
   useEffect(() => {
+    if (!open) return;
     const handleClickOutside = (e: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
         setOpen(false);
       }
     };
-    if (open) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
+    document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [open]);
 
@@ -80,7 +79,6 @@ export function NotificationDropdown() {
     }
     setOpen(false);
     router.push(notification.link);
-    // Optimistic update
     setNotifications((prev) =>
       prev.map((n) => (n.id === notification.id ? { ...n, is_read: true } : n))
     );
@@ -101,7 +99,7 @@ export function NotificationDropdown() {
   };
 
   return (
-    <div className="relative" ref={dropdownRef}>
+    <div ref={containerRef} className="relative">
       {/* Bell Button */}
       <button
         className="relative w-10 h-10 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors"
@@ -117,7 +115,7 @@ export function NotificationDropdown() {
 
       {/* Dropdown */}
       {open && (
-        <div className="absolute right-0 top-12 w-[360px] md:w-96 max-h-[600px] bg-white rounded-xl shadow-2xl border border-gray-200 z-50 flex flex-col overflow-hidden">
+        <div className="absolute top-full right-0 mt-2 w-[360px] max-h-[75vh] bg-white rounded-xl shadow-2xl border border-gray-200 z-[9999] flex flex-col overflow-hidden">
           {/* Header */}
           <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
             <h3 className="font-semibold text-sm text-gray-900">Notifications</h3>
@@ -170,16 +168,16 @@ export function NotificationDropdown() {
                       {/* Content */}
                       <div className="flex-1 min-w-0">
                         <div className="flex items-start justify-between gap-2">
-                          <h4 className="font-medium text-[13px] text-gray-900 line-clamp-2 leading-snug">
+                          <h4 className="font-medium text-[13px] text-gray-900 line-clamp-2 leading-snug break-words">
                             {notification.title}
                           </h4>
                           {!notification.is_read && (
-                            <div className="w-2 h-2 bg-blue-600 rounded-full flex-shrink-0 mt-1.5" />
+                            <div className="w-2 h-2 bg-blue-600 rounded-full flex-shrink-0 mt-1" />
                           )}
                         </div>
 
                         {notification.message && (
-                          <p className="text-xs text-gray-500 mt-0.5 line-clamp-1">
+                          <p className="text-xs text-gray-500 mt-0.5 line-clamp-1 break-words">
                             {notification.message}
                           </p>
                         )}
