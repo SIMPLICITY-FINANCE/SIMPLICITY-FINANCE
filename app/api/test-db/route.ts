@@ -15,8 +15,8 @@ export async function GET() {
     
     return NextResponse.json({ 
       success: true, 
-      time: result[0].current_time,
-      userCount: users[0].user_count
+      time: result[0]?.current_time,
+      userCount: users[0]?.user_count
     });
   } catch (error) {
     console.error('Database test error:', error);

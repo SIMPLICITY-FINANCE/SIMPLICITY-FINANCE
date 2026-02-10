@@ -121,6 +121,7 @@ export function EpisodeSummaryModal({ isOpen, onClose, episode }: EpisodeSummary
             publishedAt={episode.date}
             intro="In this episode, the hosts discuss key market insights and investment strategies."
             tags={tags}
+            episodeId={episode.episodeId}
           />
 
           {keyQuotes.length > 0 && (

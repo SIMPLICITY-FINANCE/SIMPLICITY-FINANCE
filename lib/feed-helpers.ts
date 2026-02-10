@@ -38,8 +38,9 @@ export function extractSummaryPreview(summary: Summary, maxBullets: number = 4):
   }
 
   // Count key quotes if present
-  if (summary.keyQuotes) {
-    quoteCount = summary.keyQuotes.length;
+  const summaryAny = summary as any;
+  if (summaryAny.keyQuotes) {
+    quoteCount = summaryAny.keyQuotes.length;
   }
 
   return {

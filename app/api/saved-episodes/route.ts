@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server';
-import { getSavedEpisodesForUser } from '../../lib/actions.js';
+import { getSavedEpisodeIds } from '../../lib/actions.js';
 
 export async function GET() {
   try {
-    const savedEpisodes = await getSavedEpisodesForUser();
+    const savedEpisodes = await getSavedEpisodeIds();
     return NextResponse.json(savedEpisodes);
   } catch (error) {
     console.error('Error fetching saved episodes:', error);

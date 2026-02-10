@@ -99,7 +99,7 @@ export default async function EpisodePage({ params }: PageProps) {
     notFound();
   }
 
-  const episode = episodes[0];
+  const episode = episodes[0]!;
   const summary = episode.summary_json as any;
 
   const keyQuotes = (summary?.keyQuotes || []).filter((q: any) => q.text);

@@ -3,7 +3,6 @@
 import Link from 'next/link';
 import { Home, Bookmark, Upload, Compass, BookOpen, FileText, Lightbulb } from 'lucide-react';
 import { usePathname } from 'next/navigation';
-import { Logo } from '../ui/Logo.js';
 
 interface NavItem {
   label: string;

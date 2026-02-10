@@ -4,7 +4,7 @@ import { pgTable, text, timestamp, uuid, integer, jsonb, real, index, boolean } 
 // Users - authentication and authorization
 // ─────────────────────────────────────────────────────────────────────────────
 
-export const users = pgTable("test_users", {
+export const users = pgTable("users", {
   id: uuid("id").primaryKey().defaultRandom(),
   email: text("email").notNull().unique(),
   name: text("name").notNull(),
@@ -20,7 +20,7 @@ export const users = pgTable("test_users", {
 // Shows - podcast shows/channels
 // ─────────────────────────────────────────────────────────────────────────────
 
-export const shows = pgTable("test_shows", {
+export const shows = pgTable("shows", {
   id: uuid("id").primaryKey().defaultRandom(),
   name: text("name").notNull(),
   description: text("description"),
@@ -57,7 +57,7 @@ export const shows = pgTable("test_shows", {
 // Episodes - stores metadata for each ingested episode
 // ─────────────────────────────────────────────────────────────────────────────
 
-export const episodes = pgTable("test_episodes", {
+export const episodes = pgTable("episodes", {
   id: uuid("id").primaryKey().defaultRandom(),
   source: text("source").notNull(), // "youtube" | "audio" | "local"
   url: text("url"),
@@ -94,7 +94,7 @@ export const episodes = pgTable("test_episodes", {
 // Transcript Segments - raw transcript data
 // ─────────────────────────────────────────────────────────────────────────────
 
-export const transcriptSegmentsRaw = pgTable("test_transcript_segments_raw", {
+export const transcriptSegmentsRaw = pgTable("transcript_segments_raw", {
   id: uuid("id").primaryKey().defaultRandom(),
   episodeId: uuid("episode_id").notNull().references(() => episodes.id, { onDelete: "cascade" }),
   
@@ -113,7 +113,7 @@ export const transcriptSegmentsRaw = pgTable("test_transcript_segments_raw", {
 // Episode Summary - one summary per episode
 // ─────────────────────────────────────────────────────────────────────────────
 
-export const episodeSummary = pgTable("test_episode_summary", {
+export const episodeSummary = pgTable("episode_summary", {
   id: uuid("id").primaryKey().defaultRandom(),
   episodeId: uuid("episode_id").notNull().references(() => episodes.id, { onDelete: "cascade" }),
   
@@ -138,7 +138,7 @@ export const episodeSummary = pgTable("test_episode_summary", {
 // Summary Bullets - individual bullets with evidence spans
 // ─────────────────────────────────────────────────────────────────────────────
 
-export const summaryBullets = pgTable("test_summary_bullets", {
+export const summaryBullets = pgTable("summary_bullets", {
   id: uuid("id").primaryKey().defaultRandom(),
   summaryId: uuid("summary_id").notNull().references(() => episodeSummary.id, { onDelete: "cascade" }),
   
@@ -158,7 +158,7 @@ export const summaryBullets = pgTable("test_summary_bullets", {
 // QC Runs - quality control results for summaries
 // ─────────────────────────────────────────────────────────────────────────────
 
-export const qcRuns = pgTable("test_qc_runs", {
+export const qcRuns = pgTable("qc_runs", {
   id: uuid("id").primaryKey().defaultRandom(),
   episodeId: uuid("episode_id").notNull().references(() => episodes.id, { onDelete: "cascade" }),
   summaryId: uuid("summary_id").notNull().references(() => episodeSummary.id, { onDelete: "cascade" }),
@@ -183,7 +183,7 @@ export const qcRuns = pgTable("test_qc_runs", {
 // Admin Audit Logs - track all admin actions
 // ─────────────────────────────────────────────────────────────────────────────
 
-export const adminAuditLogs = pgTable("test_admin_audit_logs", {
+export const adminAuditLogs = pgTable("admin_audit_logs", {
   id: uuid("id").primaryKey().defaultRandom(),
   userId: uuid("user_id").notNull().references(() => users.id),
   
@@ -205,7 +205,7 @@ export const adminAuditLogs = pgTable("test_admin_audit_logs", {
 // Saved Items - Episodes and Reports only (NOT bullets)
 // ─────────────────────────────────────────────────────────────────────────────
 
-export const savedItems = pgTable("test_saved_items", {
+export const savedItems = pgTable("saved_items", {
   id: uuid("id").primaryKey().defaultRandom(),
   userId: uuid("user_id").notNull().references(() => users.id),
   
@@ -224,7 +224,7 @@ export const savedItems = pgTable("test_saved_items", {
 // Followed Shows - User follows for shows/channels
 // ─────────────────────────────────────────────────────────────────────────────
 
-export const followedShows = pgTable("test_followed_shows", {
+export const followedShows = pgTable("followed_shows", {
   id: uuid("id").primaryKey().defaultRandom(),
   userId: uuid("user_id").notNull().references(() => users.id),
   
@@ -243,7 +243,7 @@ export const followedShows = pgTable("test_followed_shows", {
 // Followed People - User follows for people/hosts
 // ─────────────────────────────────────────────────────────────────────────────
 
-export const followedPeople = pgTable("test_followed_people", {
+export const followedPeople = pgTable("followed_people", {
   id: uuid("id").primaryKey().defaultRandom(),
   userId: uuid("user_id").notNull().references(() => users.id),
   
@@ -262,7 +262,7 @@ export const followedPeople = pgTable("test_followed_people", {
 // Ingest Requests - Track upload/processing status
 // ─────────────────────────────────────────────────────────────────────────────
 
-export const ingestRequests = pgTable("test_ingest_requests", {
+export const ingestRequests = pgTable("ingest_requests", {
   id: uuid("id").primaryKey().defaultRandom(),
   userId: uuid("user_id").notNull().references(() => users.id),
   
@@ -299,7 +299,7 @@ export const ingestRequests = pgTable("test_ingest_requests", {
 // Notebook Items - Bullets only (NOT episodes or reports)
 // ─────────────────────────────────────────────────────────────────────────────
 
-export const notebookItems = pgTable("test_notebook_items", {
+export const notebookItems = pgTable("notebook_items", {
   id: uuid("id").primaryKey().defaultRandom(),
   userId: uuid("user_id").notNull().references(() => users.id),
   
@@ -319,7 +319,7 @@ export const notebookItems = pgTable("test_notebook_items", {
 // Reports - Summaries of summaries (daily/weekly/monthly aggregations)
 // ─────────────────────────────────────────────────────────────────────────────
 
-export const reports = pgTable("test_reports", {
+export const reports = pgTable("reports", {
   id: uuid("id").primaryKey().defaultRandom(),
   
   title: text("title").notNull(),
@@ -476,7 +476,7 @@ export const notifications = pgTable("notifications", {
 // Report Items - Links reports to specific bullets from episodes (legacy)
 // ─────────────────────────────────────────────────────────────────────────────
 
-export const reportItems = pgTable("test_report_items", {
+export const reportItems = pgTable("report_items", {
   id: uuid("id").primaryKey().defaultRandom(),
   reportId: uuid("report_id").notNull().references(() => reports.id, { onDelete: "cascade" }),
   

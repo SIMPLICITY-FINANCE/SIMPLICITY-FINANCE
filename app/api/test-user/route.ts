@@ -34,7 +34,7 @@ export async function GET() {
   } catch (error) {
     console.error('Error checking demo user:', error);
     return NextResponse.json({ 
-      error: error.message 
+      error: error instanceof Error ? error.message : 'Unknown error' 
     }, { status: 500 });
   }
 }

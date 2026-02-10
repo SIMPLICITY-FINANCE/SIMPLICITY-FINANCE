@@ -87,7 +87,7 @@ export async function generateHeadshot(person: {
       num_images: 1,
       enable_safety_checker: true,
     },
-  })) as { images: Array<{ url: string }> };
+  })) as unknown as { images: Array<{ url: string }> };
 
   const imageUrl = result.images?.[0]?.url;
   if (!imageUrl) {
