@@ -40,9 +40,14 @@ export function PeopleCarousel({ people }: PeopleCarouselProps) {
 
   if (people.length === 0) {
     return (
-      <div className="bg-white rounded-2xl border border-gray-100 p-12 text-center">
-        <Users size={40} className="mx-auto mb-3 text-gray-300" />
-        <p className="text-muted-foreground text-sm">No people yet</p>
+      <div className="bg-white rounded-2xl border border-gray-100 py-12 text-center">
+        <Users className="w-8 h-8 text-muted-foreground mx-auto mb-3" />
+        <p className="text-sm font-medium text-foreground mb-1">No people added yet</p>
+        <p className="text-xs text-muted-foreground">
+          People are extracted from episodes during ingestion.
+          <br />
+          Process some episodes to see people appear here.
+        </p>
       </div>
     );
   }
