@@ -1,6 +1,21 @@
 # CHANGELOG
 # Most recent entries at the top.
 
+## [2026-02-12] - Reports Pipeline Fix + Admin UI Redesign
+
+### Fixed
+- Null summary guard in all 4 report generators (daily, weekly, monthly, quarterly) — prevents "null value in column 'summary' violates not-null constraint" errors
+- Summary value is now validated and trimmed before DB insert; throws descriptive error if AI returns empty
+
+### Changed
+- Redesigned admin report generation page (app/(app)/admin/reports/generate/page.tsx):
+  - Contextual date options per report type (Yesterday/Today for daily, Last Week/This Week for weekly, etc.)
+  - 3-step layout: Report Type → Date Range → Generate
+  - Progress bar with animated feedback
+  - Lucide icons for status indicators
+  - Semantic color tokens (bg-card, border-border, text-foreground, text-muted-foreground)
+  - Removed redundant nav bar and preview section for cleaner UX
+
 ## [2026-02-12]
 
 ### Added

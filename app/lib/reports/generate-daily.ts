@@ -174,12 +174,20 @@ export async function generateDailyReport(
     }
 
     // Step 9: Update report with content
+    const summary = content.executiveSummary;
+    console.log(`[DailyReport] summary type: ${typeof summary}, length: ${summary?.length ?? 'null'}`);
+    if (!summary || typeof summary !== 'string' || summary.trim() === '') {
+      throw new Error(
+        `[DailyReport] AI returned empty summary. Raw value: ${JSON.stringify(summary)}`
+      );
+    }
+
     await sql`
       UPDATE reports
       SET 
         status = 'ready',
         content_json = ${JSON.stringify(content)}::jsonb,
-        summary = ${content.executiveSummary},
+        summary = ${summary.trim()},
         generated_at = NOW()
       WHERE id = ${reportId}
     `;

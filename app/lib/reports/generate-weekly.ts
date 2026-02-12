@@ -216,11 +216,19 @@ export async function generateWeeklyReport(
     }
 
     // Update report
+    const summary = content.executiveSummary;
+    console.log(`[WeeklyReport] summary type: ${typeof summary}, length: ${summary?.length ?? 'null'}`);
+    if (!summary || typeof summary !== 'string' || summary.trim() === '') {
+      throw new Error(
+        `[WeeklyReport] AI returned empty summary. Raw value: ${JSON.stringify(summary)}`
+      );
+    }
+
     await sql`
       UPDATE reports
       SET status = 'ready',
           content_json = ${JSON.stringify(content)}::jsonb,
-          summary = ${content.executiveSummary},
+          summary = ${summary.trim()},
           generated_at = NOW()
       WHERE id = ${reportId}
     `;
