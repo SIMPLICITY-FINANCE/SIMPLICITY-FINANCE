@@ -115,6 +115,11 @@ npx inngest-cli@latest dev
 
 **First-time setup?** See [docs/ONBOARDING.md](docs/ONBOARDING.md) for detailed instructions.
 
+### AI Assistant Rules
+This project uses Windsurf AI with custom rules.
+Rules file: `.windsurf/rules.md` 
+All AI sessions should start by reading that file.
+
 ---
 
 ## 📦 Project Structure
