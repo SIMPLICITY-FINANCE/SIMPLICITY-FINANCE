@@ -72,7 +72,7 @@ export function ShowsCarousel({ shows }: ShowsCarouselProps) {
       <div
         ref={scrollRef}
         onScroll={checkScroll}
-        className="flex gap-3 overflow-x-auto pb-1 scrollbar-hide"
+        className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide"
       >
         {shows.map((show) => (
           <a
@@ -97,7 +97,7 @@ export function ShowsCarousel({ shows }: ShowsCarouselProps) {
               </div>
 
               {/* Info */}
-              <div className="px-2.5 py-2">
+              <div className="p-2">
                 <h4 className="text-xs font-semibold text-foreground line-clamp-1 group-hover/card:text-blue-600 transition-colors">
                   {show.name}
                 </h4>

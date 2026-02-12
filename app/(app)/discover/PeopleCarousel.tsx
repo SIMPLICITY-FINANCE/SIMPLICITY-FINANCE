@@ -78,7 +78,7 @@ export function PeopleCarousel({ people }: PeopleCarouselProps) {
       <div
         ref={scrollRef}
         onScroll={checkScroll}
-        className="flex gap-3 overflow-x-auto pb-1 scrollbar-hide"
+        className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide"
       >
         {people.map((person) => (
           <a
