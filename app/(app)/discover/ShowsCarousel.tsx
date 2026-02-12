@@ -95,7 +95,7 @@ export function ShowsCarousel({ shows }: ShowsCarouselProps) {
       >
         {shows.map((show) => (
           <a
-            key={show.id}
+            key={`show-${show.id}`}
             href={`/discover/shows/${show.channel_id}`}
             className="flex-none w-48 group/card"
           >

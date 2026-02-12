@@ -82,7 +82,7 @@ export function PeopleCarousel({ people }: PeopleCarouselProps) {
       >
         {people.map((person) => (
           <a
-            key={person.id}
+            key={`person-${person.id}`}
             href={`/discover/people/${person.slug}`}
             className="flex-none w-32 group/card"
           >

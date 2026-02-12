@@ -81,7 +81,7 @@ export function RecentEpisodesStrip({ episodes }: RecentEpisodesStripProps) {
         {episodes.map((ep) => (
           <a
             key={`episode-${ep.id}-${ep.video_id}`}
-            href={`/episodes/${ep.video_id}`}
+            href={`/episode/${ep.id}`}
             className="flex-none w-56 group/card"
           >
             <div className="bg-white rounded-lg border border-gray-100 overflow-hidden hover:shadow-md transition-all duration-200 hover:-translate-y-0.5">
