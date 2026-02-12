@@ -93,10 +93,10 @@ export default async function DiscoverPage() {
   return (
     <>
       {/* Header */}
-      <div className="mb-5">
-        <h2 className="text-lg font-bold text-foreground">Discover</h2>
-        <p className="text-xs text-muted-foreground mt-0.5">
-          Explore financial podcasts and expert commentators
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold text-foreground">Discover</h1>
+        <p className="text-sm text-muted-foreground mt-0.5">
+          {showsData.length} shows · {peopleData.length > 0 ? `${peopleData.length} people` : 'Financial podcasts and expert commentary'}
         </p>
       </div>
 
