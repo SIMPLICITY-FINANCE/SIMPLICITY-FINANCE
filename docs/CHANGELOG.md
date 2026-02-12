@@ -1,6 +1,22 @@
 # CHANGELOG
 # Most recent entries at the top.
 
+## [2026-02-12] - Discover Page Improvements
+
+### Fixed
+- Deduplicated shows query — replaced FULL OUTER JOIN with simple GROUP BY on shows table
+- Improved people empty state with informative message about how people get added
+
+### Added
+- "New This Week" section showing episodes added in the last 7 days (RecentEpisodesStrip.tsx)
+- "NEW" badge on show cards with episodes within the last 7 days
+- Relative date ("Today", "2d ago", "1w ago") on show cards showing last episode date
+- Page header now shows live counts (e.g. "8 shows · Financial podcasts and expert commentary")
+
+### Changed
+- Reduced carousel gap from gap-3 to gap-2 to fit more cards on screen
+- Reduced show card padding from px-2.5 py-2 to p-2
+
 ## [2026-02-12] - Admin Back Buttons
 
 ### Added
