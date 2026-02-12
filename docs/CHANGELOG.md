@@ -1,6 +1,18 @@
 # CHANGELOG
 # Most recent entries at the top.
 
+## [2026-02-12] - Profile Page Redesign
+
+### Changed
+- **Profile page** — redesigned to match Figma: profile header (avatar, name, email, joined date, bio, edit button), statistics grid (summaries read, minutes reading, podcasts following, summaries saved, day streak), following preview (2-col grid, max 4 shows with new episode counts), and recent reading history (last 5 saved episodes with progress bars)
+- **Following list** — moved from `/profile` to `/profile/following` sub-page with back button to profile
+
+### Files Created
+- `app/(app)/profile/following/page.tsx`
+
+### Files Modified
+- `app/(app)/profile/page.tsx` — full rewrite with Figma-matching layout
+
 ## [2026-02-12] - Follow System + Feed Filters + Profile Page
 
 ### Added
