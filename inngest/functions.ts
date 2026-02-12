@@ -6,23 +6,8 @@ import { generateWeeklyReportCron, generateWeeklyReportManualFn } from "./functi
 import { generateMonthlyReportCron, generateMonthlyReportManualFn } from "./functions/generateMonthlyReport";
 import { generateQuarterlyReportCron, generateQuarterlyReportManualFn } from "./functions/generateQuarterlyReport";
 
-// Stub function to verify Inngest is working
-export const helloWorld = inngest.createFunction(
-  { id: "hello-world", name: "Hello World" },
-  { event: "test/hello.world" },
-  async ({ event, step }) => {
-    await step.run("say-hello", async () => {
-      console.log("Hello from Inngest!", event.data);
-      return { message: "Hello World!", data: event.data };
-    });
-
-    return { success: true };
-  }
-);
-
 // Export all functions as an array
 export const functions: ReturnType<typeof inngest.createFunction>[] = [
-  helloWorld,
   processEpisode,
   processEpisodeOnFailure,
   ingestShowsScheduled,
