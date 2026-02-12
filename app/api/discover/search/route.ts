@@ -38,17 +38,21 @@ export async function GET(request: NextRequest) {
     const [showResults, episodeResults, peopleResults] = await Promise.all([
       // Search shows by name
       sql<ShowResult[]>`
-        SELECT
-          s.channel_id as id,
-          s.name,
-          s.channel_id,
-          s.channel_thumbnail,
-          COUNT(DISTINCT e.id)::int as episode_count
-        FROM shows s
-        LEFT JOIN episodes e ON e.youtube_channel_id = s.channel_id AND e.is_published = true
-        WHERE s.name ILIKE ${searchTerm}
-        GROUP BY s.id, s.channel_id, s.name, s.channel_thumbnail
-        ORDER BY COUNT(DISTINCT e.id) DESC
+        SELECT * FROM (
+          SELECT DISTINCT ON (s.channel_id)
+            s.channel_id as id,
+            s.name,
+            s.channel_id,
+            s.channel_thumbnail,
+            (
+              SELECT COUNT(*)::int FROM episodes e
+              WHERE e.youtube_channel_id = s.channel_id AND e.is_published = true
+            ) as episode_count
+          FROM shows s
+          WHERE s.name ILIKE ${searchTerm}
+          ORDER BY s.channel_id
+        ) sub
+        ORDER BY sub.episode_count DESC
         LIMIT 4
       `,
 
