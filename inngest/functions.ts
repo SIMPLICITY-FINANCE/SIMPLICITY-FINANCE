@@ -5,6 +5,7 @@ import { generateDailyReportCron, generateDailyReportManual } from "./functions/
 import { generateWeeklyReportCron, generateWeeklyReportManualFn } from "./functions/generateWeeklyReport";
 import { generateMonthlyReportCron, generateMonthlyReportManualFn } from "./functions/generateMonthlyReport";
 import { generateQuarterlyReportCron, generateQuarterlyReportManualFn } from "./functions/generateQuarterlyReport";
+import { backfillDailyReports } from "./functions/backfillDailyReports";
 
 // Export all functions as an array
 export const functions: ReturnType<typeof inngest.createFunction>[] = [
@@ -20,4 +21,5 @@ export const functions: ReturnType<typeof inngest.createFunction>[] = [
   generateMonthlyReportManualFn,
   generateQuarterlyReportCron,
   generateQuarterlyReportManualFn,
+  backfillDailyReports,
 ];

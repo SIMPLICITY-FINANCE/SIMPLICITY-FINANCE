@@ -24,7 +24,10 @@ import { createEpisodeNotification } from "../../app/lib/notifications/create";
 
 const execAsync = promisify(exec);
 
-const sql = postgres(process.env.DATABASE_URL!, { max: 1 });
+const sql = postgres(process.env.DATABASE_URL!, {
+  max: 10,
+  connection: { statement_timeout: 600000 },
+});
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Types & Schemas

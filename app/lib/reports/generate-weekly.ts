@@ -12,6 +12,20 @@ interface DailyReportRow {
   episodes_included: number;
 }
 
+interface EpisodeRow {
+  id: string;
+  youtube_title: string;
+  youtube_channel_title: string;
+  published_at: string;
+  video_id: string;
+}
+
+interface SummaryBulletRow {
+  episode_id: string;
+  section_name: string;
+  bullet_text: string;
+}
+
 /**
  * Generate a weekly report for a given ISO week.
  *
@@ -58,19 +72,95 @@ export async function generateWeeklyReport(
 
   console.log(`[WeeklyReport] Found ${dailyReports.length} daily reports for ${dateKey}`);
 
-  if (dailyReports.length === 0) {
-    console.log(`[WeeklyReport] Skipping — no daily reports`);
-    return null;
-  }
+  let sourceReports: DailyReportRow[];
+  let totalEpisodes: number;
+  let episodeIdsForLinking: string[] = [];
 
-  // Parse JSONB strings
-  for (const r of dailyReports) {
-    if (r.content_json && typeof r.content_json === "string") {
-      r.content_json = JSON.parse(r.content_json);
+  if (dailyReports.length > 0) {
+    // Parse JSONB strings
+    for (const r of dailyReports) {
+      if (r.content_json && typeof r.content_json === "string") {
+        r.content_json = JSON.parse(r.content_json);
+      }
     }
-  }
+    sourceReports = dailyReports;
+    totalEpisodes = dailyReports.reduce((sum, r) => sum + r.episodes_included, 0);
+  } else {
+    // Fallback: synthesize directly from episodes
+    console.log(`[WeeklyReport] No daily reports — falling back to direct episode synthesis`);
 
-  const totalEpisodes = dailyReports.reduce((sum, r) => sum + r.episodes_included, 0);
+    const episodes = await sql<EpisodeRow[]>`
+      SELECT 
+        e.id,
+        COALESCE(e.youtube_title, 'Untitled Episode') as youtube_title,
+        COALESCE(e.youtube_channel_title, 'Unknown') as youtube_channel_title,
+        COALESCE(e.published_at::text, e.created_at::text) as published_at,
+        COALESCE(e.video_id, '') as video_id
+      FROM episodes e
+      JOIN episode_summary s ON s.episode_id = e.id
+      WHERE e.is_published = true
+        AND e.published_at >= ${weekStart + "T00:00:00Z"}::timestamp
+        AND e.published_at < ${weekEnd + "T23:59:59Z"}::timestamp
+      ORDER BY e.published_at ASC
+    `;
+
+    console.log(`[WeeklyReport] Found ${episodes.length} episodes directly for ${dateKey}`);
+
+    if (episodes.length === 0) {
+      console.log(`[WeeklyReport] Skipping — no daily reports and no episodes`);
+      return null;
+    }
+
+    // Fetch summary bullets for all episodes
+    const episodeIds = episodes.map(e => e.id);
+    episodeIdsForLinking = episodeIds;
+    const bullets = await sql<SummaryBulletRow[]>`
+      SELECT 
+        s.episode_id,
+        sb.section_name,
+        sb.bullet_text
+      FROM summary_bullets sb
+      JOIN episode_summary s ON sb.summary_id = s.id
+      WHERE s.episode_id = ANY(${episodeIds})
+      ORDER BY s.episode_id, sb.section_name, sb.created_at
+    `;
+
+    // Group episodes by date and build synthetic daily report structures
+    const byDate = new Map<string, EpisodeRow[]>();
+    for (const ep of episodes) {
+      const d = ep.published_at.split("T")[0] || "unknown";
+      if (!byDate.has(d)) byDate.set(d, []);
+      byDate.get(d)!.push(ep);
+    }
+
+    sourceReports = Array.from(byDate.entries()).map(([date, dateEpisodes]) => {
+      // Build a summary from bullets for each episode
+      const episodeSummaries = dateEpisodes.map(ep => {
+        const epBullets = bullets.filter(b => b.episode_id === ep.id);
+        const sectionMap = new Map<string, string[]>();
+        for (const b of epBullets) {
+          if (!sectionMap.has(b.section_name)) sectionMap.set(b.section_name, []);
+          sectionMap.get(b.section_name)!.push(b.bullet_text);
+        }
+        return {
+          title: ep.youtube_title,
+          channel: ep.youtube_channel_title,
+          sections: Object.fromEntries(sectionMap),
+        };
+      });
+
+      return {
+        id: `synthetic-${date}`,
+        title: `Episodes from ${date}`,
+        date,
+        content_json: { episodes: episodeSummaries } as object,
+        episodes_included: dateEpisodes.length,
+      };
+    });
+
+    totalEpisodes = episodes.length;
+    console.log(`[WeeklyReport] Built ${sourceReports.length} synthetic daily summaries from ${totalEpisodes} episodes`);
+  }
 
   // Create report row
   const weekLabel = `Weekly Report — ${new Date(weekStart + "T12:00:00Z").toLocaleDateString("en-US", { month: "short", day: "numeric" })} – ${new Date(weekEnd + "T12:00:00Z").toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}`;
@@ -92,18 +182,30 @@ export async function generateWeeklyReport(
   const reportId = report.id;
 
   try {
-    // Link source episodes from all daily reports
-    const dailyReportIds = dailyReports.map((r) => r.id);
-    await sql`
-      INSERT INTO report_episodes (report_id, episode_id)
-      SELECT ${reportId}, re.episode_id
-      FROM report_episodes re
-      WHERE re.report_id = ANY(${dailyReportIds})
-      ON CONFLICT DO NOTHING
-    `;
+    // Link source episodes
+    if (episodeIdsForLinking.length > 0) {
+      // Direct episode fallback — link episodes directly
+      for (const epId of episodeIdsForLinking) {
+        await sql`
+          INSERT INTO report_episodes (report_id, episode_id)
+          VALUES (${reportId}, ${epId})
+          ON CONFLICT DO NOTHING
+        `;
+      }
+    } else {
+      // Normal path — link via daily report episodes
+      const dailyReportIds = sourceReports.map((r) => r.id);
+      await sql`
+        INSERT INTO report_episodes (report_id, episode_id)
+        SELECT ${reportId}, re.episode_id
+        FROM report_episodes re
+        WHERE re.report_id = ANY(${dailyReportIds})
+        ON CONFLICT DO NOTHING
+      `;
+    }
 
     // Call OpenAI
-    const content = await callOpenAI(dailyReports, weekStart, weekEnd, totalEpisodes);
+    const content = await callOpenAI(sourceReports, weekStart, weekEnd, totalEpisodes);
 
     // Store themes
     for (const theme of content.emergingThemes) {

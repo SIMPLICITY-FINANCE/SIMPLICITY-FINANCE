@@ -130,6 +130,9 @@ export default function AdminGenerateReportPage() {
   const [previewEpisodes, setPreviewEpisodes] = useState<PreviewEpisode[]>([]);
   const [previewLoaded, setPreviewLoaded] = useState(false);
 
+  const [backfilling, setBackfilling] = useState(false);
+  const [backfillResult, setBackfillResult] = useState<{ success: boolean; message: string } | null>(null);
+
   const range = useMemo(() => {
     if (dateMode === "preset") return computePresetRange(preset);
     return { start: customStart, end: customEnd };
@@ -139,6 +142,23 @@ export default function AdminGenerateReportPage() {
     () => computeDateKey(reportType, range.start, range.end),
     [reportType, range.start, range.end]
   );
+
+  const handleBackfill = async () => {
+    setBackfilling(true);
+    setBackfillResult(null);
+    try {
+      const res = await fetch("/api/admin/reports/backfill", { method: "POST" });
+      if (res.ok) {
+        setBackfillResult({ success: true, message: "Backfill started! Check Inngest dashboard for progress." });
+      } else {
+        setBackfillResult({ success: false, message: "Failed to trigger backfill" });
+      }
+    } catch (err) {
+      setBackfillResult({ success: false, message: err instanceof Error ? err.message : "Unexpected error" });
+    } finally {
+      setBackfilling(false);
+    }
+  };
 
   const handlePreview = async () => {
     setPreviewing(true);
@@ -231,6 +251,41 @@ export default function AdminGenerateReportPage() {
         <p className="text-sm text-gray-600">
           Manually generate reports for any date range. Useful for testing generation logic or backfilling reports.
         </p>
+
+        {/* Backfill Section */}
+        <div className="bg-amber-50 border border-amber-200 rounded-lg p-5">
+          <h3 className="font-semibold text-amber-900 mb-1">First Time Setup</h3>
+          <p className="text-sm text-amber-700 mb-3">
+            If weekly/monthly reports aren&apos;t working, generate daily reports first.
+            This finds all dates with 2+ episodes that don&apos;t have a daily report yet and generates them.
+          </p>
+          <button
+            onClick={handleBackfill}
+            disabled={backfilling}
+            className="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white text-sm font-medium rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          >
+            {backfilling ? (
+              <span className="flex items-center gap-2">
+                <span className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full" />
+                Starting...
+              </span>
+            ) : (
+              "Generate Missing Daily Reports"
+            )}
+          </button>
+          {backfillResult && (
+            <div className={`mt-3 p-3 rounded-lg text-sm ${
+              backfillResult.success
+                ? "bg-green-50 text-green-800 border border-green-200"
+                : "bg-red-50 text-red-800 border border-red-200"
+            }`}>
+              {backfillResult.message}
+            </div>
+          )}
+          <p className="text-xs text-amber-600 mt-2">
+            Runs in the background via Inngest. Check <a href="http://localhost:8288" target="_blank" rel="noopener noreferrer" className="underline">Inngest dashboard</a> for progress.
+          </p>
+        </div>
 
         {/* Report Type */}
         <div className="bg-white rounded-lg shadow p-6">
