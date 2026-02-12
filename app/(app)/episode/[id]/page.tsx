@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
-import { Globe, TrendingUp, DollarSign, Target, Cpu, Clock } from "lucide-react";
+import Link from "next/link";
+import { ArrowLeft, Globe, TrendingUp, DollarSign, Target, Cpu, Clock } from "lucide-react";
 import { ReportHeader } from "../../../components/episode/ReportHeader.js";
 import { AccordionSection } from "../../../components/episode/AccordionSection.js";
 import { QuoteCard } from "../../../components/episode/QuoteCard.js";
@@ -156,6 +157,14 @@ export default async function EpisodePage({ params }: PageProps) {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-[1100px] mx-auto px-6 py-8 space-y-6">
+        <Link
+          href="/discover"
+          className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Back to Discover
+        </Link>
+
         <ReportHeader
           title={episode.youtube_title || "Untitled Episode"}
           showName={episode.youtube_channel_title || "Unknown Show"}

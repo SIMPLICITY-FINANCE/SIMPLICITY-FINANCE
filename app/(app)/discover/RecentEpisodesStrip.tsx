@@ -30,6 +30,11 @@ function formatRelativeDate(dateStr: string): string {
 }
 
 export function RecentEpisodesStrip({ episodes }: RecentEpisodesStripProps) {
+  // Deduplicate by id - safety net regardless of query
+  const uniqueEpisodes = Array.from(
+    new Map(episodes.map(ep => [ep.id, ep])).values()
+  );
+
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
@@ -78,7 +83,7 @@ export function RecentEpisodesStrip({ episodes }: RecentEpisodesStripProps) {
         onScroll={checkScroll}
         className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide"
       >
-        {episodes.map((ep) => (
+        {uniqueEpisodes.map((ep) => (
           <a
             key={`episode-${ep.id}-${ep.video_id}`}
             href={`/episode/${ep.id}`}

@@ -1,6 +1,17 @@
 # CHANGELOG
 # Most recent entries at the top.
 
+## [2026-02-12] - Deduplicate Carousels + Back Buttons
+
+### Fixed
+- Client-side dedup in ShowsCarousel, PeopleCarousel, RecentEpisodesStrip using Map keyed on id
+- Eliminates duplicate key warnings regardless of what the SQL query returns
+
+### Added
+- Back button on episode detail page (`/episode/[id]`) → links to /discover
+- Standardized back buttons on show detail and person detail pages → link to /discover
+- All back buttons use consistent className with ArrowLeft icon from lucide-react
+
 ## [2026-02-12] - Discover Page Improvements
 
 ### Fixed

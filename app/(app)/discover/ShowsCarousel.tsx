@@ -36,6 +36,11 @@ interface ShowsCarouselProps {
 }
 
 export function ShowsCarousel({ shows }: ShowsCarouselProps) {
+  // Deduplicate by id - safety net regardless of query
+  const uniqueShows = Array.from(
+    new Map(shows.map(show => [show.id, show])).values()
+  );
+
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
@@ -56,7 +61,7 @@ export function ShowsCarousel({ shows }: ShowsCarouselProps) {
     setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 4);
   };
 
-  if (shows.length === 0) {
+  if (uniqueShows.length === 0) {
     return (
       <div className="bg-white rounded-2xl border border-gray-100 p-12 text-center">
         <Podcast size={40} className="mx-auto mb-3 text-gray-300" />
@@ -93,7 +98,7 @@ export function ShowsCarousel({ shows }: ShowsCarouselProps) {
         onScroll={checkScroll}
         className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide"
       >
-        {shows.map((show) => (
+        {uniqueShows.map((show) => (
           <a
             key={`show-${show.id}`}
             href={`/discover/shows/${show.channel_id}`}

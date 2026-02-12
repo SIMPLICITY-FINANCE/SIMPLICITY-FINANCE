@@ -18,6 +18,11 @@ interface PeopleCarouselProps {
 }
 
 export function PeopleCarousel({ people }: PeopleCarouselProps) {
+  // Deduplicate by id - safety net regardless of query
+  const uniquePeople = Array.from(
+    new Map(people.map(person => [person.id, person])).values()
+  );
+
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
@@ -38,7 +43,7 @@ export function PeopleCarousel({ people }: PeopleCarouselProps) {
     setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 4);
   };
 
-  if (people.length === 0) {
+  if (uniquePeople.length === 0) {
     return (
       <div className="bg-white rounded-2xl border border-gray-100 py-12 text-center">
         <Users className="w-8 h-8 text-muted-foreground mx-auto mb-3" />
@@ -80,7 +85,7 @@ export function PeopleCarousel({ people }: PeopleCarouselProps) {
         onScroll={checkScroll}
         className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide"
       >
-        {people.map((person) => (
+        {uniquePeople.map((person) => (
           <a
             key={`person-${person.id}`}
             href={`/discover/people/${person.slug}`}

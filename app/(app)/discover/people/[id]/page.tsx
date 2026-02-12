@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { ArrowLeft, Youtube, Globe, Bookmark, Share2, Download, Podcast, Calendar, X as XIcon } from "lucide-react";
 import { notFound } from "next/navigation";
 import { sql } from "../../../../lib/db.js";
@@ -71,15 +72,13 @@ export default async function PersonDetailPage({
   return (
     <>
       {/* Back link */}
-      <div className="mb-6">
-        <a
-          href="/discover/people"
-          className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
-        >
-          <ArrowLeft size={16} />
-          Back to People
-        </a>
-      </div>
+      <Link
+        href="/discover"
+        className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-6"
+      >
+        <ArrowLeft className="w-4 h-4" />
+        Back to Discover
+      </Link>
 
       {/* Person Header Card */}
       <div className="bg-white rounded-2xl border border-gray-100 p-6 mb-8">
