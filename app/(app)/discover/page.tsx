@@ -1,5 +1,6 @@
 import { ShowsCarousel } from "./ShowsCarousel";
 import { PeopleCarousel } from "./PeopleCarousel";
+import { RecentEpisodesStrip } from "./RecentEpisodesStrip";
 import { sql } from "../../lib/db.js";
 
 interface ShowRow {
@@ -22,8 +23,18 @@ interface PersonRow {
   episode_count: number;
 }
 
+interface EpisodeRow {
+  id: string;
+  youtube_title: string;
+  video_id: string;
+  youtube_thumbnail_url: string | null;
+  published_at: string | null;
+  show_name: string | null;
+  youtube_duration: string | null;
+}
+
 export default async function DiscoverPage() {
-  const [showsData, peopleData] = await Promise.all([
+  const [showsData, peopleData, recentEpisodes] = await Promise.all([
     sql<ShowRow[]>`
       SELECT
         s.channel_id as id,
@@ -61,6 +72,22 @@ export default async function DiscoverPage() {
       ORDER BY COUNT(DISTINCT ep.episode_id) DESC, p.name ASC
       LIMIT 20
     `,
+    sql<EpisodeRow[]>`
+      SELECT
+        e.id,
+        e.youtube_title,
+        e.video_id,
+        e.youtube_thumbnail_url,
+        e.published_at::text as published_at,
+        s.name as show_name,
+        e.youtube_duration
+      FROM episodes e
+      LEFT JOIN shows s ON e.youtube_channel_id = s.channel_id
+      WHERE e.is_published = true
+        AND e.published_at > NOW() - INTERVAL '7 days'
+      ORDER BY e.published_at DESC
+      LIMIT 8
+    `,
   ]);
 
   return (
@@ -72,6 +99,21 @@ export default async function DiscoverPage() {
           Explore financial podcasts and expert commentators
         </p>
       </div>
+
+      {/* New This Week */}
+      {recentEpisodes.length > 0 && (
+        <section className="mb-8">
+          <div className="flex items-center justify-between mb-3">
+            <div>
+              <h2 className="text-lg font-semibold text-foreground">New This Week</h2>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                {recentEpisodes.length} episode{recentEpisodes.length !== 1 ? 's' : ''} added in the last 7 days
+              </p>
+            </div>
+          </div>
+          <RecentEpisodesStrip episodes={recentEpisodes} />
+        </section>
+      )}
 
       {/* Shows Carousel */}
       <section className="mb-6">
