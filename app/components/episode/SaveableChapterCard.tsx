@@ -1,8 +1,8 @@
 "use client";
 
 import { Clock } from "lucide-react";
-import { useSavedNotes } from "../../../hooks/useSavedNotes";
-import { generateNoteId, NoteItem } from "../../../lib/savedNotesStore";
+import { useSavedNotes } from "../../hooks/useSavedNotes";
+import { generateNoteId, NoteItem } from "../../lib/savedNotesStore";
 
 interface SaveableChapterCardProps {
   id: string;

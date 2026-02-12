@@ -1,7 +1,7 @@
 import { AppLayout } from "../components/layout/AppLayout.js";
 import { RightRail } from "../components/layout/RightRail.js";
 import { SavedEpisodesProvider } from "../contexts/SavedEpisodesContext.js";
-import { getSavedEpisodeIds } from "../lib/actions.js";
+import { getSavedEpisodeIds } from "../lib/actions/saved.js";
 
 export const dynamic = "force-dynamic";
 

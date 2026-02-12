@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { useSavedNotes } from "../../../hooks/useSavedNotes";
-import { generateNoteId, NoteItem } from "../../../lib/savedNotesStore";
+import { useSavedNotes } from "../../hooks/useSavedNotes";
+import { generateNoteId, NoteItem } from "../../lib/savedNotesStore";
 
 interface SaveableQuoteCardProps {
   id: string;

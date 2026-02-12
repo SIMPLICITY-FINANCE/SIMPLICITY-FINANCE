@@ -1,8 +1,8 @@
 "use client";
 
 import { ReactNode } from "react";
-import { useSavedNotes } from "../../../hooks/useSavedNotes";
-import { generateNoteId, NoteItem } from "../../../lib/savedNotesStore";
+import { useSavedNotes } from "../../hooks/useSavedNotes";
+import { generateNoteId, NoteItem } from "../../lib/savedNotesStore";
 
 interface SaveableChecklistCardProps {
   icon: ReactNode;

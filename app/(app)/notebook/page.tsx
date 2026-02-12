@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { Search, ChevronDown, Mic, User, Calendar, Share2, Download, BookOpen } from "lucide-react";
-import { useSavedNotes } from "../../../hooks/useSavedNotes";
-import { NoteItem } from "../../../lib/savedNotesStore";
+import { useSavedNotes } from "../../hooks/useSavedNotes";
+import { NoteItem } from "../../lib/savedNotesStore";
 
 export default function NotebookPage() {
   const [searchQuery, setSearchQuery] = useState("");

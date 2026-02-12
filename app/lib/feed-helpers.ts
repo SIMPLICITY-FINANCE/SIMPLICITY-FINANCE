@@ -3,7 +3,7 @@
  * Extract preview data from episode summary JSON for feed cards
  */
 
-import type { Summary } from "../schemas/summary.schema";
+import type { Summary } from "../../schemas/summary.schema";
 
 export interface SummaryPreview {
   bullets: string[];

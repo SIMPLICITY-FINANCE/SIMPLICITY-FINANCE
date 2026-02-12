@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Card } from "../../components/ui/Card.js";
 import { FeedEpisodeCard } from "../../components/feed/FeedEpisodeCard.js";
 import { EpisodeSummaryModal } from "../../components/episode/EpisodeSummaryModal.js";
-import { extractSummaryPreview, formatBulletsForDisplay, extractTopics } from "../../../lib/feed-helpers.js";
+import { extractSummaryPreview, formatBulletsForDisplay, extractTopics } from "../../lib/feed-helpers.js";
 import type { Summary } from "../../../schemas/summary.schema.js";
 
 
