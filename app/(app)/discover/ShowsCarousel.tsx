@@ -10,6 +10,25 @@ interface Show {
   channel_thumbnail: string | null;
   episode_count: number;
   latest_thumbnail: string | null;
+  latest_episode: string | null;
+}
+
+function formatRelativeDate(dateStr: string): string {
+  const date = new Date(dateStr);
+  const now = new Date();
+  const diffDays = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24));
+
+  if (diffDays === 0) return 'Today';
+  if (diffDays === 1) return 'Yesterday';
+  if (diffDays < 7) return `${diffDays}d ago`;
+  if (diffDays < 30) return `${Math.floor(diffDays / 7)}w ago`;
+  return `${Math.floor(diffDays / 30)}mo ago`;
+}
+
+function isWithinDays(dateStr: string, days: number): boolean {
+  const date = new Date(dateStr);
+  const now = new Date();
+  return (now.getTime() - date.getTime()) < days * 24 * 60 * 60 * 1000;
 }
 
 interface ShowsCarouselProps {
@@ -82,7 +101,7 @@ export function ShowsCarousel({ shows }: ShowsCarouselProps) {
           >
             <div className="bg-white rounded-lg border border-gray-100 overflow-hidden hover:shadow-md transition-all duration-200 hover:-translate-y-0.5">
               {/* Thumbnail */}
-              <div className="aspect-video bg-gray-50 overflow-hidden">
+              <div className="relative aspect-video bg-gray-50 overflow-hidden">
                 {show.latest_thumbnail || show.channel_thumbnail ? (
                   <img
                     src={show.latest_thumbnail || show.channel_thumbnail || ""}
@@ -94,16 +113,29 @@ export function ShowsCarousel({ shows }: ShowsCarouselProps) {
                     <Podcast size={28} className="text-gray-300" />
                   </div>
                 )}
+                {/* NEW badge - only if episode within last 7 days */}
+                {show.latest_episode && isWithinDays(show.latest_episode, 7) && (
+                  <div className="absolute top-1.5 left-1.5 bg-blue-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded">
+                    NEW
+                  </div>
+                )}
               </div>
 
               {/* Info */}
-              <div className="p-2">
-                <h4 className="text-xs font-semibold text-foreground line-clamp-1 group-hover/card:text-blue-600 transition-colors">
+              <div className="p-2 flex flex-col gap-1">
+                <h4 className="text-xs font-semibold text-foreground line-clamp-2 leading-tight group-hover/card:text-blue-600 transition-colors">
                   {show.name}
                 </h4>
-                <p className="text-[11px] text-muted-foreground mt-0.5">
-                  {show.episode_count} {show.episode_count === 1 ? "episode" : "episodes"}
-                </p>
+                <div className="flex items-center justify-between">
+                  <p className="text-[11px] text-muted-foreground">
+                    {show.episode_count} {show.episode_count === 1 ? "episode" : "episodes"}
+                  </p>
+                  {show.latest_episode && (
+                    <p className="text-[11px] text-muted-foreground">
+                      {formatRelativeDate(show.latest_episode)}
+                    </p>
+                  )}
+                </div>
               </div>
             </div>
           </a>
