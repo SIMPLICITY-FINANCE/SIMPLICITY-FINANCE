@@ -1,6 +1,4 @@
-import postgres from "postgres";
-
-const sql = postgres(process.env.DATABASE_URL!, { max: 1 });
+import { sql } from "../db.js";
 
 export async function createEpisodeNotification(episode: {
   id: string;

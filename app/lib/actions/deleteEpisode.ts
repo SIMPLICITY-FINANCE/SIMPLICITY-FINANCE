@@ -1,12 +1,8 @@
 "use server";
 
-import postgres from "postgres";
 import { requireAdmin } from "../auth.js";
 import { revalidatePath } from "next/cache";
-
-const sql = postgres(process.env.DATABASE_URL!, {
-  max: 1,
-});
+import { sql } from "../db.js";
 
 /**
  * Delete an episode and all related data (cascade)

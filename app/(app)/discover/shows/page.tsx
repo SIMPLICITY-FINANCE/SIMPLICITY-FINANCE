@@ -1,7 +1,5 @@
-import postgres from "postgres";
 import { Podcast } from "lucide-react";
-
-const sql = postgres(process.env.DATABASE_URL!, { max: 1 });
+import { sql } from "../../../lib/db.js";
 
 interface ShowRow {
   id: string;

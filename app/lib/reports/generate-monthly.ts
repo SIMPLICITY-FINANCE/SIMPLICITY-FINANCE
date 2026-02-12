@@ -1,10 +1,8 @@
 import OpenAI from "openai";
-import postgres from "postgres";
 import { MONTHLY_REPORT_SYSTEM_PROMPT, MONTHLY_REPORT_USER_PROMPT } from "../../../prompts/monthly-synthesis-v1.js";
 import type { MonthlyReportContent } from "./types.js";
 import { createMonthlyReportNotification } from "../notifications/create.js";
-
-const sql = postgres(process.env.DATABASE_URL!, { max: 1 });
+import { sql } from "../db.js";
 
 interface WeeklyReportRow {
   id: string;

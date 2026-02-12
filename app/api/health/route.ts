@@ -1,22 +1,12 @@
 import { NextResponse } from 'next/server';
-import postgres from 'postgres';
+import { sql } from "../../lib/db.js";
 
 export async function GET() {
   const timestamp = new Date().toISOString();
   
   try {
-    // Test database connection
-    const sql = postgres(process.env.DATABASE_URL!, {
-      max: 1,
-      idle_timeout: 5,
-      connect_timeout: 5,
-    });
-
     // Simple query to verify connection
     await sql`SELECT 1 as health_check`;
-    
-    // Close connection
-    await sql.end();
 
     return NextResponse.json(
       {

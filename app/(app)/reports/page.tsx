@@ -1,10 +1,8 @@
-import postgres from "postgres";
 import { Card } from "../../components/ui/Card.js";
 import { Chip } from "../../components/ui/Chip.js";
 import { FileText, TrendingUp, TrendingDown, Minus, BarChart3, Calendar, ArrowRight } from "lucide-react";
 import type { DailyReportContent } from "../../lib/reports/types.js";
-
-const sql = postgres(process.env.DATABASE_URL!, { max: 1 });
+import { sql } from "../../lib/db.js";
 
 type ReportType = "daily" | "weekly" | "monthly" | "quarterly";
 

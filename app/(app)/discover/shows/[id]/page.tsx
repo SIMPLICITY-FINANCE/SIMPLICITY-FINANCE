@@ -1,8 +1,6 @@
-import postgres from "postgres";
 import { ArrowLeft, ExternalLink, Podcast, Calendar, Bookmark, Share2, Download } from "lucide-react";
 import { notFound } from "next/navigation";
-
-const sql = postgres(process.env.DATABASE_URL!, { max: 1 });
+import { sql } from "../../../../lib/db.js";
 
 interface Episode {
   id: string;

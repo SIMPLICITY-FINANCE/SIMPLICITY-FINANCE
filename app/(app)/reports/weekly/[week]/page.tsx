@@ -1,8 +1,6 @@
-import postgres from "postgres";
 import { FileText, TrendingUp, TrendingDown, Minus, ArrowLeft, Lightbulb, BarChart3, Calendar, Eye, Globe } from "lucide-react";
 import type { WeeklyReportContent, WeeklyTheme, NarrativeArc, WeeklyTopInsight } from "../../../../lib/reports/types.js";
-
-const sql = postgres(process.env.DATABASE_URL!, { max: 1 });
+import { sql } from "../../../../lib/db.js";
 
 interface ReportRow {
   id: string;

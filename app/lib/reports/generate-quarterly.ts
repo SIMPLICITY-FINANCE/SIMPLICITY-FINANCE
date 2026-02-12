@@ -1,10 +1,8 @@
 import OpenAI from "openai";
-import postgres from "postgres";
 import { QUARTERLY_REPORT_SYSTEM_PROMPT, QUARTERLY_REPORT_USER_PROMPT } from "../../../prompts/quarterly-synthesis-v1.js";
 import type { QuarterlyReportContent } from "./types.js";
 import { createQuarterlyReportNotification } from "../notifications/create.js";
-
-const sql = postgres(process.env.DATABASE_URL!, { max: 1 });
+import { sql } from "../db.js";
 
 interface MonthlyReportRow {
   id: string;

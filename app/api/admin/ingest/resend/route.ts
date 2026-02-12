@@ -1,10 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import postgres from "postgres";
 import { inngest } from "../../../../../inngest/client.js";
-
-const sql = postgres(process.env.DATABASE_URL!, {
-  max: 1,
-});
+import { sql } from "../../../../lib/db.js";
 
 export async function POST(request: NextRequest) {
   try {

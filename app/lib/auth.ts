@@ -1,10 +1,6 @@
 import { auth } from "../../auth.js";
 import { redirect } from "next/navigation";
-import postgres from "postgres";
-
-const sql = postgres(process.env.DATABASE_URL!, {
-  max: 1,
-});
+import { sql } from "./db.js";
 
 export interface User {
   id: string;

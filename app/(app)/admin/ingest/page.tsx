@@ -1,9 +1,5 @@
-import postgres from "postgres";
 import { AdminIngestTable } from "./AdminIngestTable.js";
-
-const sql = postgres(process.env.DATABASE_URL!, {
-  max: 1,
-});
+import { sql } from "../../../lib/db.js";
 
 interface IngestRequest {
   id: string;

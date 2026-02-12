@@ -1,8 +1,6 @@
-import postgres from "postgres";
 import { ArrowLeft, Youtube, Globe, Bookmark, Share2, Download, Podcast, Calendar, X as XIcon } from "lucide-react";
 import { notFound } from "next/navigation";
-
-const sql = postgres(process.env.DATABASE_URL!, { max: 1 });
+import { sql } from "../../../../lib/db.js";
 
 interface PersonRow {
   id: string;

@@ -1,9 +1,5 @@
 import { NextResponse } from "next/server";
-import postgres from "postgres";
-
-const sql = postgres(process.env.DATABASE_URL!, {
-  max: 1,
-});
+import { sql } from "../../../lib/db.js";
 
 export async function GET() {
   try {

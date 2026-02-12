@@ -1,8 +1,6 @@
-import postgres from "postgres";
 import { ShowsCarousel } from "./ShowsCarousel";
 import { PeopleCarousel } from "./PeopleCarousel";
-
-const sql = postgres(process.env.DATABASE_URL!, { max: 1 });
+import { sql } from "../../lib/db.js";
 
 interface ShowRow {
   id: string;

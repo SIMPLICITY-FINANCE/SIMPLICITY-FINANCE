@@ -1,12 +1,8 @@
 "use server";
 
 import { requireAdmin } from "../auth.js";
-import postgres from "postgres";
 import { inngest } from "../../../inngest/client.js";
-
-const sql = postgres(process.env.DATABASE_URL!, {
-  max: 1,
-});
+import { sql } from "../db.js";
 
 /**
  * Manually trigger ingestion for a specific show

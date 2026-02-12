@@ -1,10 +1,8 @@
 import OpenAI from "openai";
-import postgres from "postgres";
 import { DAILY_REPORT_SYSTEM_PROMPT, DAILY_REPORT_USER_PROMPT } from "../../../prompts/daily-report-v1.js";
 import type { DailyReportContent, EpisodeForReport } from "./types.js";
 import { createDailyReportNotification } from "../notifications/create.js";
-
-const sql = postgres(process.env.DATABASE_URL!, { max: 1 });
+import { sql } from "../db.js";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Types for raw DB rows

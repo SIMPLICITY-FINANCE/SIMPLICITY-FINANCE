@@ -1,8 +1,6 @@
 import { requireAdmin } from "../../../lib/auth.js";
-import postgres from "postgres";
 import { GenerateReportForm } from "./GenerateReportForm.js";
-
-const sql = postgres(process.env.DATABASE_URL!, { max: 1 });
+import { sql } from "../../../lib/db.js";
 
 interface ReportRow {
   id: string;

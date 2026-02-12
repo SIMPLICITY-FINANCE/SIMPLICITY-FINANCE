@@ -1,8 +1,6 @@
-import postgres from "postgres";
 import { FileText, TrendingUp, TrendingDown, Minus, ArrowLeft, Lightbulb, BarChart3, Calendar, Eye, Globe } from "lucide-react";
 import type { MonthlyReportContent, MonthlyTrend, MonthlyDebate, WeeklyTopInsight } from "../../../../lib/reports/types.js";
-
-const sql = postgres(process.env.DATABASE_URL!, { max: 1 });
+import { sql } from "../../../../lib/db.js";
 
 const sentimentConfig: Record<string, { label: string; color: string; bg: string }> = {
   bullish: { label: "Bullish", color: "text-green-700", bg: "bg-green-100" },

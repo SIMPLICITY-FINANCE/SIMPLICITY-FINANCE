@@ -1,9 +1,7 @@
 "use server";
 
-import postgres from "postgres";
 import { inngest } from "../../../inngest/client.js";
-
-const sql = postgres(process.env.DATABASE_URL!, { max: 1 });
+import { sql } from "../db.js";
 
 /**
  * Trigger manual daily report generation for a specific date.

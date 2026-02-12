@@ -1,9 +1,7 @@
 "use server";
 
 import { inngest } from "../../../inngest/client.js";
-import postgres from "postgres";
-
-const sql = postgres(process.env.DATABASE_URL!, { max: 1 });
+import { sql } from "../db.js";
 
 // Mock user ID for demo (in production, get from auth session)
 const DEMO_USER_ID = "00000000-0000-0000-0000-000000000001";

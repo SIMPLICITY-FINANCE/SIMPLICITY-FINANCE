@@ -1,10 +1,6 @@
 import { NextResponse } from "next/server.js";
 import { requireAdmin } from "../../../lib/auth.js";
-import postgres from "postgres";
-
-const sql = postgres(process.env.DATABASE_URL!, {
-  max: 1,
-});
+import { sql } from "../../../lib/db.js";
 
 export async function POST(request: Request) {
   try {

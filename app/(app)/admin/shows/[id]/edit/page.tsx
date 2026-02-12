@@ -1,11 +1,7 @@
 import { requireAdmin } from "../../../../../lib/auth.js";
-import postgres from "postgres";
 import { ShowForm } from "../../ShowForm.js";
 import { notFound } from "next/navigation.js";
-
-const sql = postgres(process.env.DATABASE_URL!, {
-  max: 1,
-});
+import { sql } from "../../../../../lib/db.js";
 
 export default async function EditShowPage({ params }: { params: { id: string } }) {
   await requireAdmin();

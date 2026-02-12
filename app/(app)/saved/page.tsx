@@ -1,13 +1,9 @@
-import postgres from "postgres";
 import { Card } from "../../components/ui/Card.js";
 import { Chip } from "../../components/ui/Chip.js";
 import { Users, Radio } from "lucide-react";
 import { SavedEpisodesList } from "./SavedEpisodesList.js";
 import { DebugPanel } from "./DebugPanel.js";
-
-const sql = postgres(process.env.DATABASE_URL!, {
-  max: 1,
-});
+import { sql } from "../../lib/db.js";
 
 interface SavedEpisode {
   id: string;

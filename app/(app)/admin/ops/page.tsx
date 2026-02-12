@@ -1,9 +1,5 @@
-import postgres from "postgres";
 import { requireAdmin } from "../../../lib/auth.js";
-
-const sql = postgres(process.env.DATABASE_URL!, {
-  max: 1,
-});
+import { sql } from "../../../lib/db.js";
 
 interface SystemStats {
   total_episodes: number;

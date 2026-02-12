@@ -1,4 +1,3 @@
-import postgres from "postgres";
 import { notFound } from "next/navigation";
 import { Globe, TrendingUp, DollarSign, Target, Cpu, Clock } from "lucide-react";
 import { ReportHeader } from "../../../components/episode/ReportHeader.js";
@@ -9,10 +8,7 @@ import { ChapterCard } from "../../../components/episode/ChapterCard.js";
 import { ReferencesGrid } from "../../../components/episode/ReferencesGrid.js";
 import { VideoEmbedCard } from "../../../components/episode/VideoEmbedCard.js";
 import { DisclaimersCard } from "../../../components/episode/DisclaimersCard.js";
-
-const sql = postgres(process.env.DATABASE_URL!, {
-  max: 1,
-});
+import { sql } from "../../../lib/db.js";
 
 interface PageProps {
   params: Promise<{ id: string }>;

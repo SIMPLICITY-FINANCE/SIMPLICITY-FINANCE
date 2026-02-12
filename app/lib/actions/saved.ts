@@ -1,11 +1,7 @@
 "use server";
 
-import postgres from "postgres";
 import { revalidatePath } from "next/cache";
-
-const sql = postgres(process.env.DATABASE_URL!, {
-  max: 1,
-});
+import { sql } from "../db.js";
 
 // For now, we'll use a hardcoded user ID since we don't have real auth yet
 // In production, this would come from the session

@@ -1,12 +1,8 @@
 import { requireAdmin } from "../../../lib/auth.js";
-import postgres from "postgres";
 import Link from "next/link.js";
 import { AddShowDialog } from "./AddShowDialog.js";
 import { ShowRow } from "./ShowRow.js";
-
-const sql = postgres(process.env.DATABASE_URL!, {
-  max: 1,
-});
+import { sql } from "../../../lib/db.js";
 
 interface ShowData {
   id: string;

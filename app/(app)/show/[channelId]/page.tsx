@@ -1,12 +1,8 @@
-import postgres from "postgres";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ExternalLink } from "lucide-react";
 import { Card } from "../../../components/ui/Card.js";
 import { Chip } from "../../../components/ui/Chip.js";
-
-const sql = postgres(process.env.DATABASE_URL!, {
-  max: 1,
-});
+import { sql } from "../../../lib/db.js";
 
 interface ShowDetail {
   channelId: string;

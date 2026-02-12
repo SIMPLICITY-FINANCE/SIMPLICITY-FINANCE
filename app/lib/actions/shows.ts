@@ -1,14 +1,10 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import postgres from "postgres";
 import { resolveYouTubeUrl, getChannelVideos, testYouTubeApi } from "../youtube/api.js";
 import { parseYouTubeUrl } from "../youtube/parser.js";
 import { redirect } from "next/navigation";
-
-const sql = postgres(process.env.DATABASE_URL!, {
-  max: 1,
-});
+import { sql } from "../db.js";
 
 // Types for our shows
 export interface Show {
