@@ -80,7 +80,7 @@ export function RecentEpisodesStrip({ episodes }: RecentEpisodesStripProps) {
       >
         {episodes.map((ep) => (
           <a
-            key={ep.id}
+            key={`episode-${ep.id}-${ep.video_id}`}
             href={`/episodes/${ep.video_id}`}
             className="flex-none w-56 group/card"
           >

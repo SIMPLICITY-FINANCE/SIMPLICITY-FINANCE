@@ -73,19 +73,22 @@ export default async function DiscoverPage() {
       LIMIT 20
     `,
     sql<EpisodeRow[]>`
-      SELECT
-        e.id,
-        e.youtube_title,
-        e.video_id,
-        e.youtube_thumbnail_url,
-        e.published_at::text as published_at,
-        s.name as show_name,
-        e.youtube_duration
-      FROM episodes e
-      LEFT JOIN shows s ON e.youtube_channel_id = s.channel_id
-      WHERE e.is_published = true
-        AND e.published_at > NOW() - INTERVAL '7 days'
-      ORDER BY e.published_at DESC
+      SELECT * FROM (
+        SELECT DISTINCT ON (e.id)
+          e.id,
+          e.youtube_title,
+          e.video_id,
+          e.youtube_thumbnail_url,
+          e.published_at::text as published_at,
+          s.name as show_name,
+          e.youtube_duration
+        FROM episodes e
+        LEFT JOIN shows s ON e.youtube_channel_id = s.channel_id
+        WHERE e.is_published = true
+          AND e.published_at > NOW() - INTERVAL '7 days'
+        ORDER BY e.id, e.published_at DESC
+      ) sub
+      ORDER BY sub.published_at DESC
       LIMIT 8
     `,
   ]);
