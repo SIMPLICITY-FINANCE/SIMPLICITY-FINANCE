@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, Podcast } from "lucide-react";
+import { FollowShowButton } from "../../components/FollowShowButton.js";
 
 interface Show {
   id: string;
@@ -128,9 +129,12 @@ export function ShowsCarousel({ shows }: ShowsCarouselProps) {
 
               {/* Info */}
               <div className="p-2 flex flex-col gap-1">
-                <h4 className="text-xs font-semibold text-foreground line-clamp-2 leading-tight group-hover/card:text-blue-600 transition-colors">
-                  {show.name}
-                </h4>
+                <div className="flex items-start justify-between gap-1">
+                  <h4 className="text-xs font-semibold text-foreground line-clamp-2 leading-tight group-hover/card:text-blue-600 transition-colors">
+                    {show.name}
+                  </h4>
+                  <FollowShowButton channelId={show.channel_id} variant="compact" />
+                </div>
                 <div className="flex items-center justify-between">
                   <p className="text-[11px] text-muted-foreground">
                     {show.episode_count} {show.episode_count === 1 ? "episode" : "episodes"}

@@ -1,11 +1,15 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { Card } from "../../components/ui/Card.js";
 import { FeedEpisodeCard } from "../../components/feed/FeedEpisodeCard.js";
 import { EpisodeSummaryModal } from "../../components/episode/EpisodeSummaryModal.js";
 import { extractSummaryPreview, formatBulletsForDisplay, extractTopics } from "../../lib/feed-helpers.js";
 import type { Summary } from "../../../schemas/summary.schema.js";
+
+const STORAGE_KEY = 'simplicity-feed-mode';
+const CATEGORY_KEY = 'simplicity-feed-category';
 
 
 interface FeedEpisode {
@@ -28,20 +32,56 @@ export default function DashboardPage() {
   const [selectedEpisode, setSelectedEpisode] = useState<FeedEpisode | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [emptyMessage, setEmptyMessage] = useState<string | null>(null);
 
-  useEffect(() => {
-    async function fetchFeed() {
-      try {
-        const response = await fetch('/api/feed');
-        const data = await response.json();
+  async function fetchFeed(filter: string, category: string | null) {
+    setIsLoading(true);
+    setEmptyMessage(null);
+    try {
+      let url = `/api/feed?filter=${filter}`;
+      if (filter === 'custom' && category) url += `&category=${category}`;
+      console.log(`[Dashboard] Fetching: ${url}`);
+      const response = await fetch(url);
+      const data = await response.json();
+
+      if (Array.isArray(data)) {
+        // Backward compat: old flat array format
         setFeedEpisodes(data);
-      } catch (err) {
-        console.error('Failed to fetch feed:', err);
-      } finally {
-        setIsLoading(false);
+      } else {
+        setFeedEpisodes(data.episodes || []);
+        if (data.message) setEmptyMessage(data.message);
       }
+    } catch (err) {
+      console.error('[Dashboard] Failed to fetch feed:', err);
+    } finally {
+      setIsLoading(false);
     }
-    fetchFeed();
+  }
+
+  // Initial fetch using localStorage
+  useEffect(() => {
+    const filter = localStorage.getItem(STORAGE_KEY) || 'full';
+    const category = localStorage.getItem(CATEGORY_KEY) || null;
+    fetchFeed(filter, category);
+  }, []);
+
+  // Listen for filter changes from FeedDropdown
+  useEffect(() => {
+    function onModeChange(e: Event) {
+      const filter = (e as CustomEvent).detail as string;
+      const category = localStorage.getItem(CATEGORY_KEY) || null;
+      fetchFeed(filter, category);
+    }
+    function onCategoryChange(e: Event) {
+      const category = (e as CustomEvent).detail as string | null;
+      fetchFeed('custom', category);
+    }
+    window.addEventListener('feed-mode-change', onModeChange);
+    window.addEventListener('feed-category-change', onCategoryChange);
+    return () => {
+      window.removeEventListener('feed-mode-change', onModeChange);
+      window.removeEventListener('feed-category-change', onCategoryChange);
+    };
   }, []);
 
   const handleCardClick = (episode: FeedEpisode) => {
@@ -135,10 +175,24 @@ export default function DashboardPage() {
     <>
       {feedEpisodes.length === 0 ? (
         <Card className="p-12 text-center">
-          <p className="text-muted-foreground text-lg">No episodes available yet</p>
-          <p className="text-muted-foreground/70 text-sm mt-2">
-            Submit a YouTube URL to get started
-          </p>
+          {emptyMessage ? (
+            <>
+              <p className="text-muted-foreground text-lg mb-2">{emptyMessage}</p>
+              <Link
+                href="/discover"
+                className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                Browse Shows
+              </Link>
+            </>
+          ) : (
+            <>
+              <p className="text-muted-foreground text-lg">No episodes available yet</p>
+              <p className="text-muted-foreground/70 text-sm mt-2">
+                Submit a YouTube URL to get started
+              </p>
+            </>
+          )}
         </Card>
       ) : (
         <div className="space-y-4">

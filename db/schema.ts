@@ -33,6 +33,9 @@ export const shows = pgTable("shows", {
   channelThumbnail: text("channel_thumbnail"),
   subscriberCount: integer("subscriber_count"),
   
+  // Classification
+  category: text("category"), // 'markets' | 'macro' | 'technology' | 'geopolitics' | 'business'
+  
   // Ingestion settings
   sourceType: text("source_type").notNull().default("youtube"), // 'youtube', 'rss', etc.
   status: text("status").$type<"enabled" | "disabled">().notNull().default("disabled"),

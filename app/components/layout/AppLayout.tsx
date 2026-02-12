@@ -2,7 +2,8 @@
 
 import { Sidebar } from './Sidebar.js';
 import { Input } from '../ui/Input.js';
-import { Search, Filter } from 'lucide-react';
+import { FeedDropdown } from './FeedDropdown.js';
+import { Search } from 'lucide-react';
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -29,11 +30,7 @@ export function AppLayout({
                 icon={<Search size={20} />}
               />
             </form>
-            <button className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-foreground bg-card border border-border rounded-lg hover:bg-muted transition-colors shadow-sm">
-              <Filter size={18} />
-              <span>Full Feed</span>
-              <span className="text-gray-400">↓</span>
-            </button>
+            <FeedDropdown />
           </div>
         </div>
 

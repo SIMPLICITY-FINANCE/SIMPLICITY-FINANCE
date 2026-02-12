@@ -1,6 +1,38 @@
 # CHANGELOG
 # Most recent entries at the top.
 
+## [2026-02-12] - Follow System + Feed Filters + Profile Page
+
+### Added
+- **Follow/Unfollow API** — `POST/DELETE/GET /api/shows/[channelId]/follow` using raw SQL + DEMO_USER_ID
+- **Followed Shows API** — `GET /api/shows/followed` returns all followed shows with thumbnails and episode counts
+- **FollowShowButton component** — `default` (pill with text) and `compact` (icon-only circle) variants
+- **Feed filter dropdown** — 3 modes: Full Feed, Followed Only, Customised (with category pills)
+- **Category pills** — markets, macro, technology, geopolitics, business — appear when Customised is selected
+- **Feed API filtering** — `/api/feed?filter=followed|custom&category=markets` filters episodes by followed shows or category
+- **Dashboard re-fetches** on filter/category change via CustomEvent (no page reload)
+- **Empty states** — contextual messages when no followed shows or no category results
+- **Profile/Following page** — replaces placeholder, shows all followed shows with unfollow buttons
+- **Follow button on show cards** — compact follow button in ShowsCarousel on Discover page
+- **`category` column on `shows` table** — seeded for all 9 existing shows
+
+### Schema Changes
+- `shows.category` column added (text, nullable)
+
+### Files Created
+- `app/api/shows/[channelId]/follow/route.ts`
+- `app/api/shows/followed/route.ts`
+- `app/components/FollowShowButton.tsx`
+- `scripts/add-category-column.ts`
+
+### Files Modified
+- `db/schema.ts` — added `category` column to shows
+- `app/api/feed/route.ts` — accepts `?filter=` and `?category=` params
+- `app/(app)/dashboard/page.tsx` — listens for filter/category events, shows empty states
+- `app/components/layout/FeedDropdown.tsx` — added category pills for Customised mode
+- `app/(app)/profile/page.tsx` — replaced placeholder with Following page
+- `app/(app)/discover/ShowsCarousel.tsx` — added compact follow button to show cards
+
 ## [2026-02-12] - Discover Search Feature
 
 ### Added
