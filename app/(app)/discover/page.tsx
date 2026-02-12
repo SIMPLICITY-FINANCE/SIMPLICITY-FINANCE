@@ -9,6 +9,7 @@ interface ShowRow {
   channel_thumbnail: string | null;
   episode_count: number;
   latest_thumbnail: string | null;
+  latest_episode: string | null;
 }
 
 interface PersonRow {
@@ -24,38 +25,25 @@ interface PersonRow {
 export default async function DiscoverPage() {
   const [showsData, peopleData] = await Promise.all([
     sql<ShowRow[]>`
-      WITH show_stats AS (
-        SELECT
-          e.youtube_channel_id as channel_id,
-          COUNT(DISTINCT e.id)::int as episode_count,
-          (
-            SELECT e2.youtube_thumbnail_url
-            FROM episodes e2
-            WHERE e2.youtube_channel_id = e.youtube_channel_id
-              AND e2.youtube_thumbnail_url IS NOT NULL
-            ORDER BY e2.created_at DESC
-            LIMIT 1
-          ) as latest_thumbnail
-        FROM episodes e
-        WHERE e.youtube_channel_id IS NOT NULL
-          AND e.is_published = true
-        GROUP BY e.youtube_channel_id
-      )
       SELECT
-        COALESCE(s.channel_id, ss.channel_id) as id,
-        COALESCE(s.name, (
-          SELECT e3.youtube_channel_title FROM episodes e3
-          WHERE e3.youtube_channel_id = ss.channel_id
-          LIMIT 1
-        )) as name,
-        COALESCE(s.channel_id, ss.channel_id) as channel_id,
+        s.channel_id as id,
+        s.name,
+        s.channel_id,
         s.channel_thumbnail,
-        COALESCE(ss.episode_count, 0)::int as episode_count,
-        ss.latest_thumbnail
+        COUNT(DISTINCT e.id)::int as episode_count,
+        (
+          SELECT e2.youtube_thumbnail_url
+          FROM episodes e2
+          WHERE e2.youtube_channel_id = s.channel_id
+            AND e2.youtube_thumbnail_url IS NOT NULL
+          ORDER BY e2.published_at DESC
+          LIMIT 1
+        ) as latest_thumbnail,
+        MAX(e.published_at)::text as latest_episode
       FROM shows s
-      FULL OUTER JOIN show_stats ss ON s.channel_id = ss.channel_id
-      WHERE s.channel_id IS NOT NULL OR ss.episode_count > 0
-      ORDER BY COALESCE(ss.episode_count, 0) DESC, COALESCE(s.name, '') ASC
+      LEFT JOIN episodes e ON e.youtube_channel_id = s.channel_id AND e.is_published = true
+      GROUP BY s.id, s.channel_id, s.name, s.channel_thumbnail
+      ORDER BY COUNT(DISTINCT e.id) DESC, s.name ASC
       LIMIT 20
     `,
     sql<PersonRow[]>`
