@@ -1,6 +1,18 @@
 # CHANGELOG
 # Most recent entries at the top.
 
+## [2026-02-12] - Discover Search Feature
+
+### Added
+- Search API route (`/api/discover/search`) — searches shows by name, episodes by title + summary bullet text, people by name
+- `DiscoverSearch` client component — expandable search icon in header, 300ms debounced, grouped dropdown results
+- Dropdown shows Shows, Episodes, and People sections with thumbnails and metadata
+- Escape key and outside click to close, correct navigation links for all result types
+
+### Files Created
+- `app/api/discover/search/route.ts`
+- `app/(app)/discover/DiscoverSearch.tsx`
+
 ## [2026-02-12] - Deduplicate Carousels + Back Buttons
 
 ### Fixed

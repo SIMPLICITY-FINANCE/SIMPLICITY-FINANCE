@@ -1,6 +1,7 @@
 import { ShowsCarousel } from "./ShowsCarousel";
 import { PeopleCarousel } from "./PeopleCarousel";
 import { RecentEpisodesStrip } from "./RecentEpisodesStrip";
+import { DiscoverSearch } from "./DiscoverSearch";
 import { sql } from "../../lib/db.js";
 
 interface ShowRow {
@@ -96,11 +97,14 @@ export default async function DiscoverPage() {
   return (
     <>
       {/* Header */}
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-foreground">Discover</h1>
-        <p className="text-sm text-muted-foreground mt-0.5">
-          {showsData.length} shows · {peopleData.length > 0 ? `${peopleData.length} people` : 'Financial podcasts and expert commentary'}
-        </p>
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h1 className="text-2xl font-bold text-foreground">Discover</h1>
+          <p className="text-sm text-muted-foreground mt-0.5">
+            {showsData.length} shows · {peopleData.length > 0 ? `${peopleData.length} people` : 'Financial podcasts and expert commentary'}
+          </p>
+        </div>
+        <DiscoverSearch />
       </div>
 
       {/* New This Week */}
