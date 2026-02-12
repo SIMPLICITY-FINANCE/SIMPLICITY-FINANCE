@@ -1,3 +1,5 @@
+import Link from "next/link.js";
+import { ArrowLeft } from "lucide-react";
 import { requireAdmin } from "../../../lib/auth.js";
 import { GenerateReportForm } from "./GenerateReportForm.js";
 import { sql } from "../../../lib/db.js";
@@ -60,6 +62,14 @@ export default async function AdminReportsPage() {
       </nav>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <Link
+          href="/admin"
+          className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-6"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Back to Admin
+        </Link>
+
         {/* Generate Report Section */}
         <div className="bg-white rounded-lg shadow p-6 mb-8">
           <h2 className="text-lg font-medium text-gray-900 mb-4">Generate Daily Report</h2>

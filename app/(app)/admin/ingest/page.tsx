@@ -1,3 +1,5 @@
+import Link from "next/link.js";
+import { ArrowLeft } from "lucide-react";
 import { AdminIngestTable } from "./AdminIngestTable.js";
 import { sql } from "../../../lib/db.js";
 
@@ -43,6 +45,14 @@ export default async function AdminIngestPage() {
 
   return (
     <div className="max-w-6xl mx-auto">
+      <Link
+        href="/admin"
+        className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-6"
+      >
+        <ArrowLeft className="w-4 h-4" />
+        Back to Admin
+      </Link>
+
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-foreground mb-2">
           Ingest Management

@@ -1,5 +1,6 @@
 import { requireAdmin } from "../../../lib/auth.js";
 import Link from "next/link.js";
+import { ArrowLeft } from "lucide-react";
 import { AddShowDialog } from "./AddShowDialog.js";
 import { ShowRow } from "./ShowRow.js";
 import { sql } from "../../../lib/db.js";
@@ -63,20 +64,20 @@ export default async function AdminShowsPage() {
                 {shows.length} show{shows.length !== 1 ? "s" : ""} • {enabledCount} enabled
               </p>
             </div>
-            <div className="flex gap-3">
-              <Link
-                href="/admin"
-                className="px-4 py-2 bg-white text-gray-700 text-sm font-medium rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors"
-              >
-                ← Back to Admin
-              </Link>
-              <AddShowDialog />
-            </div>
+            <AddShowDialog />
           </div>
         </div>
       </header>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <Link
+          href="/admin"
+          className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-6"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Back to Admin
+        </Link>
+
         {shows.length === 0 ? (
           <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-12 text-center">
             <div className="text-5xl mb-4">📺</div>

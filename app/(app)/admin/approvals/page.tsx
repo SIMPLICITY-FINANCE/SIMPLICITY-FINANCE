@@ -1,4 +1,6 @@
 import { redirect } from "next/navigation.js";
+import Link from "next/link.js";
+import { ArrowLeft } from "lucide-react";
 import { requireAdmin } from "../../../lib/auth.js";
 import { sql } from "../../../lib/db.js";
 
@@ -135,6 +137,14 @@ export default async function ApprovalsPage() {
       </nav>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <Link
+          href="/admin"
+          className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-6"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Back to Admin
+        </Link>
+
         <div className="mb-6">
           <h2 className="text-lg font-medium text-gray-900">
             Pending Summaries ({pendingSummaries.length})

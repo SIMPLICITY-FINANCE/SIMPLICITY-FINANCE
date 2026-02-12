@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { ArrowLeft, Calendar, Loader2, CheckCircle2, AlertCircle } from "lucide-react";
 import {
   generateDailyReportManual,
@@ -384,14 +385,17 @@ export default function AdminGenerateReportPage() {
   return (
     <div className="max-w-2xl mx-auto px-6 py-8">
 
-      {/* Header */}
-      <div className="flex items-center justify-between mb-8">
-        <h1 className="text-2xl font-bold text-foreground">Generate Report</h1>
-        <a href="/admin/reports" className="text-sm text-blue-600 hover:text-blue-700 flex items-center gap-1">
-          <ArrowLeft className="w-4 h-4" /> Back to Reports
-        </a>
-      </div>
+      {/* Back button */}
+      <Link
+        href="/admin/reports"
+        className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-6"
+      >
+        <ArrowLeft className="w-4 h-4" />
+        Back to Reports
+      </Link>
 
+      {/* Header */}
+      <h1 className="text-2xl font-bold text-foreground mb-2">Generate Report</h1>
       <p className="text-sm text-muted-foreground mb-6">
         Manually generate reports for any date range.
       </p>

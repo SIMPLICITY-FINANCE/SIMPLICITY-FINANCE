@@ -1,6 +1,14 @@
 # CHANGELOG
 # Most recent entries at the top.
 
+## [2026-02-12] - Admin Back Buttons
+
+### Added
+- Consistent back buttons on all admin pages using ArrowLeft icon from lucide-react
+- Added to: approvals, ingest, reports, reports/generate, ops, shows, shows/new, shows/[id]/edit
+- Standardized className: `inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-6`
+- Each page links to its logical parent (/admin, /admin/reports, /admin/shows)
+
 ## [2026-02-12] - Reports Pipeline Fix + Admin UI Redesign
 
 ### Fixed

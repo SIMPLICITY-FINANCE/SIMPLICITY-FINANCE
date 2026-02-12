@@ -1,3 +1,5 @@
+import Link from "next/link.js";
+import { ArrowLeft } from "lucide-react";
 import { requireAdmin } from "../../../../lib/auth.js";
 import { ShowForm } from "../ShowForm.js";
 
@@ -15,17 +17,19 @@ export default async function NewShowPage() {
                 Configure a new show for automatic episode ingestion
               </p>
             </div>
-            <a
-              href="/admin/shows"
-              className="px-4 py-2 bg-gray-100 text-gray-700 text-sm font-medium rounded hover:bg-gray-200 transition-colors"
-            >
-              ← Back to Shows
-            </a>
           </div>
         </div>
       </header>
 
       <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <Link
+          href="/admin/shows"
+          className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-6"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Back to Shows
+        </Link>
+
         <ShowForm />
       </main>
     </div>
