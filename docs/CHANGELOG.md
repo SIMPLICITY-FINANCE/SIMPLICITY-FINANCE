@@ -1,6 +1,48 @@
 # CHANGELOG
 # Most recent entries at the top.
 
+## [2026-02-15] - Build Earnings, Calendar, Predictions, Tweets Panel Tabs
+
+### Added
+- **Earnings Tab** — Finnhub earnings calendar for AAPL, TSLA, NVDA, META, AMZN, SPY, QQQ, DIA
+- **Calendar Tab** — Finnhub economic calendar, grouped by day with impact indicators
+- **Predictions Tab** — Polymarket prediction markets with probability bars (no API key needed)
+- **Tweets Tab** — RSS feeds from Reuters, Bloomberg, FT, CNBC, WSJ styled as tweet cards
+
+### API Routes Created
+- `app/api/panel/earnings/route.ts` — fetches upcoming earnings (next 90 days), filters to tracked tickers
+- `app/api/panel/calendar/route.ts` — fetches economic events (next 2 weeks), sorted by date
+- `app/api/panel/predictions/route.ts` — fetches Polymarket markets by volume, extracts YES token probability
+- `app/api/panel/tweets/route.ts` — parses RSS XML from 5 financial news sources, interleaves results
+
+### Components Updated
+- `app/components/panel-tabs/EarningsTab.tsx` — shows earnings with ticker badges, dates, EPS estimates, beat/miss indicators
+- `app/components/panel-tabs/CalendarTab.tsx` — groups events by day (Today/Tomorrow/date), impact dots (high/med/low), actual vs forecast
+- `app/components/panel-tabs/PredictionsTab.tsx` — shows markets with probability circles, volume, progress bars, links to Polymarket
+- `app/components/panel-tabs/TweetsTab.tsx` — shows news cards with source avatars, time ago, clickable links
+
+### Features
+- All tabs use `PanelSkeleton` for loading states
+- All tabs show graceful error states with helpful messages
+- Earnings: color-coded ticker badges, pre-market/after-close timing, beat/miss with trend icons
+- Calendar: date grouping (Today/Tomorrow/weekday), impact indicators (red/amber/green), actual vs forecast comparison
+- Predictions: probability-based coloring (green ≥70%, amber ≥40%, red <40%), volume formatting, progress bars
+- Tweets: source-specific colors (Reuters orange, Bloomberg black, FT pink, CNBC blue, WSJ blue), time ago formatting
+
+### Data Sources
+- Earnings & Calendar: Finnhub API (requires `FINNHUB_API_KEY` env var)
+- Predictions: Polymarket public API (no key needed)
+- Tweets: RSS feeds (Reuters, Bloomberg, FT, CNBC, WSJ) - no auth needed
+
+### Technical Notes
+- All tabs fetch on mount via useEffect
+- Earnings: filters to 8 tracked tickers, sorts by date, shows up to 15 results
+- Calendar: filters to next 2 weeks, shows up to 20 events
+- Predictions: top 15 markets by 24h volume, filters to markets with YES token probability
+- Tweets: fetches 3 items per source, interleaves by publish date, shows up to 20 total
+- RSS parsing: simple regex-based XML extraction with CDATA support
+- All tabs cache API responses (earnings/calendar: 1h, predictions: 5min, tweets: 5min)
+
 ## [2026-02-15] - Panel Tabs at Bottom + Real Up Next & Random Suggestions
 
 ### Changed
