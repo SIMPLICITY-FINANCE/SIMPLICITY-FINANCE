@@ -1,6 +1,64 @@
 # CHANGELOG
 # Most recent entries at the top.
 
+## [2026-02-15] - Markets Fix - Weekend Support with Range Query, Liquid Tickers
+
+### Fixed
+- **Weekend data availability** — Markets now work on weekends by using range query to find most recent trading day
+- **Illiquid ticker replacements** — Replaced PPLT, PALL, CORN, WEAT with liquid ETFs available on Polygon free tier
+- **Day-over-day change calculation** — Now uses previous day close → current close for accurate % change
+
+### API Changes (app/api/panel/markets/route.ts)
+- **Replaced /prev endpoint with /range endpoint** for stocks/ETFs
+  - Old: `/v2/aggs/ticker/{ticker}/prev` (only works Mon-Fri, returns empty on weekends)
+  - New: `/v2/aggs/ticker/{ticker}/range/1/day/{from}/{to}` with 7-day lookback
+  - Finds most recent 2 trading days even on weekends
+- **Crypto unchanged** — Still uses snapshot API (trades 24/7, always has current data)
+- **Ticker replacements** to use liquid ETFs on free tier:
+  - Metals: Removed PPLT, PALL → Added GDX (Gold Miners), GDXJ (Jr Gold Miners)
+  - Equities: Removed VIX → Added VWO (Emerging Markets)
+  - Bonds: Added LQD (Corp Bonds) for 5 total
+  - Commodities: Removed CORN, WEAT → Added DBA (Agriculture), DJP (Commodities Index)
+- **Change calculation** now uses previous close as baseline (day-over-day)
+- **Console logging** added: `[Markets] Fetched X/29 instruments` for debugging
+- **Zero-division protection** added: filters out instruments where o === 0
+
+### Instrument Changes
+**Total: 29 instruments (same count, different tickers)**
+
+**Metals (4):**
+- Kept: GLD, SLV
+- Added: GDX (Gold Miners), GDXJ (Jr Gold Miners)
+- Removed: PPLT (Platinum), PALL (Palladium) — not on free tier
+
+**Equities (6):**
+- Kept: SPY, QQQ, DIA, IWM, EFA
+- Added: VWO (Emerging Markets)
+- Removed: VIX (Volatility) — inconsistent data
+
+**Crypto (6):**
+- No changes: BTC, ETH, SOL, BNB, XRP, DOGE
+
+**Currencies (4):**
+- No changes: UUP, FXE, FXB, FXY
+
+**Bonds (5):**
+- Kept: TLT, IEF, SHY, HYG
+- Added: LQD (Corp Bonds)
+
+**Commodities (4):**
+- Kept: USO, UNG
+- Added: DBA (Agriculture), DJP (Commodities Index)
+- Removed: CORN, WEAT — not on free tier
+
+### Technical Notes
+- Range query with `sort=desc&limit=2` gets [latest, previous] trading days
+- Handles weekends: if today is Saturday, returns Friday and Thursday data
+- Crypto snapshot API unchanged (24/7 trading)
+- Change calculation: `(latest.c - previous.c) / previous.c * 100`
+- All tickers now verified to work on Polygon free tier
+- `isCrypto` boolean flag replaces `type` enum for cleaner logic
+
 ## [2026-02-15] - Markets Tab Redesign - Category Grid, 2-Column Cards with Sparklines
 
 ### Added
