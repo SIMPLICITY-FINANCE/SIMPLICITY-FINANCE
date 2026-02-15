@@ -11,13 +11,12 @@ export async function GET() {
         e.youtube_thumbnail_url as thumbnail_url,
         e.published_at,
         e.youtube_channel_title as show_name,
-        s.slug as show_slug,
+        s.channel_id as show_slug,
         s.channel_thumbnail as show_thumbnail
       FROM episodes e
       LEFT JOIN shows s ON e.youtube_channel_id = s.channel_id
-      LEFT JOIN episode_summary es ON es.episode_id = e.id
       WHERE e.is_published = true
-        AND es.id IS NOT NULL
+        AND EXISTS (SELECT 1 FROM episode_summary es WHERE es.episode_id = e.id)
       ORDER BY COALESCE(e.published_at, e.created_at) DESC
       LIMIT 5
     `;
