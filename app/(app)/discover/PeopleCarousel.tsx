@@ -7,10 +7,9 @@ interface Person {
   id: string;
   name: string;
   slug: string;
-  emoji: string | null;
-  avatar_url: string | null;
-  title: string | null;
-  episode_count: number;
+  image_url: string | null;
+  show_name: string;
+  show_slug: string | null;
 }
 
 interface PeopleCarouselProps {
@@ -45,13 +44,13 @@ export function PeopleCarousel({ people }: PeopleCarouselProps) {
 
   if (uniquePeople.length === 0) {
     return (
-      <div className="bg-white rounded-2xl border border-gray-100 py-12 text-center">
+      <div className="bg-card border border-border rounded-xl p-12 text-center">
         <Users className="w-8 h-8 text-muted-foreground mx-auto mb-3" />
-        <p className="text-sm font-medium text-foreground mb-1">No people added yet</p>
+        <p className="text-sm font-medium text-foreground mb-1">No hosts set yet</p>
         <p className="text-xs text-muted-foreground">
-          People are extracted from episodes during ingestion.
+          Hosts are configured in the admin panel for each show.
           <br />
-          Process some episodes to see people appear here.
+          Set hosts for shows to see them appear here.
         </p>
       </div>
     );
@@ -87,36 +86,34 @@ export function PeopleCarousel({ people }: PeopleCarouselProps) {
       >
         {uniquePeople.map((person) => (
           <a
-            key={`person-${person.id}`}
+            key={`person-${person.slug}`}
             href={`/discover/people/${person.slug}`}
-            className="flex-none w-32 group/card"
+            className="flex-shrink-0 w-36 p-2 rounded-lg hover:bg-accent transition-colors group/card"
           >
-            <div className="bg-white rounded-lg border border-gray-100 overflow-hidden hover:shadow-md transition-all duration-200 hover:-translate-y-0.5">
-              {/* Avatar */}
-              <div className="pt-3 pb-2 flex justify-center">
-                {person.avatar_url ? (
-                  <img
-                    src={person.avatar_url}
-                    alt={person.name}
-                    className="w-16 h-16 rounded-full object-cover ring-2 ring-gray-100"
-                  />
-                ) : (
-                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-amber-100 to-orange-100 flex items-center justify-center text-2xl ring-2 ring-gray-100">
-                    {person.emoji || "\u{1F464}"}
-                  </div>
-                )}
-              </div>
-
-              {/* Info */}
-              <div className="px-2 pb-3 text-center">
-                <h4 className="text-xs font-semibold text-foreground line-clamp-1 group-hover/card:text-blue-600 transition-colors">
-                  {person.name}
-                </h4>
-                <p className="text-[10px] text-muted-foreground mt-0.5">
-                  {person.episode_count} {person.episode_count === 1 ? "ep" : "eps"}
-                </p>
-              </div>
+            {/* Avatar */}
+            <div className="w-16 h-16 rounded-full overflow-hidden bg-muted mx-auto mb-2 ring-2 ring-border">
+              {person.image_url ? (
+                <img
+                  src={person.image_url}
+                  alt={person.name}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-2xl font-bold text-muted-foreground bg-gradient-to-br from-blue-500/20 to-blue-700/20">
+                  {person.name?.[0]?.toUpperCase()}
+                </div>
+              )}
             </div>
+
+            {/* Name */}
+            <p className="text-xs font-semibold text-foreground text-center line-clamp-2 leading-tight mb-0.5">
+              {person.name}
+            </p>
+
+            {/* Show name */}
+            <p className="text-[11px] text-muted-foreground text-center truncate">
+              {person.show_name}
+            </p>
           </a>
         ))}
       </div>

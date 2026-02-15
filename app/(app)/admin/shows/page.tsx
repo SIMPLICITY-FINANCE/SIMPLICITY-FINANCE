@@ -21,6 +21,9 @@ interface ShowData {
   total_episodes_ingested: number | null;
   created_at: string;
   episode_count: number;
+  host_name: string | null;
+  host_slug: string | null;
+  host_image_url: string | null;
 }
 
 export default async function AdminShowsPage() {
@@ -42,6 +45,9 @@ export default async function AdminShowsPage() {
       s.last_checked_at,
       s.total_episodes_ingested,
       s.created_at,
+      s.host_name,
+      s.host_slug,
+      s.host_image_url,
       COALESCE((
         SELECT COUNT(*)::int FROM episodes e WHERE e.youtube_channel_id = s.channel_id
       ), 0) as episode_count

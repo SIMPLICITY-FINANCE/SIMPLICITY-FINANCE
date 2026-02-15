@@ -36,6 +36,11 @@ export const shows = pgTable("shows", {
   // Classification
   category: text("category"), // 'markets' | 'macro' | 'technology' | 'geopolitics' | 'business'
   
+  // Host information
+  hostName: text("host_name"), // e.g. "Guy Turner"
+  hostSlug: text("host_slug"), // e.g. "guy-turner" (for URL)
+  hostImageUrl: text("host_image_url"), // headshot or channel avatar URL
+  
   // Ingestion settings
   sourceType: text("source_type").notNull().default("youtube"), // 'youtube', 'rss', etc.
   status: text("status").$type<"enabled" | "disabled">().notNull().default("disabled"),

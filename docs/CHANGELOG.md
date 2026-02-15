@@ -1,6 +1,33 @@
 # CHANGELOG
 # Most recent entries at the top.
 
+## [2026-02-15] - Build People Section from Show Hosts
+
+### Added
+- **Host fields to shows table** — `host_name`, `host_slug`, `host_image_url` columns added
+- **Host data seeding** — all 9 existing shows seeded with appropriate host information
+- **People carousel from hosts** — People section now reads from shows table instead of separate people table
+- **Person profile pages** — `/discover/people/[slug]` shows host profile with name, photo, and link to their show
+- **Host management in admin** — edit host name and image URL for each show in admin panel
+- **Host API route** — `PATCH /api/admin/shows/[showId]/host` for updating host information
+
+### Schema Changes
+- Added `host_name`, `host_slug`, `host_image_url` columns to `shows` table
+
+### Files Created
+- `scripts/add-host-fields.ts` — adds host columns to shows table
+- `scripts/check-shows.ts` — utility to check existing shows
+- `scripts/seed-hosts.ts` — seeds host data for existing shows
+- `app/(app)/discover/people/[slug]/page.tsx` — person profile page
+- `app/api/admin/shows/[showId]/host/route.ts` — host update API
+
+### Files Modified
+- `db/schema.ts` — added host fields to shows table
+- `app/(app)/discover/page.tsx` — updated people query to read from shows
+- `app/(app)/discover/PeopleCarousel.tsx` — updated for new data shape
+- `app/(app)/admin/shows/page.tsx` — added host fields to query
+- `app/(app)/admin/shows/ShowRow.tsx` — added host management UI
+
 ## [2026-02-12] - Profile Page Redesign
 
 ### Changed

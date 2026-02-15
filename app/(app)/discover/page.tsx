@@ -18,10 +18,9 @@ interface PersonRow {
   id: string;
   name: string;
   slug: string;
-  emoji: string | null;
-  avatar_url: string | null;
-  title: string | null;
-  episode_count: number;
+  image_url: string | null;
+  show_name: string;
+  show_slug: string | null;
 }
 
 interface EpisodeRow {
@@ -60,17 +59,16 @@ export default async function DiscoverPage() {
     `,
     sql<PersonRow[]>`
       SELECT
-        p.id,
-        p.name,
-        p.slug,
-        p.emoji,
-        p.avatar_url,
-        p.title,
-        COUNT(DISTINCT ep.episode_id)::int as episode_count
-      FROM people p
-      LEFT JOIN episode_people ep ON ep.person_id = p.id
-      GROUP BY p.id
-      ORDER BY COUNT(DISTINCT ep.episode_id) DESC, p.name ASC
+        s.id,
+        s.host_name as name,
+        s.host_slug as slug,
+        s.host_image_url as image_url,
+        s.name as show_name,
+        s.slug as show_slug
+      FROM shows s
+      WHERE s.host_name IS NOT NULL
+        AND s.host_slug IS NOT NULL
+      ORDER BY s.name ASC
       LIMIT 20
     `,
     sql<EpisodeRow[]>`
@@ -93,6 +91,11 @@ export default async function DiscoverPage() {
       LIMIT 8
     `,
   ]);
+
+  // Deduplicate people by host_slug in case same person hosts multiple shows
+  const uniquePeople = Array.from(
+    new Map(peopleData.map(p => [p.slug, p])).values()
+  );
 
   return (
     <>
@@ -151,7 +154,7 @@ export default async function DiscoverPage() {
             View All →
           </a>
         </div>
-        <PeopleCarousel people={peopleData} />
+        <PeopleCarousel people={uniquePeople} />
       </section>
     </>
   );

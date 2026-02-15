@@ -21,6 +21,9 @@ interface ShowData {
   total_episodes_ingested: number | null;
   created_at: string;
   episode_count: number;
+  host_name: string | null;
+  host_slug: string | null;
+  host_image_url: string | null;
 }
 
 function timeAgo(dateStr: string | null): string {
@@ -45,6 +48,12 @@ export function ShowRow({ show }: { show: ShowData }) {
   const [testing, setTesting] = useState(false);
   const [testMessage, setTestMessage] = useState<string | null>(null);
   const [status, setStatus] = useState(show.status);
+  
+  // Host management state
+  const [editingHost, setEditingHost] = useState(false);
+  const [hostName, setHostName] = useState(show.host_name ?? "");
+  const [hostImageUrl, setHostImageUrl] = useState(show.host_image_url ?? "");
+  const [savingHost, setSavingHost] = useState(false);
 
   async function handleToggle() {
     setToggling(true);
@@ -93,6 +102,29 @@ export function ShowRow({ show }: { show: ShowData }) {
       setTimeout(() => setTestMessage(null), 5000);
     } finally {
       setTesting(false);
+    }
+  }
+
+  async function handleUpdateHost() {
+    setSavingHost(true);
+    try {
+      const response = await fetch(`/api/admin/shows/${show.id}/host`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ host_name: hostName, host_image_url: hostImageUrl }),
+      });
+      
+      if (response.ok) {
+        setEditingHost(false);
+        // Refresh the page to show updated data
+        window.location.reload();
+      } else {
+        console.error("Failed to update host");
+      }
+    } catch (error) {
+      console.error("Error updating host:", error);
+    } finally {
+      setSavingHost(false);
     }
   }
 
@@ -210,6 +242,83 @@ export function ShowRow({ show }: { show: ShowData }) {
           <p className="text-xs text-blue-600 bg-blue-50 rounded px-2 py-1">{testMessage}</p>
         </div>
       )}
+
+      {/* Host section - spans full row */}
+      <div className="col-span-5 bg-gray-50 border border-gray-200 rounded-lg p-4 -mx-6 -mb-4 mt-2">
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-sm font-semibold text-gray-900">Host</h3>
+          {!editingHost && (
+            <button
+              onClick={() => setEditingHost(true)}
+              className="text-xs text-blue-600 hover:text-blue-700 font-medium"
+            >
+              Edit
+            </button>
+          )}
+        </div>
+        
+        {editingHost ? (
+          <div className="space-y-3">
+            <div>
+              <label className="text-xs text-gray-600 block mb-1">Host Name</label>
+              <input
+                type="text"
+                value={hostName}
+                onChange={(e) => setHostName(e.target.value)}
+                placeholder="e.g. Guy Turner"
+                className="w-full text-sm border border-gray-300 rounded-lg px-3 py-2 bg-white"
+              />
+            </div>
+            <div>
+              <label className="text-xs text-gray-600 block mb-1">Host Image URL (optional)</label>
+              <input
+                type="text"
+                value={hostImageUrl}
+                onChange={(e) => setHostImageUrl(e.target.value)}
+                placeholder="https://example.com/host-image.jpg"
+                className="w-full text-sm border border-gray-300 rounded-lg px-3 py-2 bg-white"
+              />
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={handleUpdateHost}
+                disabled={savingHost || !hostName.trim()}
+                className="text-sm bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg transition-colors disabled:opacity-50"
+              >
+                {savingHost ? "Saving..." : "Save Host"}
+              </button>
+              <button
+                onClick={() => {
+                  setEditingHost(false);
+                  setHostName(show.host_name ?? "");
+                  setHostImageUrl(show.host_image_url ?? "");
+                }}
+                className="text-sm bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-1.5 rounded-lg transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div>
+            {show.host_name ? (
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-200">
+                  {show.host_image_url && (
+                    <img src={show.host_image_url} className="w-full h-full object-cover" alt={show.host_name} />
+                  )}
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-gray-900">{show.host_name}</p>
+                  <p className="text-xs text-gray-500">{show.host_slug}</p>
+                </div>
+              </div>
+            ) : (
+              <p className="text-sm text-gray-500">No host set</p>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
