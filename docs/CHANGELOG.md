@@ -1,6 +1,52 @@
 # CHANGELOG
 # Most recent entries at the top.
 
+## [2026-02-15] - Panel Tabs at Bottom + Real Up Next & Random Suggestions
+
+### Changed
+- **Tab bar moved to bottom** — 6 live data tabs now fixed at bottom of panel (above Help & Support)
+- **Up Next shows real episodes** — fetches 5 most recently published episodes from database
+- **Suggestions show random hosts** — fetches 6 random hosts from shows table, randomized on each load
+- **Removed hardcoded data** — replaced static demo data with live API calls
+
+### Panel Layout (Final)
+```
+┌─────────────────────────┐
+│ Up Next / Tab content   │ ← changes based on active tab
+│                         │
+│ Suggestions (if no tab) │
+│                         │
+├─────────────────────────┤
+│ [NEWS][MARKETS][EARN]   │ ← tab bar FIXED at bottom
+│ [CAL][PRED][TWEETS]     │
+├─────────────────────────┤
+│ Help & Support          │
+└─────────────────────────┘
+```
+
+### API Routes Created
+- `app/api/panel/up-next/route.ts` — fetches 5 latest published episodes with show info
+- `app/api/panel/suggestions/route.ts` — fetches 6 random hosts (ORDER BY RANDOM())
+
+### Components Created
+- `app/components/panel-sections/UpNextSection.tsx` — client component with loading skeleton, links to episodes
+- `app/components/panel-sections/SuggestionsSection.tsx` — client component with carousel navigation, styled initials fallback
+
+### Files Modified
+- `app/components/layout/RightRailClient.tsx` — moved tab bar to bottom, replaced hardcoded Up Next/Suggestions with new components
+
+### Behavior
+- Up Next: shows real episode thumbnails, titles, show names, dates
+- Suggestions: random hosts on each load, carousel navigation (4 visible at a time)
+- Tab bar: fixed at bottom, clicking tab replaces Up Next/Suggestions with live data
+- Help & Support: always at bottom below tab bar
+
+### Technical Notes
+- Both sections fetch on mount via useEffect
+- Up Next has loading skeleton (3 placeholder items)
+- Suggestions use styled color-coded initials if no host image
+- Tab bar stays fixed at bottom in both modes (default and tab active)
+
 ## [2026-02-15] - Restructure Panel - Tabs at Top Replace Up Next on Click
 
 ### Changed
