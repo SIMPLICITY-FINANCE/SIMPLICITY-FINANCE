@@ -41,15 +41,6 @@ const suggestions = [
   { name: 'Chamath Palihapitiya', avatar: '👨‍💼' },
 ];
 
-const quickActions = [
-  { label: 'NEWS', icon: '📰' },
-  { label: 'CALENDAR', icon: '📅' },
-  { label: 'EARNINGS', icon: '💼' },
-  { label: 'TWEETS', icon: '🐦' },
-  { label: 'PREDICTIONS', icon: '📈' },
-  { label: 'MARKETS', icon: '📊' },
-];
-
 interface RightRailClientProps {
   user?: {
     name: string | null;
@@ -306,23 +297,6 @@ export function RightRailClient({ user }: RightRailClientProps) {
         {/* Live Data Panel */}
         <div className="px-4">
           <LiveDataPanel />
-        </div>
-
-        {/* Quick Actions */}
-        <div className="px-4 pb-6">
-          <div className="grid grid-cols-3 gap-2">
-            {quickActions.map((action, idx) => (
-              <button
-                key={idx}
-                className="flex flex-col items-center gap-2 py-3 border border-gray-100 rounded-lg hover:bg-gray-50 transition-colors"
-              >
-                <span className="text-xl">{action.icon}</span>
-                <span className="text-[10px] font-medium text-foreground">
-                  {action.label}
-                </span>
-              </button>
-            ))}
-          </div>
         </div>
 
         {/* Help Button */}
