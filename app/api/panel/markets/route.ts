@@ -11,11 +11,11 @@ const INSTRUMENTS: {
   category: Category;
   isCrypto: boolean;
 }[] = [
-  // METALS - use GLD/SLV (liquid ETFs), skip illiquid PPLT/PALL
-  { ticker: 'GLD',  polyTicker: 'GLD',        label: 'Gold',          category: 'metals',      isCrypto: false },
-  { ticker: 'SLV',  polyTicker: 'SLV',        label: 'Silver',        category: 'metals',      isCrypto: false },
+  // METALS
+  { ticker: 'GLD',  polyTicker: 'GLD',        label: 'Gold ETF',      category: 'metals',      isCrypto: false },
+  { ticker: 'SLV',  polyTicker: 'SLV',        label: 'Silver ETF',    category: 'metals',      isCrypto: false },
   { ticker: 'GDX',  polyTicker: 'GDX',        label: 'Gold Miners',   category: 'metals',      isCrypto: false },
-  { ticker: 'GDXJ', polyTicker: 'GDXJ',       label: 'Jr Gold Miners',category: 'metals',      isCrypto: false },
+  { ticker: 'GDXJ', polyTicker: 'GDXJ',       label: 'Jr Miners',     category: 'metals',      isCrypto: false },
 
   // EQUITIES
   { ticker: 'SPY',  polyTicker: 'SPY',        label: 'S&P 500',       category: 'equities',    isCrypto: false },
@@ -25,15 +25,13 @@ const INSTRUMENTS: {
   { ticker: 'EFA',  polyTicker: 'EFA',        label: 'Intl Stocks',   category: 'equities',    isCrypto: false },
   { ticker: 'VWO',  polyTicker: 'VWO',        label: 'Emerging Mkts', category: 'equities',    isCrypto: false },
 
-  // CRYPTO - these trade 24/7 so always have data
-  { ticker: 'BTC',  polyTicker: 'X:BTCUSD',   label: 'Bitcoin',       category: 'crypto',      isCrypto: true  },
-  { ticker: 'ETH',  polyTicker: 'X:ETHUSD',   label: 'Ethereum',      category: 'crypto',      isCrypto: true  },
-  { ticker: 'SOL',  polyTicker: 'X:SOLUSD',   label: 'Solana',        category: 'crypto',      isCrypto: true  },
-  { ticker: 'BNB',  polyTicker: 'X:BNBUSD',   label: 'BNB',           category: 'crypto',      isCrypto: true  },
-  { ticker: 'XRP',  polyTicker: 'X:XRPUSD',   label: 'XRP',           category: 'crypto',      isCrypto: true  },
-  { ticker: 'DOGE', polyTicker: 'X:DOGEUSD',  label: 'Dogecoin',      category: 'crypto',      isCrypto: true  },
+  // CRYPTO - use crypto ETFs instead of direct crypto (free tier doesn't support crypto snapshot)
+  { ticker: 'BITO', polyTicker: 'BITO',       label: 'Bitcoin ETF',   category: 'crypto',      isCrypto: false },
+  { ticker: 'ETHE', polyTicker: 'ETHE',       label: 'Ethereum ETF',  category: 'crypto',      isCrypto: false },
+  { ticker: 'GBTC', polyTicker: 'GBTC',       label: 'Bitcoin Trust', category: 'crypto',      isCrypto: false },
+  { ticker: 'MSTR', polyTicker: 'MSTR',       label: 'MicroStrategy', category: 'crypto',      isCrypto: false },
 
-  // CURRENCIES - use UUP and major currency ETFs
+  // CURRENCIES
   { ticker: 'UUP',  polyTicker: 'UUP',        label: 'US Dollar',     category: 'currencies',  isCrypto: false },
   { ticker: 'FXE',  polyTicker: 'FXE',        label: 'Euro',          category: 'currencies',  isCrypto: false },
   { ticker: 'FXB',  polyTicker: 'FXB',        label: 'Brit Pound',    category: 'currencies',  isCrypto: false },
@@ -45,33 +43,19 @@ const INSTRUMENTS: {
   { ticker: 'SHY',  polyTicker: 'SHY',        label: '2Y Treasury',   category: 'bonds',       isCrypto: false },
   { ticker: 'HYG',  polyTicker: 'HYG',        label: 'High Yield',    category: 'bonds',       isCrypto: false },
   { ticker: 'LQD',  polyTicker: 'LQD',        label: 'Corp Bonds',    category: 'bonds',       isCrypto: false },
+  { ticker: 'AGG',  polyTicker: 'AGG',        label: 'Bond Index',    category: 'bonds',       isCrypto: false },
 
   // COMMODITIES
-  { ticker: 'USO',  polyTicker: 'USO',        label: 'Oil (WTI)',     category: 'commodities', isCrypto: false },
-  { ticker: 'UNG',  polyTicker: 'UNG',        label: 'Nat. Gas',      category: 'commodities', isCrypto: false },
+  { ticker: 'USO',  polyTicker: 'USO',        label: 'Oil ETF',       category: 'commodities', isCrypto: false },
+  { ticker: 'UNG',  polyTicker: 'UNG',        label: 'Nat Gas ETF',   category: 'commodities', isCrypto: false },
   { ticker: 'DBA',  polyTicker: 'DBA',        label: 'Agriculture',   category: 'commodities', isCrypto: false },
-  { ticker: 'DJP',  polyTicker: 'DJP',        label: 'Commodities',   category: 'commodities', isCrypto: false },
+  { ticker: 'DBC',  polyTicker: 'DBC',        label: 'Commodities',   category: 'commodities', isCrypto: false },
 ];
 
-// Get last 5 trading days worth of data - handles weekends
-async function fetchLastClose(polyTicker: string, isCrypto: boolean) {
+// Get last trading days worth of data - handles weekends
+async function fetchLastClose(polyTicker: string) {
   try {
-    if (isCrypto) {
-      // Crypto trades 24/7 - use snapshot
-      const url = `https://api.polygon.io/v2/snapshot/locale/global/markets/crypto/tickers/${polyTicker}?apiKey=${POLYGON_KEY}`;
-      const res = await fetch(url, { cache: 'no-store' });
-      if (!res.ok) return null;
-      const data = await res.json();
-      const t = data?.ticker;
-      if (!t) return null;
-      const c = t.day?.c ?? t.prevDay?.c;
-      const o = t.day?.o ?? t.prevDay?.o;
-      if (!c || !o) return null;
-      return { c, o };
-    }
-
-    // For stocks/ETFs - use range query to get last 5 days
-    // This handles weekends by finding the most recent trading day
+    // Use range query to get last 7 days - finds most recent trading day
     const to = new Date();
     const from = new Date();
     from.setDate(from.getDate() - 7); // go back 7 days to ensure we find a trading day
@@ -111,7 +95,7 @@ export async function GET() {
 
   try {
     const results = await Promise.allSettled(
-      INSTRUMENTS.map(inst => fetchLastClose(inst.polyTicker, inst.isCrypto))
+      INSTRUMENTS.map(inst => fetchLastClose(inst.polyTicker))
     );
 
     const markets = results
