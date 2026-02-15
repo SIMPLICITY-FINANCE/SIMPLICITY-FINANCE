@@ -5,6 +5,7 @@ import { Crown, MessageCircle, RefreshCw, User, Settings, HelpCircle, Shield } f
 import { useRouter } from 'next/navigation.js';
 import { IconButton } from '../ui/IconButton.js';
 import { NotificationDropdown } from '../NotificationDropdown.js';
+import { LiveDataPanel } from '../LiveDataPanel.js';
 
 const upNextItems = [
   {
@@ -300,6 +301,11 @@ export function RightRailClient({ user }: RightRailClientProps) {
               </div>
             ))}
           </div>
+        </div>
+
+        {/* Live Data Panel */}
+        <div className="px-4">
+          <LiveDataPanel />
         </div>
 
         {/* Quick Actions */}

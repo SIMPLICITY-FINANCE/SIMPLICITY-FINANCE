@@ -1,6 +1,44 @@
 # CHANGELOG
 # Most recent entries at the top.
 
+## [2026-02-15] - Live Data Panel with News and Markets Tabs
+
+### Added
+- **Live Data Panel** — new tabbed section in right panel below Suggestions
+- **6 tabs** — NEWS, MARKETS, EARNINGS, CALENDAR, PREDICTIONS, TWEETS (3x2 grid layout)
+- **News tab (Finnhub)** — displays top 10 financial news headlines with source, timestamp, and external links
+- **Markets tab (Polygon)** — shows 6 key tickers (SPY, QQQ, DIA, BTC, GLD, TLT) with prices and % change
+- **Placeholder tabs** — Earnings, Calendar, Predictions, Tweets show "Coming Soon" state
+- **Smart refresh** — data fetches only when tab is clicked (no auto-refresh), uses key prop to remount components
+- **Loading states** — animated skeleton while fetching data
+- **Error states** — clear error messages if API keys are missing or requests fail
+
+### API Routes Created
+- `app/api/panel/news/route.ts` — Finnhub news API integration (5min cache)
+- `app/api/panel/markets/route.ts` — Polygon market data API (previous day close)
+
+### Components Created
+- `app/components/LiveDataPanel.tsx` — main panel with tab state management
+- `app/components/panel-tabs/PanelSkeleton.tsx` — shared loading skeleton
+- `app/components/panel-tabs/NewsTab.tsx` — news feed with time-ago formatting
+- `app/components/panel-tabs/MarketsTab.tsx` — market tickers with trend indicators
+- `app/components/panel-tabs/EarningsTab.tsx` — placeholder
+- `app/components/panel-tabs/CalendarTab.tsx` — placeholder
+- `app/components/panel-tabs/PredictionsTab.tsx` — placeholder
+- `app/components/panel-tabs/TweetsTab.tsx` — placeholder
+
+### Files Modified
+- `app/components/layout/RightRailClient.tsx` — integrated LiveDataPanel below Suggestions
+- `.env.example` — added FINNHUB_API_KEY and POLYGON_API_KEY
+
+### Technical Notes
+- Tab switching is instant (no page reload)
+- Each tab remounts on click via key prop, triggering fresh data fetch
+- Uses semantic tokens throughout (bg-muted, text-foreground, etc.)
+- Server-side caching: 5 minutes (300s revalidate)
+- Finnhub: free tier available
+- Polygon: paid API (free tier limited)
+
 ## [2026-02-15] - People Carousel Shows Real Headshots Only
 
 ### Changed
