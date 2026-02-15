@@ -1,6 +1,56 @@
 # CHANGELOG
 # Most recent entries at the top.
 
+## [2026-02-15] - Predictions Tab Redesign - Categories, 2-Column Grid, Separate YES/NO Bars
+
+### Added
+- **Category filtering** — 6 categories: Geo-Politics, Economy, Technology, Markets, Trending, Breaking
+- **3x2 category grid** — Icons + labels + market counts, active category highlighted in green
+- **2-column market grid** — Compact cards showing 8 markets per category
+- **Separate YES/NO bars** — Each market shows individual green YES bar and red NO bar with percentages
+- **Smart categorization** — Markets auto-classified by keywords in question text
+- **Breaking category** — Top 40% by 24h volume marked as "breaking"
+
+### API Changes (app/api/panel/predictions/route.ts)
+- Added `classifyMarket()` function with keyword matching for 5 categories
+- Geo-politics: war, election, government, military, sanctions, etc.
+- Economy: Fed, inflation, GDP, unemployment, recession, rates, etc.
+- Technology: AI, crypto, Bitcoin, tech companies, blockchain, etc.
+- Markets: stocks, earnings, IPO, bonds, commodities, etc.
+- Trending: default fallback category
+- Breaking: dynamically assigned based on 24h volume threshold (top 40%)
+- Increased limit from 15 to 40 markets to populate all categories
+- Each market now includes `category` field in response
+
+### Component Changes (app/components/panel-tabs/PredictionsTab.tsx)
+- Complete redesign matching Figma specifications
+- Category filter grid at top (3 columns × 2 rows)
+- Each category button shows: icon, label, market count
+- Active category highlighted with green background (bg-green-500)
+- Default category: Economy (most relevant for financial app)
+- Markets displayed in 2-column grid (grid-cols-2)
+- Shows up to 8 markets per category
+- Each card has separate YES and NO bars (not combined)
+- YES bar: green with percentage on right
+- NO bar: red with percentage on right
+- Empty state: "No {category} markets" with link to Trending
+- Icons: Globe, BarChart2, Zap, TrendingUp, Flame, Radio (lucide-react)
+
+### UX Improvements
+- Click any category to filter markets instantly
+- Category badges show count of available markets
+- Compact 2-column layout fits more markets in viewport
+- Separate bars make YES/NO probabilities clearer
+- Hover states on category buttons and market cards
+- Direct links to Polymarket for each market
+
+### Technical Notes
+- TypeScript: 0 compilation errors
+- Category classification runs server-side for performance
+- Breaking threshold: 60% of max 24h volume
+- Markets sorted by volume within each category
+- Filters applied client-side for instant switching
+
 ## [2026-02-15] - Fix Markets, Calendar, Predictions Tabs (Crypto Tickers, Free APIs, YES/NO UI)
 
 ### Fixed
