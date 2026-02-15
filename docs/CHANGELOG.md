@@ -1,6 +1,22 @@
 # CHANGELOG
 # Most recent entries at the top.
 
+## [2026-02-15] - Fix Person Profile Page and People Carousel Images
+
+### Fixed
+- **Person profile page error** — removed non-existent `shows.slug` column from query, now uses `channel_id` for show links
+- **People carousel images** — added `channel_thumbnail` as fallback when `host_image_url` is not set
+- **Duplicate subtitles** — hide show name in people carousel when it matches the host name (e.g., "All-In Podcast" host of "All-In Podcast")
+- **Image fallback logic** — person profile page now falls back to show thumbnail if host image is missing
+
+### Files Modified
+- `app/(app)/discover/people/[slug]/page.tsx` — fixed SQL query, added thumbnail fallback, added Mic2 icon
+- `app/(app)/discover/page.tsx` — added `channel_thumbnail` to people query
+- `app/(app)/discover/PeopleCarousel.tsx` — added image fallback logic, hide duplicate subtitles
+
+### Files Created
+- `scripts/update-host-images.ts` — utility to copy channel thumbnails to host_image_url
+
 ## [2026-02-15] - Build People Section from Show Hosts
 
 ### Added

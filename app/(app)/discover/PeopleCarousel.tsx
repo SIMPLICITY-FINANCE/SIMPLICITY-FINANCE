@@ -8,6 +8,7 @@ interface Person {
   name: string;
   slug: string;
   image_url: string | null;
+  show_thumbnail: string | null;
   show_name: string;
   show_slug: string | null;
 }
@@ -84,38 +85,43 @@ export function PeopleCarousel({ people }: PeopleCarouselProps) {
         onScroll={checkScroll}
         className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide"
       >
-        {uniquePeople.map((person) => (
-          <a
-            key={`person-${person.slug}`}
-            href={`/discover/people/${person.slug}`}
-            className="flex-shrink-0 w-36 p-2 rounded-lg hover:bg-accent transition-colors group/card"
-          >
-            {/* Avatar */}
-            <div className="w-16 h-16 rounded-full overflow-hidden bg-muted mx-auto mb-2 ring-2 ring-border">
-              {person.image_url ? (
-                <img
-                  src={person.image_url}
-                  alt={person.name}
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center text-2xl font-bold text-muted-foreground bg-gradient-to-br from-blue-500/20 to-blue-700/20">
-                  {person.name?.[0]?.toUpperCase()}
-                </div>
+        {uniquePeople.map((person) => {
+          const displayImage = person.image_url || person.show_thumbnail;
+          return (
+            <a
+              key={`person-${person.slug}`}
+              href={`/discover/people/${person.slug}`}
+              className="flex-shrink-0 w-36 p-2 rounded-lg hover:bg-accent transition-colors group/card"
+            >
+              {/* Avatar */}
+              <div className="w-16 h-16 rounded-full overflow-hidden bg-muted mx-auto mb-2 ring-2 ring-border">
+                {displayImage ? (
+                  <img
+                    src={displayImage}
+                    alt={person.name ?? ''}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-xl font-bold bg-gradient-to-br from-blue-500 to-blue-700 text-white rounded-full">
+                    {person.name?.[0]?.toUpperCase() ?? '?'}
+                  </div>
+                )}
+              </div>
+
+              {/* Name */}
+              <p className="text-xs font-semibold text-foreground text-center line-clamp-2 leading-tight mb-0.5">
+                {person.name}
+              </p>
+
+              {/* Show name - only show if different from person name */}
+              {person.show_name && person.show_name !== person.name && (
+                <p className="text-[11px] text-muted-foreground text-center truncate">
+                  {person.show_name}
+                </p>
               )}
-            </div>
-
-            {/* Name */}
-            <p className="text-xs font-semibold text-foreground text-center line-clamp-2 leading-tight mb-0.5">
-              {person.name}
-            </p>
-
-            {/* Show name */}
-            <p className="text-[11px] text-muted-foreground text-center truncate">
-              {person.show_name}
-            </p>
-          </a>
-        ))}
+            </a>
+          );
+        })}
       </div>
     </div>
   );

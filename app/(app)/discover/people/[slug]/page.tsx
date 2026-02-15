@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Mic2 } from "lucide-react";
 import { sql } from "../../../../lib/db.js";
 import { notFound } from "next/navigation";
 
@@ -15,10 +15,11 @@ export default async function PersonPage({ params }: Props) {
     SELECT 
       id,
       name,
-      slug,
+      channel_id,
       host_name,
       host_slug,
-      host_image_url
+      host_image_url,
+      channel_thumbnail
     FROM shows
     WHERE host_slug = ${slug}
       AND host_name IS NOT NULL
@@ -28,6 +29,10 @@ export default async function PersonPage({ params }: Props) {
   if (!show || !show.host_name) {
     notFound();
   }
+
+  // Use host_image_url if set, otherwise fall back to show thumbnail
+  const displayImage = show.host_image_url || show.channel_thumbnail;
+  const initial = show.host_name[0].toUpperCase();
 
   return (
     <div className="max-w-lg mx-auto px-6 py-8">
@@ -43,16 +48,16 @@ export default async function PersonPage({ params }: Props) {
       {/* Profile card */}
       <div className="bg-card border border-border rounded-xl p-8 flex flex-col items-center text-center">
         {/* Photo */}
-        <div className="w-32 h-32 rounded-full overflow-hidden bg-muted ring-4 ring-border mb-5">
-          {show.host_image_url ? (
+        <div className="w-32 h-32 rounded-full overflow-hidden bg-muted ring-4 ring-border mb-5 flex-shrink-0">
+          {displayImage ? (
             <img
-              src={show.host_image_url}
+              src={displayImage}
               alt={show.host_name}
               className="w-full h-full object-cover"
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-5xl font-bold text-muted-foreground bg-gradient-to-br from-blue-500/20 to-blue-700/20">
-              {show.host_name[0].toUpperCase()}
+            <div className="w-full h-full flex items-center justify-center text-4xl font-bold bg-gradient-to-br from-blue-500 to-blue-700 text-white">
+              {initial}
             </div>
           )}
         </div>
@@ -62,16 +67,27 @@ export default async function PersonPage({ params }: Props) {
           {show.host_name}
         </h1>
 
-        {/* Show name */}
-        <p className="text-sm text-muted-foreground mb-6">
-          Host of{" "}
-          <Link
-            href={`/discover/shows/${show.slug}`}
-            className="text-blue-600 hover:text-blue-700 font-medium"
-          >
-            {show.name}
-          </Link>
-        </p>
+        {/* Role */}
+        <div className="flex items-center gap-1.5 text-sm text-muted-foreground mb-6">
+          <Mic2 className="w-3.5 h-3.5" />
+          <span>
+            Host of{" "}
+            <Link
+              href={`/discover/shows/${show.channel_id}`}
+              className="text-blue-600 hover:text-blue-700 font-medium transition-colors"
+            >
+              {show.name}
+            </Link>
+          </span>
+        </div>
+
+        {/* Stats row */}
+        <div className="flex items-center gap-6 pt-4 border-t border-border w-full justify-center">
+          <div className="text-center">
+            <p className="text-xs text-muted-foreground">Show</p>
+            <p className="text-sm font-semibold text-foreground truncate max-w-32">{show.name}</p>
+          </div>
+        </div>
       </div>
     </div>
   );
