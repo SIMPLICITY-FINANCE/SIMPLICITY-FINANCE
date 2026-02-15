@@ -1,11 +1,18 @@
 "use client";
 
 import { useState } from 'react';
-import { Crown, MessageCircle, RefreshCw, User, Settings, HelpCircle, Shield } from 'lucide-react';
+import { Crown, MessageCircle, RefreshCw, User, Settings, HelpCircle, Shield, Newspaper, TrendingUp, DollarSign, Calendar, Target, Twitter } from 'lucide-react';
 import { useRouter } from 'next/navigation.js';
 import { IconButton } from '../ui/IconButton.js';
 import { NotificationDropdown } from '../NotificationDropdown.js';
-import { LiveDataPanel } from '../LiveDataPanel.js';
+import { NewsTab } from '../panel-tabs/NewsTab.js';
+import { MarketsTab } from '../panel-tabs/MarketsTab.js';
+import { EarningsTab } from '../panel-tabs/EarningsTab.js';
+import { CalendarTab } from '../panel-tabs/CalendarTab.js';
+import { PredictionsTab } from '../panel-tabs/PredictionsTab.js';
+import { TweetsTab } from '../panel-tabs/TweetsTab.js';
+
+type PanelTab = 'news' | 'markets' | 'earnings' | 'calendar' | 'predictions' | 'tweets' | null;
 
 const upNextItems = [
   {
@@ -53,6 +60,16 @@ export function RightRailClient({ user }: RightRailClientProps) {
   const router = useRouter();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [activeTab, setActiveTab] = useState<PanelTab>(null);
+
+  const TABS = [
+    { id: 'news' as const,        label: 'NEWS',        icon: Newspaper   },
+    { id: 'markets' as const,     label: 'MARKETS',     icon: TrendingUp  },
+    { id: 'earnings' as const,    label: 'EARNINGS',    icon: DollarSign  },
+    { id: 'calendar' as const,    label: 'CALENDAR',    icon: Calendar    },
+    { id: 'predictions' as const, label: 'PREDICTIONS', icon: Target      },
+    { id: 'tweets' as const,      label: 'TWEETS',      icon: Twitter     },
+  ];
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
@@ -196,7 +213,31 @@ export function RightRailClient({ user }: RightRailClientProps) {
 
       {/* Scrollable content area */}
       <div className="flex-1 overflow-y-auto overflow-x-hidden rounded-b-2xl">
-        {/* Up Next Section */}
+        {/* Tab bar - always at top */}
+        <div className="px-4 pt-4 pb-2 flex-shrink-0">
+          <div className="grid grid-cols-3 gap-1">
+            {TABS.map(({ id, label, icon: Icon }) => (
+              <button
+                key={id}
+                onClick={() => setActiveTab(prev => prev === id ? null : id)}
+                className={`flex flex-col items-center gap-1 py-2 px-1 rounded-lg text-[10px] font-semibold tracking-wide transition-colors ${
+                  activeTab === id
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-muted text-muted-foreground hover:bg-accent hover:text-foreground'
+                }`}
+              >
+                <Icon className="w-4 h-4" />
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Conditional content */}
+        {activeTab === null ? (
+          // Default mode: show Up Next + Suggestions
+          <>
+            {/* Up Next Section */}
         <div className="p-4">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-sm font-semibold text-gray-900 flex items-center gap-2">
@@ -263,8 +304,8 @@ export function RightRailClient({ user }: RightRailClientProps) {
           </button>
         </div>
 
-        {/* Suggestions Section */}
-        <div className="px-4 pb-4">
+            {/* Suggestions Section */}
+            <div className="px-4 pb-4">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-sm font-semibold text-gray-900 flex items-center gap-2">
               <span className="text-base">💡</span>
@@ -291,15 +332,22 @@ export function RightRailClient({ user }: RightRailClientProps) {
                 </p>
               </div>
             ))}
+            </div>
           </div>
-        </div>
+        </>
+        ) : (
+          // Tab mode: show live data content
+          <div className="px-4 pb-4">
+            {activeTab === 'news'        && <NewsTab        key="news"        />}
+            {activeTab === 'markets'     && <MarketsTab     key="markets"     />}
+            {activeTab === 'earnings'    && <EarningsTab    key="earnings"    />}
+            {activeTab === 'calendar'    && <CalendarTab    key="calendar"    />}
+            {activeTab === 'predictions' && <PredictionsTab key="predictions" />}
+            {activeTab === 'tweets'      && <TweetsTab      key="tweets"      />}
+          </div>
+        )}
 
-        {/* Live Data Panel */}
-        <div className="px-4">
-          <LiveDataPanel />
-        </div>
-
-        {/* Help Button */}
+        {/* Help Button - always at bottom */}
         <div className="px-4 pb-6">
           <button 
             onClick={() => router.push('/help')}

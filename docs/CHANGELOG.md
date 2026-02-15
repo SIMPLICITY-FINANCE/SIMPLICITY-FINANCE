@@ -1,6 +1,48 @@
 # CHANGELOG
 # Most recent entries at the top.
 
+## [2026-02-15] - Restructure Panel - Tabs at Top Replace Up Next on Click
+
+### Changed
+- **Tab bar moved to top** — 6 live data tabs now appear at top of right panel (above Up Next)
+- **Two-mode panel** — Default shows Up Next + Suggestions, clicking tab hides them and shows live data
+- **Toggle behavior** — clicking active tab deactivates it and returns to Up Next/Suggestions
+- **Tab state lifted** — moved from LiveDataPanel to RightRailClient for full panel control
+- **LiveDataPanel removed** — tab logic now integrated directly into right panel component
+
+### Panel Layout
+
+**Mode 1 (Default - no tab active):**
+```
+Tab bar (small, inactive)
+Up Next section
+Suggestions section
+Help & Support
+```
+
+**Mode 2 (Tab clicked):**
+```
+Tab bar (active tab highlighted)
+Live data content (news/markets/etc.)
+Help & Support
+```
+
+### Behavior
+- Clicking a tab → hides Up Next/Suggestions, shows tab content
+- Clicking same tab again → returns to Up Next/Suggestions
+- Clicking different tab → switches directly to new tab content
+- Help & Support always visible at bottom in both modes
+
+### Files Modified
+- `app/components/layout/RightRailClient.tsx` — added tab state, conditional rendering, moved tab bar to top
+- Removed `LiveDataPanel` component usage (tab components imported directly)
+
+### Technical Notes
+- Tab state: `null` = default mode, `'news'|'markets'|etc.` = tab mode
+- Toggle logic: `prev === id ? null : id` (click active tab to deactivate)
+- Tab content remounts on click via `key` prop (triggers fresh data fetch)
+- Instant switching, no animations
+
 ## [2026-02-15] - Live Data Panel with News and Markets Tabs
 
 ### Added
