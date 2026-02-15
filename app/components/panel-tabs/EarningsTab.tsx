@@ -71,9 +71,19 @@ export function EarningsTab() {
   );
 
   if (earnings.length === 0) return (
-    <p className="text-sm text-muted-foreground text-center py-6">
-      No upcoming earnings in next 90 days
-    </p>
+    <div className="text-center py-6 space-y-2">
+      <p className="text-sm text-muted-foreground">
+        No upcoming earnings found
+      </p>
+      <a
+        href="https://finnhub.io/dashboard"
+        target="_blank"
+        rel="noreferrer"
+        className="text-xs text-blue-600 hover:text-blue-700"
+      >
+        Check Finnhub plan →
+      </a>
+    </div>
   );
 
   return (
