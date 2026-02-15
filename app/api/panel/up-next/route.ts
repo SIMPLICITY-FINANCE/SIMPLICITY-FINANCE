@@ -6,17 +6,17 @@ export async function GET() {
     const episodes = await sql`
       SELECT 
         e.id,
-        e.title,
-        e.slug,
-        e.thumbnail_url,
+        COALESCE(e.youtube_title, 'Untitled Episode') as title,
+        e.video_id as slug,
+        e.youtube_thumbnail_url as thumbnail_url,
         e.published_at,
-        s.name as show_name,
+        e.youtube_channel_title as show_name,
         s.slug as show_slug,
         s.channel_thumbnail as show_thumbnail
       FROM episodes e
-      LEFT JOIN shows s ON e.show_id = s.id
+      LEFT JOIN shows s ON e.youtube_channel_id = s.channel_id
       WHERE e.is_published = true
-      ORDER BY e.published_at DESC
+      ORDER BY e.published_at DESC NULLS LAST
       LIMIT 5
     `;
 

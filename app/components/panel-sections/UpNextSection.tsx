@@ -57,7 +57,7 @@ export function UpNextSection() {
         {episodes.map(ep => (
           <Link
             key={ep.id}
-            href={`/episode/${ep.slug}`}
+            href={ep.slug ? `/episode/${ep.slug}` : '#'}
             className="flex gap-3 p-2.5 bg-white border border-gray-100 rounded-xl hover:shadow-md transition-all duration-200"
           >
             {/* Thumbnail */}
