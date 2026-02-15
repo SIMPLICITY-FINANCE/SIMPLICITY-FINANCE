@@ -1,6 +1,63 @@
 # CHANGELOG
 # Most recent entries at the top.
 
+## [2026-02-15] - Markets Tab Redesign - Category Grid, 2-Column Cards with Sparklines
+
+### Added
+- **Category filtering** — 6 categories: Metals, Equities, Crypto, Currencies, Bonds, Commodities
+- **3×2 category grid** — Icons + labels, active category highlighted with amber border
+- **2-column market cards** — Compact cards with ticker, large price, change, % badge, sparkline
+- **Mini sparklines** — Simple 3-point SVG line showing up (green) or down (red) trend
+- **Expanded instrument coverage** — 28 total instruments across all categories
+- **Smart price formatting** — BTC shows no decimals, small cryptos show 4 decimals, stocks show 2 decimals
+
+### API Changes (app/api/panel/markets/route.ts)
+- Complete rewrite with category-based instrument organization
+- **Metals** (4): GLD, SLV, PPLT, PALL
+- **Equities** (6): SPY, QQQ, DIA, IWM, VIX, EFA
+- **Crypto** (6): BTC, ETH, SOL, BNB, XRP, DOGE
+- **Currencies** (4): UUP, FXE, FXB, FXY
+- **Bonds** (4): TLT, IEF, SHY, HYG
+- **Commodities** (4): USO, UNG, CORN, WEAT
+- Separate fetch logic for crypto (snapshot API) vs stocks (prev aggregates)
+- Returns `category`, `change` (absolute), `changePct`, `up` (boolean) for each instrument
+- Crypto uses Polygon snapshot endpoint for more current data
+- Stocks use previous day aggregates endpoint
+
+### Component Changes (app/components/panel-tabs/MarketsTab.tsx)
+- Complete redesign matching Figma specifications
+- Category grid at top (3 columns × 2 rows)
+- Active category: amber border + amber icon color
+- Inactive categories: muted background, hover states
+- Default category: Equities (most relevant for financial app)
+- 2-column grid of market cards (grid-cols-2)
+- Each card shows:
+  - Ticker (top left) + Sparkline (top right)
+  - Large price (formatted by ticker type)
+  - Label (small, truncated)
+  - Change + % badge (green up ▲ / red down ▼)
+- Sparkline component: simple 3-point polyline SVG
+- Icons: Gem, BarChart2, Bitcoin, DollarSign, Landmark, Package (lucide-react)
+
+### UX Improvements
+- Click any category to filter markets instantly
+- Amber highlight makes active category clear
+- Large price numbers easy to scan
+- Sparklines provide quick visual trend indication
+- Green/red color coding for up/down movements
+- % badges with up/down arrows
+- Smart formatting: BTC shows 95,000 not 95,000.00
+- Client-side filtering for instant category switching
+
+### Technical Notes
+- TypeScript: 0 compilation errors
+- 28 instruments total (increased from 7)
+- Category classification in API for performance
+- Crypto uses snapshot API for real-time data
+- Stocks use previous close data
+- Sparkline: simple SVG polyline (no chart library needed)
+- Price formatting handles different decimal requirements per ticker
+
 ## [2026-02-15] - News Tab Redesign - TODAY/TRENDING/BREAKING Filters with Topic Icons
 
 ### Added
