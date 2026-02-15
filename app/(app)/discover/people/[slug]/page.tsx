@@ -18,8 +18,7 @@ export default async function PersonPage({ params }: Props) {
       channel_id,
       host_name,
       host_slug,
-      host_image_url,
-      channel_thumbnail
+      host_image_url
     FROM shows
     WHERE host_slug = ${slug}
       AND host_name IS NOT NULL
@@ -30,9 +29,10 @@ export default async function PersonPage({ params }: Props) {
     notFound();
   }
 
-  // Use host_image_url if set, otherwise fall back to show thumbnail
-  const displayImage = show.host_image_url || show.channel_thumbnail;
+  // Only use real headshot, no fallback to show thumbnail
+  const displayImage = show.host_image_url;
   const initial = show.host_name[0].toUpperCase();
+  const hue = (show.host_name.charCodeAt(0) * 5) % 360;
 
   return (
     <div className="max-w-lg mx-auto px-6 py-8">
@@ -56,7 +56,10 @@ export default async function PersonPage({ params }: Props) {
               className="w-full h-full object-cover"
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-4xl font-bold bg-gradient-to-br from-blue-500 to-blue-700 text-white">
+            <div 
+              className="w-full h-full flex items-center justify-center text-4xl font-bold text-white"
+              style={{ background: `hsl(${hue}, 65%, 45%)` }}
+            >
               {initial}
             </div>
           )}

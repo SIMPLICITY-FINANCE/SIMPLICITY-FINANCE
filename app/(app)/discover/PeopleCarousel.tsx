@@ -8,7 +8,6 @@ interface Person {
   name: string;
   slug: string;
   image_url: string | null;
-  show_thumbnail: string | null;
   show_name: string;
   show_slug: string | null;
 }
@@ -86,7 +85,8 @@ export function PeopleCarousel({ people }: PeopleCarouselProps) {
         className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide"
       >
         {uniquePeople.map((person) => {
-          const displayImage = person.image_url || person.show_thumbnail;
+          const displayImage = person.image_url;
+          const hue = ((person.name?.charCodeAt(0) ?? 65) * 5) % 360;
           return (
             <a
               key={`person-${person.slug}`}
@@ -102,7 +102,10 @@ export function PeopleCarousel({ people }: PeopleCarouselProps) {
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center text-xl font-bold bg-gradient-to-br from-blue-500 to-blue-700 text-white rounded-full">
+                  <div 
+                    className="w-full h-full flex items-center justify-center text-xl font-bold text-white rounded-full"
+                    style={{ background: `hsl(${hue}, 65%, 45%)` }}
+                  >
                     {person.name?.[0]?.toUpperCase() ?? '?'}
                   </div>
                 )}

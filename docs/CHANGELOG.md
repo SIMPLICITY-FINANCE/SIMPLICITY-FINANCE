@@ -1,6 +1,28 @@
 # CHANGELOG
 # Most recent entries at the top.
 
+## [2026-02-15] - People Carousel Shows Real Headshots Only
+
+### Changed
+- **Host names updated** — Coin Bureau now shows "Guy Turner", Eurodollar University shows "Jeff Snider", All-In Podcast shows "All-In Pod"
+- **Removed show thumbnail fallback** — people carousel and profile pages no longer use show logos as person photos
+- **Styled initial fallback** — when no headshot is available, displays color-coded initial (e.g., "B" for Benjamin, "G" for Guy) with unique HSL color per person
+- **Cleared wrong host images** — removed show thumbnails that were incorrectly copied as host images
+
+### Database Changes
+- Cleared all `host_image_url` values (were show thumbnails, not real headshots)
+- Updated host names to reflect actual hosts (Guy Turner, Jeff Snider, etc.)
+- All hosts now use NULL for `host_image_url` until real headshots are added via admin
+
+### Files Modified
+- `app/(app)/discover/PeopleCarousel.tsx` — removed `show_thumbnail` fallback, added color-coded initial
+- `app/(app)/discover/page.tsx` — removed `show_thumbnail` from people query
+- `app/(app)/discover/people/[slug]/page.tsx` — removed thumbnail fallback, added color-coded initial
+
+### Files Created
+- `scripts/fix-host-data.ts` — clears wrong images and updates host names
+- `scripts/check-current-hosts.ts` — utility to check current host data
+
 ## [2026-02-15] - Fix Person Profile Page and People Carousel Images
 
 ### Fixed

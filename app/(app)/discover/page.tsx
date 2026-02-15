@@ -19,7 +19,6 @@ interface PersonRow {
   name: string;
   slug: string;
   image_url: string | null;
-  show_thumbnail: string | null;
   show_name: string;
   show_slug: string | null;
 }
@@ -64,7 +63,6 @@ export default async function DiscoverPage() {
         s.host_name as name,
         s.host_slug as slug,
         s.host_image_url as image_url,
-        s.channel_thumbnail as show_thumbnail,
         s.name as show_name,
         NULL as show_slug
       FROM shows s
