@@ -4,85 +4,127 @@ const POLYGON_KEY = process.env.POLYGON_API_KEY;
 
 type Category = 'metals' | 'equities' | 'crypto' | 'currencies' | 'bonds' | 'commodities';
 
-const INSTRUMENTS: {
+// Only use tickers confirmed on Polygon free tier
+const POLYGON_INSTRUMENTS: {
   ticker: string;
-  polyTicker: string;
   label: string;
-  category: Category;
-  isCrypto: boolean;
+  category: Exclude<Category, 'currencies' | 'crypto'>;
 }[] = [
+  // EQUITIES - all major, confirmed on free tier
+  { ticker: 'SPY',  label: 'S&P 500',        category: 'equities'    },
+  { ticker: 'QQQ',  label: 'Nasdaq 100',      category: 'equities'    },
+  { ticker: 'DIA',  label: 'Dow Jones',       category: 'equities'    },
+  { ticker: 'IWM',  label: 'Russell 2000',    category: 'equities'    },
+  { ticker: 'EFA',  label: 'Intl Stocks',     category: 'equities'    },
+  { ticker: 'VWO',  label: 'Emerging Mkts',   category: 'equities'    },
   // METALS
-  { ticker: 'GLD',  polyTicker: 'GLD',        label: 'Gold ETF',      category: 'metals',      isCrypto: false },
-  { ticker: 'SLV',  polyTicker: 'SLV',        label: 'Silver ETF',    category: 'metals',      isCrypto: false },
-  { ticker: 'GDX',  polyTicker: 'GDX',        label: 'Gold Miners',   category: 'metals',      isCrypto: false },
-  { ticker: 'GDXJ', polyTicker: 'GDXJ',       label: 'Jr Miners',     category: 'metals',      isCrypto: false },
-
-  // EQUITIES
-  { ticker: 'SPY',  polyTicker: 'SPY',        label: 'S&P 500',       category: 'equities',    isCrypto: false },
-  { ticker: 'QQQ',  polyTicker: 'QQQ',        label: 'Nasdaq 100',    category: 'equities',    isCrypto: false },
-  { ticker: 'DIA',  polyTicker: 'DIA',        label: 'Dow Jones',     category: 'equities',    isCrypto: false },
-  { ticker: 'IWM',  polyTicker: 'IWM',        label: 'Russell 2000',  category: 'equities',    isCrypto: false },
-  { ticker: 'EFA',  polyTicker: 'EFA',        label: 'Intl Stocks',   category: 'equities',    isCrypto: false },
-  { ticker: 'VWO',  polyTicker: 'VWO',        label: 'Emerging Mkts', category: 'equities',    isCrypto: false },
-
-  // CRYPTO - use crypto ETFs instead of direct crypto (free tier doesn't support crypto snapshot)
-  { ticker: 'BITO', polyTicker: 'BITO',       label: 'Bitcoin ETF',   category: 'crypto',      isCrypto: false },
-  { ticker: 'ETHE', polyTicker: 'ETHE',       label: 'Ethereum ETF',  category: 'crypto',      isCrypto: false },
-  { ticker: 'GBTC', polyTicker: 'GBTC',       label: 'Bitcoin Trust', category: 'crypto',      isCrypto: false },
-  { ticker: 'MSTR', polyTicker: 'MSTR',       label: 'MicroStrategy', category: 'crypto',      isCrypto: false },
-
-  // CURRENCIES
-  { ticker: 'UUP',  polyTicker: 'UUP',        label: 'US Dollar',     category: 'currencies',  isCrypto: false },
-  { ticker: 'FXE',  polyTicker: 'FXE',        label: 'Euro',          category: 'currencies',  isCrypto: false },
-  { ticker: 'FXB',  polyTicker: 'FXB',        label: 'Brit Pound',    category: 'currencies',  isCrypto: false },
-  { ticker: 'FXY',  polyTicker: 'FXY',        label: 'Japanese Yen',  category: 'currencies',  isCrypto: false },
-
+  { ticker: 'GLD',  label: 'Gold',            category: 'metals'      },
+  { ticker: 'SLV',  label: 'Silver',          category: 'metals'      },
+  { ticker: 'GDX',  label: 'Gold Miners',     category: 'metals'      },
+  { ticker: 'GDXJ', label: 'Jr Miners',       category: 'metals'      },
   // BONDS
-  { ticker: 'TLT',  polyTicker: 'TLT',        label: '20Y Treasury',  category: 'bonds',       isCrypto: false },
-  { ticker: 'IEF',  polyTicker: 'IEF',        label: '10Y Treasury',  category: 'bonds',       isCrypto: false },
-  { ticker: 'SHY',  polyTicker: 'SHY',        label: '2Y Treasury',   category: 'bonds',       isCrypto: false },
-  { ticker: 'HYG',  polyTicker: 'HYG',        label: 'High Yield',    category: 'bonds',       isCrypto: false },
-  { ticker: 'LQD',  polyTicker: 'LQD',        label: 'Corp Bonds',    category: 'bonds',       isCrypto: false },
-  { ticker: 'AGG',  polyTicker: 'AGG',        label: 'Bond Index',    category: 'bonds',       isCrypto: false },
-
+  { ticker: 'TLT',  label: '20Y Treasury',    category: 'bonds'       },
+  { ticker: 'IEF',  label: '10Y Treasury',    category: 'bonds'       },
+  { ticker: 'SHY',  label: '2Y Treasury',     category: 'bonds'       },
+  { ticker: 'HYG',  label: 'High Yield',      category: 'bonds'       },
+  { ticker: 'LQD',  label: 'Corp Bonds',      category: 'bonds'       },
   // COMMODITIES
-  { ticker: 'USO',  polyTicker: 'USO',        label: 'Oil ETF',       category: 'commodities', isCrypto: false },
-  { ticker: 'UNG',  polyTicker: 'UNG',        label: 'Nat Gas ETF',   category: 'commodities', isCrypto: false },
-  { ticker: 'DBA',  polyTicker: 'DBA',        label: 'Agriculture',   category: 'commodities', isCrypto: false },
-  { ticker: 'DBC',  polyTicker: 'DBC',        label: 'Commodities',   category: 'commodities', isCrypto: false },
+  { ticker: 'USO',  label: 'Oil (WTI)',       category: 'commodities' },
+  { ticker: 'UNG',  label: 'Natural Gas',     category: 'commodities' },
+  { ticker: 'DBA',  label: 'Agriculture',     category: 'commodities' },
+  { ticker: 'GSG',  label: 'Commodities',     category: 'commodities' },
 ];
 
-// Get last trading days worth of data - handles weekends
-async function fetchLastClose(polyTicker: string) {
+// Crypto instruments - Polygon snapshot works for these
+const CRYPTO_INSTRUMENTS = [
+  { ticker: 'BTC',  polyTicker: 'X:BTCUSD',  label: 'Bitcoin'   },
+  { ticker: 'ETH',  polyTicker: 'X:ETHUSD',  label: 'Ethereum'  },
+  { ticker: 'SOL',  polyTicker: 'X:SOLUSD',  label: 'Solana'    },
+  { ticker: 'BNB',  polyTicker: 'X:BNBUSD',  label: 'BNB'       },
+  { ticker: 'XRP',  polyTicker: 'X:XRPUSD',  label: 'XRP'       },
+  { ticker: 'DOGE', polyTicker: 'X:DOGEUSD', label: 'Dogecoin'  },
+];
+
+// Currency pairs - use frankfurter.app (free, no key needed)
+const CURRENCY_PAIRS = [
+  { ticker: 'EUR/USD', base: 'EUR', quote: 'USD', label: 'Euro'         },
+  { ticker: 'GBP/USD', base: 'GBP', quote: 'USD', label: 'Brit Pound'  },
+  { ticker: 'JPY/USD', base: 'JPY', quote: 'USD', label: 'Japanese Yen'},
+  { ticker: 'CHF/USD', base: 'CHF', quote: 'USD', label: 'Swiss Franc' },
+  { ticker: 'AUD/USD', base: 'AUD', quote: 'USD', label: 'Aus Dollar'  },
+  { ticker: 'CAD/USD', base: 'CAD', quote: 'USD', label: 'Can Dollar'  },
+];
+
+// Fetch stock/ETF last trading day (works on weekends)
+async function fetchStockLastClose(ticker: string) {
   try {
-    // Use range query to get last 7 days - finds most recent trading day
     const to = new Date();
     const from = new Date();
-    from.setDate(from.getDate() - 7); // go back 7 days to ensure we find a trading day
-
+    from.setDate(from.getDate() - 7);
     const fromStr = from.toISOString().split('T')[0];
     const toStr = to.toISOString().split('T')[0];
 
-    const url = `https://api.polygon.io/v2/aggs/ticker/${polyTicker}/range/1/day/${fromStr}/${toStr}?adjusted=true&sort=desc&limit=2&apiKey=${POLYGON_KEY}`;
+    const url = `https://api.polygon.io/v2/aggs/ticker/${ticker}/range/1/day/${fromStr}/${toStr}?adjusted=true&sort=desc&limit=2&apiKey=${POLYGON_KEY}`;
     const res = await fetch(url, { cache: 'no-store' });
     if (!res.ok) return null;
     const data = await res.json();
-
     const results = data?.results;
-    if (!results || results.length === 0) return null;
+    if (!results?.length) return null;
 
-    // Most recent day = results[0], previous day = results[1]
     const latest = results[0];
     const previous = results[1];
-
     if (!latest?.c) return null;
 
-    // Use previous day's close as open for % change calculation
-    // This gives day-over-day change
-    const c = latest.c;
-    const o = previous?.c ?? latest.o; // prev close or today's open
+    return {
+      c: latest.c,
+      o: previous?.c ?? latest.o,
+    };
+  } catch {
+    return null;
+  }
+}
 
+// Fetch crypto via snapshot
+async function fetchCryptoSnapshot(polyTicker: string) {
+  try {
+    const url = `https://api.polygon.io/v2/snapshot/locale/global/markets/crypto/tickers/${polyTicker}?apiKey=${POLYGON_KEY}`;
+    const res = await fetch(url, { cache: 'no-store' });
+    if (!res.ok) return null;
+    const data = await res.json();
+    const t = data?.ticker;
+    if (!t) return null;
+    const c = t.day?.c ?? t.prevDay?.c;
+    const o = t.day?.o ?? t.prevDay?.o;
+    if (!c || !o) return null;
     return { c, o };
+  } catch {
+    return null;
+  }
+}
+
+// Fetch forex via frankfurter.app - FREE, no key needed
+async function fetchForexRates() {
+  try {
+    // Get today's rates - returns all major pairs vs EUR base
+    const res = await fetch(
+      'https://api.frankfurter.app/latest?from=USD&to=EUR,GBP,JPY,CHF,AUD,CAD',
+      { cache: 'no-store' }
+    );
+    if (!res.ok) return null;
+    const data = await res.json();
+
+    // Also get yesterday's rates for % change
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 3); // go back 3 days to handle weekends
+    const yStr = yesterday.toISOString().split('T')[0];
+
+    const prevRes = await fetch(
+      `https://api.frankfurter.app/${yStr}?from=USD&to=EUR,GBP,JPY,CHF,AUD,CAD`,
+      { cache: 'no-store' }
+    );
+    const prevData = prevRes.ok ? await prevRes.json() : null;
+
+    return { current: data.rates, previous: prevData?.rates };
   } catch {
     return null;
   }
@@ -94,32 +136,85 @@ export async function GET() {
   }
 
   try {
-    const results = await Promise.allSettled(
-      INSTRUMENTS.map(inst => fetchLastClose(inst.polyTicker))
-    );
+    // Fetch all in parallel
+    const [stockResults, cryptoResults, forexData] = await Promise.all([
+      Promise.allSettled(POLYGON_INSTRUMENTS.map(inst => fetchStockLastClose(inst.ticker))),
+      Promise.allSettled(CRYPTO_INSTRUMENTS.map(inst => fetchCryptoSnapshot(inst.polyTicker))),
+      fetchForexRates(),
+    ]);
 
-    const markets = results
+    // Process stocks/ETFs
+    const stockMarkets = stockResults
       .map((result, i) => {
         if (result.status === 'rejected' || !result.value) return null;
-        const inst = INSTRUMENTS[i];
+        const inst = POLYGON_INSTRUMENTS[i];
         if (!inst) return null;
         const { c, o } = result.value;
         if (!c || !o || o === 0) return null;
-        const change = c - o;
         const changePct = ((c - o) / o) * 100;
         return {
           ticker: inst.ticker,
           label: inst.label,
-          category: inst.category,
+          category: inst.category as string,
           close: c,
-          change: parseFloat(change.toFixed(4)),
+          change: parseFloat((c - o).toFixed(2)),
           changePct: parseFloat(changePct.toFixed(2)),
           up: c >= o,
         };
       })
       .filter(Boolean);
 
-    console.log(`[Markets] Fetched ${markets.length}/${INSTRUMENTS.length} instruments`);
+    // Process crypto
+    const cryptoMarkets = cryptoResults
+      .map((result, i) => {
+        if (result.status === 'rejected' || !result.value) return null;
+        const inst = CRYPTO_INSTRUMENTS[i];
+        if (!inst) return null;
+        const { c, o } = result.value;
+        if (!c || !o || o === 0) return null;
+        const changePct = ((c - o) / o) * 100;
+        return {
+          ticker: inst.ticker,
+          label: inst.label,
+          category: 'crypto',
+          close: c,
+          change: parseFloat((c - o).toFixed(2)),
+          changePct: parseFloat(changePct.toFixed(2)),
+          up: c >= o,
+        };
+      })
+      .filter(Boolean);
+
+    // Process forex - frankfurter returns how many foreign units per USD
+    // Invert to get USD per foreign unit
+    const forexMarkets = forexData
+      ? CURRENCY_PAIRS.map(pair => {
+          const currCode = pair.base; // EUR, GBP, etc.
+          const currentRate = forexData.current?.[currCode];
+          const previousRate = forexData.previous?.[currCode];
+
+          if (!currentRate) return null;
+
+          // frankfurter returns: 1 USD = X foreign
+          // Invert: 1 foreign = 1/X USD
+          const close = 1 / currentRate;
+          const prev = previousRate ? 1 / previousRate : close;
+          const changePct = ((close - prev) / prev) * 100;
+
+          return {
+            ticker: pair.ticker,
+            label: pair.label,
+            category: 'currencies',
+            close: parseFloat(close.toFixed(4)),
+            change: parseFloat((close - prev).toFixed(4)),
+            changePct: parseFloat(changePct.toFixed(2)),
+            up: close >= prev,
+          };
+        }).filter(Boolean)
+      : [];
+
+    const markets = [...stockMarkets, ...cryptoMarkets, ...forexMarkets];
+    console.log(`[Markets] ${markets.length} instruments loaded`);
 
     return NextResponse.json({ markets });
   } catch (error: any) {

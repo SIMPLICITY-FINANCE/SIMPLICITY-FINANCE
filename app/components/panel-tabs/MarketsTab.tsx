@@ -47,14 +47,20 @@ function Sparkline({ up }: { up: boolean }) {
 }
 
 function formatPrice(ticker: string, price: number): string {
-  if (ticker === 'BTC') {
-    return price.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+  // Crypto
+  if (ticker === 'BTC') return `$${price.toLocaleString('en-US', { maximumFractionDigits: 0 })}`;
+  if (['ETH', 'SOL', 'BNB'].includes(ticker)) {
+    return `$${price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   }
-  if (['ETH', 'SOL', 'BNB', 'XRP', 'DOGE'].includes(ticker)) {
-    if (price < 1) return price.toFixed(4);
-    return price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  if (['XRP', 'DOGE'].includes(ticker)) {
+    return `$${price.toFixed(4)}`;
   }
-  return price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  // Forex - show 4 decimal places
+  if (ticker.includes('/')) {
+    return price.toFixed(4);
+  }
+  // Stocks/ETFs
+  return `$${price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
 
 function formatChange(change: number, ticker: string): string {
