@@ -1,6 +1,50 @@
 # CHANGELOG
 # Most recent entries at the top.
 
+## [2026-02-15] - Fix Markets, Calendar, Predictions Tabs (Crypto Tickers, Free APIs, YES/NO UI)
+
+### Fixed
+- **Markets Tab** — Corrected crypto ticker format for Polygon API (BTC → X:BTCUSD, ETH → X:ETHUSD)
+- **Calendar Tab** — Replaced premium economic calendar with free Finnhub earnings + hardcoded FOMC dates
+- **Predictions Tab** — Switched to Gamma API with YES/NO probability bars instead of single percentage
+
+### Markets Tab Changes
+- Updated `app/api/panel/markets/route.ts` to use correct Polygon ticker format
+- Stocks use direct ticker (SPY, QQQ, DIA, GLD, TLT)
+- Crypto uses X: prefix (X:BTCUSD, X:ETHUSD)
+- Added ETH to tracked instruments (7 total: SPY, QQQ, DIA, BTC, ETH, GLD, TLT)
+- API now returns label and type fields, removed hardcoded TICKER_LABELS from component
+- Updated `MarketsTab.tsx` to use label from API response
+
+### Calendar Tab Changes
+- Replaced premium Finnhub economic calendar endpoint (requires $50/month plan)
+- Now uses free Finnhub earnings calendar + hardcoded 2026 FOMC meeting dates
+- Earnings events show company symbol badges (blue pill)
+- FOMC events marked as high impact (red dot)
+- Updated `app/api/panel/calendar/route.ts` to fetch earnings and merge with Fed dates
+- Updated `CalendarTab.tsx` to display symbol badges for earnings type events
+
+### Predictions Tab Changes
+- Switched from CLOB API to Gamma API (https://gamma-api.polymarket.com/markets)
+- New YES/NO bar UI showing both probabilities side-by-side
+- Green bar for YES probability, red bar for NO probability
+- Percentages shown in bars (if ≥20% width) and below bars
+- Updated `app/api/panel/predictions/route.ts` to parse outcomePrices JSON array
+- Completely rewrote `PredictionsTab.tsx` with split YES/NO bar design
+- Shows 24h volume in addition to total volume
+- Direct links to market pages via m.url field
+
+### Expected Results After Fix
+- **Markets**: BTC shows ~$95,000+, ETH shows ~$2,500+, stocks show correct prices
+- **Calendar**: Shows upcoming earnings reports + 2026 FOMC meeting dates (no premium API error)
+- **Predictions**: Shows current 2024/2025 markets with YES/NO split bars (not old test markets)
+
+### Technical Notes
+- Cleared Next.js cache required after these changes (`rm -rf .next`)
+- All three tabs now use free-tier or public APIs (no premium subscriptions needed)
+- Calendar FOMC dates hardcoded for 2026, will need annual update
+- Predictions Gamma API returns active markets sorted by 24h volume
+
 ## [2026-02-15] - Build Earnings, Calendar, Predictions, Tweets Panel Tabs
 
 ### Added

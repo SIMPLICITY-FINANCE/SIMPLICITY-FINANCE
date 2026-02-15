@@ -13,6 +13,8 @@ interface CalendarEvent {
   forecast: string | null;
   prev: string | null;
   unit: string;
+  type?: string;
+  symbol?: string;
 }
 
 function formatEventDate(timeStr: string) {
@@ -115,9 +117,16 @@ export function CalendarTab() {
                       <div className={`w-1.5 h-1.5 rounded-full mt-1.5 flex-shrink-0 ${impactColor(event.impact)}`} />
 
                       <div className="flex-1 min-w-0">
-                        <p className="text-xs font-medium text-foreground line-clamp-2 leading-snug">
-                          {event.event}
-                        </p>
+                        <div className="flex items-center gap-1.5">
+                          <p className="text-xs font-medium text-foreground line-clamp-2 leading-snug">
+                            {event.event}
+                          </p>
+                          {event.type === 'earnings' && event.symbol && (
+                            <span className="text-[9px] font-bold bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 px-1 py-0.5 rounded flex-shrink-0">
+                              {event.symbol}
+                            </span>
+                          )}
+                        </div>
                         <p className="text-[10px] text-muted-foreground mt-0.5">
                           {event.country} · {time}
                           <span className={`ml-1.5 text-[9px] font-semibold ${

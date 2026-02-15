@@ -6,20 +6,11 @@ import { TrendingUp, TrendingDown, AlertCircle } from 'lucide-react';
 
 interface MarketItem {
   ticker: string;
+  label: string;
+  type: string;
   close: number;
   change: number;
-  high: number;
-  low: number;
 }
-
-const TICKER_LABELS: Record<string, string> = {
-  SPY: 'S&P 500',
-  QQQ: 'Nasdaq',
-  DIA: 'Dow Jones',
-  BTC: 'Bitcoin',
-  GLD: 'Gold',
-  TLT: '20Y Treasury',
-};
 
 export function MarketsTab() {
   const [markets, setMarkets] = useState<MarketItem[]>([]);
@@ -64,7 +55,7 @@ export function MarketsTab() {
           <div>
             <p className="text-xs font-bold text-foreground">{item.ticker}</p>
             <p className="text-[10px] text-muted-foreground">
-              {TICKER_LABELS[item.ticker] ?? item.ticker}
+              {item.label}
             </p>
           </div>
 
