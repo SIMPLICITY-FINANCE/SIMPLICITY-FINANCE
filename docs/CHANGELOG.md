@@ -1,6 +1,57 @@
 # CHANGELOG
 # Most recent entries at the top.
 
+## [2026-02-15] - News Tab Redesign - TODAY/TRENDING/BREAKING Filters with Topic Icons
+
+### Added
+- **Filter tabs** — TODAY, TRENDING, BREAKING at top of news feed
+- **Topic classification** — Each news item auto-classified by keywords (economy, commodities, crypto, markets, tech, general)
+- **Colored topic icons** — Visual indicators matching topic (📊 economy, 🛢️ commodities, ₿ crypto, 📈 markets, ⚡ tech, 📰 general)
+- **Alert indicators** — Red/amber circles on right for high/medium importance items
+- **Time-based filtering** — TODAY (last 24h), BREAKING (last 2h), TRENDING (all by relevance)
+
+### API Changes (app/api/panel/news/route.ts)
+- Increased limit from 10 to 30 news items
+- Added `isBreaking` flag (last 2 hours)
+- Added `isToday` flag (last 24 hours)
+- Added `alertLevel` based on position in Finnhub feed (top 3 = high, next 5 = medium, rest = low)
+- Added `topicIcon` classification via keyword matching in headlines
+- Economy: Fed, rate, inflation, CPI, FOMC, treasury
+- Commodities: oil, gold, commodity, energy
+- Crypto: crypto, Bitcoin, Ethereum, BTC, ETH
+- Markets: stock, market, S&P, Nasdaq, equity, IPO
+- Tech: tech, AI, Apple, Google, Microsoft, chip
+- General: fallback for unmatched topics
+- Reduced cache from 5min to 3min for fresher breaking news
+
+### Component Changes (app/components/panel-tabs/NewsTab.tsx)
+- Complete redesign with filter tabs matching Figma
+- TODAY/TRENDING/BREAKING tabs with emoji icons (📰/📈/⚡)
+- Active tab highlighted with card background and border
+- Topic icons with colored backgrounds (purple, orange, blue, green, cyan, gray)
+- Alert icons: red circle with ! for high, amber circle with ! for medium, none for low
+- Clean list layout with dividers (no thumbnails)
+- Each item: topic icon (left) + headline + source/time + alert icon (right)
+- Empty state for BREAKING when no news in last 2 hours
+- Client-side filtering for instant tab switching
+
+### UX Improvements
+- Click TODAY to see news from last 24 hours
+- Click TRENDING to see all news sorted by Finnhub relevance
+- Click BREAKING to see only news from last 2 hours
+- Color-coded topic icons make scanning easier
+- Alert indicators highlight important stories
+- Time ago format (Xm ago, Xh ago, Xd ago)
+- Hover states on news items
+
+### Technical Notes
+- TypeScript: 0 compilation errors
+- Topic classification runs server-side for performance
+- Alert levels based on Finnhub feed position (proxy for importance)
+- Filters applied client-side for instant switching
+- Breaking threshold: 2 hours (7200 seconds)
+- Today threshold: 24 hours (86400 seconds)
+
 ## [2026-02-15] - Predictions Tab Redesign - Categories, 2-Column Grid, Separate YES/NO Bars
 
 ### Added
