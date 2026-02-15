@@ -15,8 +15,10 @@ export async function GET() {
         s.channel_thumbnail as show_thumbnail
       FROM episodes e
       LEFT JOIN shows s ON e.youtube_channel_id = s.channel_id
+      LEFT JOIN episode_summary es ON es.episode_id = e.id
       WHERE e.is_published = true
-      ORDER BY e.published_at DESC NULLS LAST
+        AND es.id IS NOT NULL
+      ORDER BY COALESCE(e.published_at, e.created_at) DESC
       LIMIT 5
     `;
 
